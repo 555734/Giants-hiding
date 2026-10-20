@@ -16,6 +16,7 @@ permissions:
   actions: write
 jobs:
   review:
+    if: ${{ !contains(github.event.head_commit.message, '[inspect-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:

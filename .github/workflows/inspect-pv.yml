@@ -1,0 +1,30 @@
+name: Inspect rendered PV frames
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/inspect-pv.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          name: pv-review-frames
+          run-id: 39464063549
+          github-token: ${{ github.token }}
+          path: output
+      - name: Publish review files with readable image data
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PV_SOURCE_SHA: 4807e5f5037532161d1a1eaf068dcffc2626f9e4
+          PV_SOURCE_RUN: '39464063549'
+        run: node scripts/publish-previews.mjs
