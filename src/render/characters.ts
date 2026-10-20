@@ -20,7 +20,7 @@ function ik(a:T.Bone,b:T.Bone,c:T.Bone,target:T.Vector3,pole:T.Vector3){
 function palmQuaternion(finger:T.Vector3,normal:T.Vector3){const y=finger.clone().normalize(),z=normal.clone().cross(y).normalize(),x=y.clone().cross(z).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z))}
 export class Character{
  root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Group;headRest=new T.Quaternion();footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;
- constructor(base:T.Group,headGeo:T.BufferGeometry,headMat:T.Material,height:number,giant:boolean,cloth:T.Texture){
+ constructor(base:T.Group,headGeo:T.BufferGeometry,headMat:T.Material|T.Material[],height:number,giant:boolean,cloth:T.Texture){
   this.root.name=giant?'giant-worker':'human-player';this.root.add(this.unit);this.unit.scale.setScalar(height/1.94459);
   const correction=new T.Group();correction.rotation.y=-Math.PI/2;correction.position.y=.996932;this.unit.add(correction);
   const rig=clone(base);correction.add(rig);
@@ -109,9 +109,22 @@ export async function loadCharacters(scene:T.Scene,cloth:T.Texture){
  const loader=new GLTFLoader(),tl=new T.TextureLoader();
  const [base,hg,col,normal]=await Promise.all([loader.loadAsync('./assets/human-base.glb'),loader.loadAsync('./assets/LeePerrySmith.glb'),tl.loadAsync('./assets/face-albedo-open.jpg'),tl.loadAsync('./assets/Infinite-Level_02_Tangent_SmoothUV.jpg')]);col.colorSpace=T.SRGBColorSpace;col.flipY=normal.flipY=true;col.anisotropy=4;
  let headGeo!:T.BufferGeometry;hg.scene.traverse(o=>{if((o as T.Mesh).isMesh)headGeo=(o as T.Mesh).geometry});
- const positions=headGeo.getAttribute('position'),indices=headGeo.getIndex(),kept:number[]=[];
- const count=indices?indices.count:positions.count;for(let n=0;n<count;n+=3){const a=indices?indices.getX(n):n,b=indices?indices.getX(n+1):n+1,c=indices?indices.getX(n+2):n+2;if((positions.getY(a)+positions.getY(b)+positions.getY(c))/3>=-1.05)kept.push(a,b,c)}headGeo=headGeo.clone();headGeo.setIndex(kept);
+ const positions=headGeo.getAttribute('position'),uv=headGeo.getAttribute('uv'),indices=headGeo.getIndex(),kept:number[]=[],eyeIndices:number[]=[];
+ const count=indices?indices.count:positions.count;for(let n=0;n<count;n+=3){const a=indices?indices.getX(n):n,b=indices?indices.getX(n+1):n+1,c=indices?indices.getX(n+2):n+2;if((positions.getY(a)+positions.getY(b)+positions.getY(c))/3>=-1.05){const eye=[a,b,c].every(i=>uv.getY(i)>.90&&(uv.getX(i)<.10||uv.getX(i)>.90));(eye?eyeIndices:kept).push(a,b,c)}}headGeo=headGeo.clone();headGeo.setIndex([...kept,...eyeIndices]);headGeo.clearGroups();headGeo.addGroup(0,kept.length,0);headGeo.addGroup(kept.length,eyeIndices.length,1);
+ const eyeAmount={value:0};
+ const eyeMat=new T.MeshStandardMaterial({map:col,normalMap:normal,normalScale:new T.Vector2(.65,.65),roughness:.68,color:0xffead7});
+ eyeMat.onBeforeCompile=shader=>{shader.uniforms.eyeAmount=eyeAmount;
+  shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 eyeSource;').replace('#include <begin_vertex>','#include <begin_vertex>\neyeSource=position;');
+  shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 eyeSource;\nuniform float eyeAmount;').replace('#include <color_fragment>',`#include <color_fragment>
+   vec2 eyeUV=(eyeSource.xy-vec2(sign(eyeSource.x)*.69,1.45))/vec2(.28,.23);
+   float rad=length(eyeUV);float iris=(1.-smoothstep(.76,.90,rad))*smoothstep(1.5,1.7,eyeSource.z);
+   float pupil=1.-smoothstep(.30,.38,rad);float streak=.025*sin(atan(eyeUV.y,eyeUV.x)*42.);
+   vec3 eyeColor=mix(vec3(.74,.76,.72),vec3(.17+streak,.080+streak,.032),iris);
+   eyeColor=mix(eyeColor,vec3(.008),pupil*iris);
+   diffuseColor.rgb=mix(diffuseColor.rgb,eyeColor,eyeAmount);
+  `);
+ };
  const headMat=new T.MeshStandardMaterial({map:col,normalMap:normal,normalScale:new T.Vector2(.65,.65),roughness:.68,color:0xffead7});
- const human=new Character(base.scene,headGeo,headMat,1.7,false,cloth),giant=new Character(base.scene,headGeo,headMat,60,true,cloth);scene.add(human.root,giant.root,human.shadow);
- return{human,giant,update(s:State){human.updatePlayer(s);giant.updateGiant(s)}};
+ const human=new Character(base.scene,headGeo,headMat,1.7,false,cloth),giant=new Character(base.scene,headGeo,[headMat,eyeMat],60,true,cloth);scene.add(human.root,giant.root,human.shadow);
+ return{human,giant,update(s:State){eyeAmount.value=s.inspect;human.updatePlayer(s);giant.updateGiant(s)}};
 }
