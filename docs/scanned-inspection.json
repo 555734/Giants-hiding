@@ -1,0 +1,1286 @@
+{
+  "source": {
+    "url": "https://renderpeople.com/sample/free/renderpeople_free_animated_people_FBX.zip",
+    "license": "https://renderpeople.com/general-terms-and-conditions/",
+    "redistribute_assets": false
+  },
+  "armature": "Armature",
+  "bones": [
+    {
+      "name": "rp_nathan_animated_003_walking_root",
+      "parent": null,
+      "head": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "tail": [
+        0.0,
+        94.44613647460938,
+        0.0
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_hip",
+      "parent": "rp_nathan_animated_003_walking_root",
+      "head": [
+        4.1359030627651384e-25,
+        94.44613647460938,
+        3.6734198463196485e-40
+      ],
+      "tail": [
+        -6.0926885078423955e-15,
+        94.44613647460938,
+        -12.057052612304688
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_spine_01",
+      "parent": "rp_nathan_animated_003_walking_hip",
+      "head": [
+        -1.9644237454485847e-06,
+        109.38165283203125,
+        8.145767424139194e-06
+      ],
+      "tail": [
+        -1.9644237454485847e-06,
+        109.38165283203125,
+        -14.935507774353027
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_spine_02",
+      "parent": "rp_nathan_animated_003_walking_spine_01",
+      "head": [
+        -1.69490783719084e-06,
+        124.31716918945312,
+        7.946952791826334e-06
+      ],
+      "tail": [
+        -1.69490783719084e-06,
+        124.31716918945312,
+        -14.935493469238281
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_spine_03",
+      "parent": "rp_nathan_animated_003_walking_spine_02",
+      "head": [
+        -2.1575310711341444e-06,
+        139.25267028808594,
+        8.705239451956004e-06
+      ],
+      "tail": [
+        -2.1575310711341444e-06,
+        139.25267028808594,
+        -14.69016170501709
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_neck",
+      "parent": "rp_nathan_animated_003_walking_spine_03",
+      "head": [
+        -7.509822239626374e-07,
+        154.1883544921875,
+        1.026800055115018e-05
+      ],
+      "tail": [
+        -7.509416377615707e-07,
+        155.6553497314453,
+        -11.425823211669922
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_head",
+      "parent": "rp_nathan_animated_003_walking_neck",
+      "head": [
+        -2.0114780454605352e-06,
+        165.6141815185547,
+        1.467029094696045
+      ],
+      "tail": [
+        -2.0114780454605352e-06,
+        165.6141815185547,
+        -9.044858932495117
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_head_end",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        -2.01094189833384e-06,
+        184.9942626953125,
+        1.4670299291610718
+      ],
+      "tail": [
+        -2.01094189833384e-06,
+        184.9942626953125,
+        -9.0448579788208
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_jaw",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        -0.005774754099547863,
+        166.406005859375,
+        3.0618250370025635
+      ],
+      "tail": [
+        0.0011031078174710274,
+        173.9003448486328,
+        7.867439270019531
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_jaw_end",
+      "parent": "rp_nathan_animated_003_walking_jaw",
+      "head": [
+        0.0049512372352182865,
+        161.60037231445312,
+        10.55615234375
+      ],
+      "tail": [
+        0.01182909682393074,
+        169.09471130371094,
+        15.361766815185547
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eye_l",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        3.086183547973633,
+        171.92538452148438,
+        8.798508644104004
+      ],
+      "tail": [
+        3.086183547973633,
+        173.14773559570312,
+        8.798514366149902
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eye_end_l",
+      "parent": "rp_nathan_animated_003_walking_eye_l",
+      "head": [
+        3.086183547973633,
+        171.9253692626953,
+        10.020857810974121
+      ],
+      "tail": [
+        3.086183547973633,
+        173.14772033691406,
+        10.02086353302002
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eye_r",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        -2.7840075492858887,
+        171.96580505371094,
+        8.700883865356445
+      ],
+      "tail": [
+        -2.7840075492858887,
+        173.35598754882812,
+        8.700883865356445
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eye_end_r",
+      "parent": "rp_nathan_animated_003_walking_eye_r",
+      "head": [
+        -2.7840075492858887,
+        171.96580505371094,
+        10.091066360473633
+      ],
+      "tail": [
+        -2.7840075492858887,
+        173.35598754882812,
+        10.091066360473633
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_mouth_l",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        2.7327303886413574,
+        165.03065490722656,
+        10.034152030944824
+      ],
+      "tail": [
+        2.7327303886413574,
+        175.54254150390625,
+        10.034152030944824
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_mouth_r",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        -2.4369263648986816,
+        164.99383544921875,
+        10.269474983215332
+      ],
+      "tail": [
+        -2.4369263648986816,
+        175.50572204589844,
+        10.269474983215332
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eyelid_l",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        3.086183547973633,
+        171.92538452148438,
+        8.798508644104004
+      ],
+      "tail": [
+        3.086183547973633,
+        173.55517578125,
+        8.391067504882812
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eyelid_end_l",
+      "parent": "rp_nathan_animated_003_walking_eyelid_l",
+      "head": [
+        3.086183786392212,
+        172.33282470703125,
+        10.428303718566895
+      ],
+      "tail": [
+        3.086183786392212,
+        173.96261596679688,
+        10.020862579345703
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eyelid_r",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        -2.7840075492858887,
+        171.96580505371094,
+        8.700883865356445
+      ],
+      "tail": [
+        -2.7840075492858887,
+        173.76344299316406,
+        8.293437004089355
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eyelid_end_r",
+      "parent": "rp_nathan_animated_003_walking_eyelid_r",
+      "head": [
+        -2.7840077877044678,
+        172.37326049804688,
+        10.498512268066406
+      ],
+      "tail": [
+        -2.7840077877044678,
+        172.37326049804688,
+        8.655281066894531
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eyebrow_l",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        1.8699404001235962,
+        172.9646453857422,
+        11.727678298950195
+      ],
+      "tail": [
+        -5.56308650970459,
+        180.39767456054688,
+        11.727678298950195
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_eyebrow_r",
+      "parent": "rp_nathan_animated_003_walking_head",
+      "head": [
+        -1.9572221040725708,
+        173.00946044921875,
+        11.582239151000977
+      ],
+      "tail": [
+        5.475804805755615,
+        180.44248962402344,
+        11.582239151000977
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_shoulder_l",
+      "parent": "rp_nathan_animated_003_walking_spine_03",
+      "head": [
+        5.807886600494385,
+        152.4693145751953,
+        -1.7880386114120483
+      ],
+      "tail": [
+        5.807886600494385,
+        152.4693145751953,
+        -15.432111740112305
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_upperarm_l",
+      "parent": "rp_nathan_animated_003_walking_shoulder_l",
+      "head": [
+        19.451967239379883,
+        152.4693145751953,
+        -1.7880393266677856
+      ],
+      "tail": [
+        19.451967239379883,
+        152.4693145751953,
+        -21.798187255859375
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_lowerarm_l",
+      "parent": "rp_nathan_animated_003_walking_upperarm_l",
+      "head": [
+        46.13217544555664,
+        152.4693145751953,
+        -1.7880414724349976
+      ],
+      "tail": [
+        46.13217544555664,
+        152.4693145751953,
+        -21.166032791137695
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_hand_l",
+      "parent": "rp_nathan_animated_003_walking_lowerarm_l",
+      "head": [
+        71.96949768066406,
+        152.4693145751953,
+        -1.7880377769470215
+      ],
+      "tail": [
+        71.96949768066406,
+        142.4844512939453,
+        -1.7880377769470215
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_thumb_01_l",
+      "parent": "rp_nathan_animated_003_walking_hand_l",
+      "head": [
+        77.45376586914062,
+        151.1186981201172,
+        1.5073399543762207
+      ],
+      "tail": [
+        78.3613052368164,
+        150.93719482421875,
+        -2.122814178466797
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_thumb_02_l",
+      "parent": "rp_nathan_animated_003_walking_thumb_01_l",
+      "head": [
+        81.01341247558594,
+        150.40675354003906,
+        2.432847023010254
+      ],
+      "tail": [
+        81.01341247558594,
+        150.40675354003906,
+        -0.8004903793334961
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_thumb_03_l",
+      "parent": "rp_nathan_animated_003_walking_thumb_02_l",
+      "head": [
+        84.24674987792969,
+        150.40676879882812,
+        2.432847023010254
+      ],
+      "tail": [
+        84.24674987792969,
+        150.40676879882812,
+        -0.030196189880371094
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_thumb_end_l",
+      "parent": "rp_nathan_animated_003_walking_thumb_03_l",
+      "head": [
+        86.70980072021484,
+        150.40676879882812,
+        2.432847499847412
+      ],
+      "tail": [
+        86.70980072021484,
+        150.40676879882812,
+        -0.03019571304321289
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_index_01_l",
+      "parent": "rp_nathan_animated_003_walking_hand_l",
+      "head": [
+        82.58560943603516,
+        151.92333984375,
+        0.8500661849975586
+      ],
+      "tail": [
+        82.58560943603516,
+        147.72325134277344,
+        0.8500661849975586
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_index_02_l",
+      "parent": "rp_nathan_animated_003_walking_index_01_l",
+      "head": [
+        86.78569793701172,
+        151.92335510253906,
+        0.8500661849975586
+      ],
+      "tail": [
+        86.78569793701172,
+        149.50189208984375,
+        0.8500661849975586
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_index_03_l",
+      "parent": "rp_nathan_animated_003_walking_index_02_l",
+      "head": [
+        89.2071533203125,
+        151.92333984375,
+        0.8500670194625854
+      ],
+      "tail": [
+        89.2071533203125,
+        149.57644653320312,
+        0.8500670194625854
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_index_end_l",
+      "parent": "rp_nathan_animated_003_walking_index_03_l",
+      "head": [
+        91.5540542602539,
+        151.92333984375,
+        0.8500672578811646
+      ],
+      "tail": [
+        91.5540542602539,
+        149.57644653320312,
+        0.8500672578811646
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_middle_01_l",
+      "parent": "rp_nathan_animated_003_walking_hand_l",
+      "head": [
+        82.75593566894531,
+        152.0730743408203,
+        -1.1505762338638306
+      ],
+      "tail": [
+        82.75593566894531,
+        147.05197143554688,
+        -1.1505762338638306
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_middle_02_l",
+      "parent": "rp_nathan_animated_003_walking_middle_01_l",
+      "head": [
+        87.77703094482422,
+        152.07308959960938,
+        -1.1505762338638306
+      ],
+      "tail": [
+        87.77703094482422,
+        149.21157836914062,
+        -1.1505762338638306
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_middle_03_l",
+      "parent": "rp_nathan_animated_003_walking_middle_02_l",
+      "head": [
+        90.6385498046875,
+        152.07308959960938,
+        -1.1505762338638306
+      ],
+      "tail": [
+        90.6385498046875,
+        149.2501678466797,
+        -1.1505762338638306
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_middle_end_l",
+      "parent": "rp_nathan_animated_003_walking_middle_03_l",
+      "head": [
+        93.46147155761719,
+        152.07308959960938,
+        -1.1505765914916992
+      ],
+      "tail": [
+        93.46147155761719,
+        149.2501678466797,
+        -1.1505765914916992
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ring_01_l",
+      "parent": "rp_nathan_animated_003_walking_hand_l",
+      "head": [
+        82.58560943603516,
+        151.92333984375,
+        -3.0938527584075928
+      ],
+      "tail": [
+        82.58560943603516,
+        147.2772216796875,
+        -3.0938527584075928
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ring_02_l",
+      "parent": "rp_nathan_animated_003_walking_ring_01_l",
+      "head": [
+        87.23173522949219,
+        151.92333984375,
+        -3.0938518047332764
+      ],
+      "tail": [
+        87.23173522949219,
+        149.38113403320312,
+        -3.0938518047332764
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ring_03_l",
+      "parent": "rp_nathan_animated_003_walking_ring_02_l",
+      "head": [
+        89.7739486694336,
+        151.92335510253906,
+        -3.0938518047332764
+      ],
+      "tail": [
+        89.7739486694336,
+        149.41519165039062,
+        -3.0938518047332764
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ring_end_l",
+      "parent": "rp_nathan_animated_003_walking_ring_03_l",
+      "head": [
+        92.2821044921875,
+        151.92335510253906,
+        -3.0938515663146973
+      ],
+      "tail": [
+        92.2821044921875,
+        149.41519165039062,
+        -3.0938515663146973
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_pinky_01_l",
+      "parent": "rp_nathan_animated_003_walking_hand_l",
+      "head": [
+        82.43231964111328,
+        151.7867889404297,
+        -4.803149700164795
+      ],
+      "tail": [
+        82.43231964111328,
+        148.3865966796875,
+        -4.803149700164795
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_pinky_02_l",
+      "parent": "rp_nathan_animated_003_walking_pinky_01_l",
+      "head": [
+        85.83251190185547,
+        151.7867889404297,
+        -4.803149700164795
+      ],
+      "tail": [
+        85.83251190185547,
+        150.22579956054688,
+        -4.803149700164795
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_pinky_03_l",
+      "parent": "rp_nathan_animated_003_walking_pinky_02_l",
+      "head": [
+        87.39349365234375,
+        151.7867889404297,
+        -4.803149223327637
+      ],
+      "tail": [
+        87.39349365234375,
+        150.00401306152344,
+        -4.803149223327637
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_pinky_end_l",
+      "parent": "rp_nathan_animated_003_walking_pinky_03_l",
+      "head": [
+        89.17626953125,
+        151.7867889404297,
+        -4.803149223327637
+      ],
+      "tail": [
+        89.17626953125,
+        150.00401306152344,
+        -4.803149223327637
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_lowerarm_twist_l",
+      "parent": "rp_nathan_animated_003_walking_lowerarm_l",
+      "head": [
+        59.050838470458984,
+        152.4693145751953,
+        -1.7880374193191528
+      ],
+      "tail": [
+        59.050838470458984,
+        152.4693145751953,
+        -21.16602897644043
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_upperarm_twist_l",
+      "parent": "rp_nathan_animated_003_walking_upperarm_l",
+      "head": [
+        32.79206466674805,
+        152.4693145751953,
+        -1.788040280342102
+      ],
+      "tail": [
+        32.79206466674805,
+        152.4693145751953,
+        -21.798187255859375
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_shoulder_r",
+      "parent": "rp_nathan_animated_003_walking_spine_03",
+      "head": [
+        -6.490896224975586,
+        152.22299194335938,
+        -1.5653513669967651
+      ],
+      "tail": [
+        -6.490896224975586,
+        152.22299194335938,
+        12.120012283325195
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_upperarm_r",
+      "parent": "rp_nathan_animated_003_walking_shoulder_r",
+      "head": [
+        -20.176265716552734,
+        152.2229766845703,
+        -1.5653510093688965
+      ],
+      "tail": [
+        -20.176265716552734,
+        152.2229766845703,
+        19.41032600402832
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_lowerarm_r",
+      "parent": "rp_nathan_animated_003_walking_upperarm_r",
+      "head": [
+        -48.143836975097656,
+        152.22299194335938,
+        -1.5653489828109741
+      ],
+      "tail": [
+        -48.143836975097656,
+        152.22299194335938,
+        17.724414825439453
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_hand_r",
+      "parent": "rp_nathan_animated_003_walking_lowerarm_r",
+      "head": [
+        -73.863525390625,
+        152.22299194335938,
+        -1.56535005569458
+      ],
+      "tail": [
+        -73.863525390625,
+        162.13604736328125,
+        -1.56535005569458
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_thumb_01_r",
+      "parent": "rp_nathan_animated_003_walking_hand_r",
+      "head": [
+        -78.5592269897461,
+        150.73269653320312,
+        1.6475341320037842
+      ],
+      "tail": [
+        -77.63563537597656,
+        150.91741943359375,
+        5.341902732849121
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_thumb_02_r",
+      "parent": "rp_nathan_animated_003_walking_thumb_01_r",
+      "head": [
+        -82.18184661865234,
+        150.00814819335938,
+        2.5894176959991455
+      ],
+      "tail": [
+        -82.18184661865234,
+        150.00814819335938,
+        6.062684059143066
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_thumb_03_r",
+      "parent": "rp_nathan_animated_003_walking_thumb_02_r",
+      "head": [
+        -85.65512084960938,
+        150.00816345214844,
+        2.5894179344177246
+      ],
+      "tail": [
+        -85.65512084960938,
+        150.00816345214844,
+        5.1880202293396
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_thumb_end_r",
+      "parent": "rp_nathan_animated_003_walking_thumb_03_r",
+      "head": [
+        -88.25372314453125,
+        150.00816345214844,
+        2.589418888092041
+      ],
+      "tail": [
+        -88.25372314453125,
+        150.00816345214844,
+        5.188021183013916
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_index_01_r",
+      "parent": "rp_nathan_animated_003_walking_hand_r",
+      "head": [
+        -84.56809997558594,
+        151.7074737548828,
+        1.123964548110962
+      ],
+      "tail": [
+        -84.56809997558594,
+        155.8619384765625,
+        1.123964548110962
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_index_02_r",
+      "parent": "rp_nathan_animated_003_walking_index_01_r",
+      "head": [
+        -88.72257232666016,
+        151.7074737548828,
+        1.1239632368087769
+      ],
+      "tail": [
+        -88.72257232666016,
+        154.07754516601562,
+        1.1239632368087769
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_index_03_r",
+      "parent": "rp_nathan_animated_003_walking_index_02_r",
+      "head": [
+        -91.09264373779297,
+        151.7074737548828,
+        1.1239633560180664
+      ],
+      "tail": [
+        -91.09264373779297,
+        154.01052856445312,
+        1.1239633560180664
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_index_end_r",
+      "parent": "rp_nathan_animated_003_walking_index_03_r",
+      "head": [
+        -93.39569854736328,
+        151.7074737548828,
+        1.1239635944366455
+      ],
+      "tail": [
+        -93.39569854736328,
+        154.01052856445312,
+        1.1239635944366455
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_middle_01_r",
+      "parent": "rp_nathan_animated_003_walking_hand_r",
+      "head": [
+        -84.68389129638672,
+        151.9329376220703,
+        -0.7964551448822021
+      ],
+      "tail": [
+        -84.68389129638672,
+        156.87924194335938,
+        -0.7964551448822021
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_middle_02_r",
+      "parent": "rp_nathan_animated_003_walking_middle_01_r",
+      "head": [
+        -89.63018798828125,
+        151.9329376220703,
+        -0.7964584827423096
+      ],
+      "tail": [
+        -89.63018798828125,
+        154.710205078125,
+        -0.7964584827423096
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_middle_03_r",
+      "parent": "rp_nathan_animated_003_walking_middle_02_r",
+      "head": [
+        -92.40745544433594,
+        151.9329376220703,
+        -0.7964591383934021
+      ],
+      "tail": [
+        -92.40745544433594,
+        154.67396545410156,
+        -0.7964591383934021
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_middle_end_r",
+      "parent": "rp_nathan_animated_003_walking_middle_03_r",
+      "head": [
+        -95.14848327636719,
+        151.9329376220703,
+        -0.796457827091217
+      ],
+      "tail": [
+        -95.14848327636719,
+        154.67396545410156,
+        -0.796457827091217
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ring_01_r",
+      "parent": "rp_nathan_animated_003_walking_hand_r",
+      "head": [
+        -84.56809997558594,
+        151.7074737548828,
+        -2.7390761375427246
+      ],
+      "tail": [
+        -84.56809997558594,
+        156.2455291748047,
+        -2.7390761375427246
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ring_02_r",
+      "parent": "rp_nathan_animated_003_walking_ring_01_r",
+      "head": [
+        -89.10615539550781,
+        151.7074737548828,
+        -2.7390761375427246
+      ],
+      "tail": [
+        -89.10615539550781,
+        154.19273376464844,
+        -2.7390761375427246
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ring_03_r",
+      "parent": "rp_nathan_animated_003_walking_ring_02_r",
+      "head": [
+        -91.59141540527344,
+        151.7074737548828,
+        -2.73907732963562
+      ],
+      "tail": [
+        -91.59141540527344,
+        154.16192626953125,
+        -2.73907732963562
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ring_end_r",
+      "parent": "rp_nathan_animated_003_walking_ring_03_r",
+      "head": [
+        -94.04586791992188,
+        151.7074737548828,
+        -2.739077568054199
+      ],
+      "tail": [
+        -94.04586791992188,
+        154.16192626953125,
+        -2.739077568054199
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_pinky_01_r",
+      "parent": "rp_nathan_animated_003_walking_hand_r",
+      "head": [
+        -84.4330062866211,
+        151.62022399902344,
+        -4.559199810028076
+      ],
+      "tail": [
+        -84.4330062866211,
+        155.16180419921875,
+        -4.559199810028076
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_pinky_02_r",
+      "parent": "rp_nathan_animated_003_walking_pinky_01_r",
+      "head": [
+        -87.9745864868164,
+        151.62022399902344,
+        -4.559200286865234
+      ],
+      "tail": [
+        -87.9745864868164,
+        153.22500610351562,
+        -4.559200286865234
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_pinky_03_r",
+      "parent": "rp_nathan_animated_003_walking_pinky_02_r",
+      "head": [
+        -89.57936096191406,
+        151.62022399902344,
+        -4.559201240539551
+      ],
+      "tail": [
+        -89.57936096191406,
+        153.45016479492188,
+        -4.559201240539551
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_pinky_end_r",
+      "parent": "rp_nathan_animated_003_walking_pinky_03_r",
+      "head": [
+        -91.40929412841797,
+        151.62022399902344,
+        -4.559201717376709
+      ],
+      "tail": [
+        -91.40929412841797,
+        153.45016479492188,
+        -4.559201717376709
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_lowerarm_twist_r",
+      "parent": "rp_nathan_animated_003_walking_lowerarm_r",
+      "head": [
+        -61.00368118286133,
+        152.22299194335938,
+        -1.5653518438339233
+      ],
+      "tail": [
+        -61.00368118286133,
+        152.22299194335938,
+        17.72441291809082
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_upperarm_twist_r",
+      "parent": "rp_nathan_animated_003_walking_upperarm_r",
+      "head": [
+        -34.160057067871094,
+        152.2229766845703,
+        -1.56535005569458
+      ],
+      "tail": [
+        -34.160057067871094,
+        152.2229766845703,
+        19.410327911376953
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_upperleg_l",
+      "parent": "rp_nathan_animated_003_walking_hip",
+      "head": [
+        10.617815971374512,
+        94.43638610839844,
+        1.213025939250656e-06
+      ],
+      "tail": [
+        10.617809295654297,
+        94.42206573486328,
+        -33.317138671875
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_lowerleg_l",
+      "parent": "rp_nathan_animated_003_walking_upperleg_l",
+      "head": [
+        10.577012062072754,
+        50.01354217529297,
+        0.019090553745627403
+      ],
+      "tail": [
+        10.58000373840332,
+        51.37028884887695,
+        -31.442188262939453
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_foot_l",
+      "parent": "rp_nathan_animated_003_walking_lowerleg_l",
+      "head": [
+        10.484508514404297,
+        8.065264701843262,
+        -1.789893388748169
+      ],
+      "tail": [
+        10.484508514404297,
+        8.065264701843262,
+        -17.67103385925293
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ball_l",
+      "parent": "rp_nathan_animated_003_walking_foot_l",
+      "head": [
+        10.705787658691406,
+        1.0853934288024902,
+        12.4734525680542
+      ],
+      "tail": [
+        10.705670356750488,
+        7.318238258361816,
+        12.517756462097168
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_foot_end_l",
+      "parent": "rp_nathan_animated_003_walking_ball_l",
+      "head": [
+        10.68923282623291,
+        1.041089415550232,
+        18.706275939941406
+      ],
+      "tail": [
+        10.689115524291992,
+        7.273934364318848,
+        18.750579833984375
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_lowerleg_twist_l",
+      "parent": "rp_nathan_animated_003_walking_lowerleg_l",
+      "head": [
+        10.53076171875,
+        29.039419174194336,
+        -0.8854055404663086
+      ],
+      "tail": [
+        10.533753395080566,
+        30.39616584777832,
+        -32.346683502197266
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_upperleg_twist_l",
+      "parent": "rp_nathan_animated_003_walking_upperleg_l",
+      "head": [
+        10.597414016723633,
+        72.2249755859375,
+        0.009551969356834888
+      ],
+      "tail": [
+        10.597407341003418,
+        72.21065521240234,
+        -33.307586669921875
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_upperleg_r",
+      "parent": "rp_nathan_animated_003_walking_hip",
+      "head": [
+        -10.617822647094727,
+        94.45588684082031,
+        1.0299658015355817e-06
+      ],
+      "tail": [
+        -10.617809295654297,
+        94.47013092041016,
+        33.147064208984375
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_lowerleg_r",
+      "parent": "rp_nathan_animated_003_walking_upperleg_r",
+      "head": [
+        -10.65841007232666,
+        50.25982666015625,
+        0.01899784244596958
+      ],
+      "tail": [
+        -10.65888500213623,
+        48.92757797241211,
+        30.944847106933594
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_foot_r",
+      "parent": "rp_nathan_animated_003_walking_lowerleg_r",
+      "head": [
+        -10.673099517822266,
+        9.02535629272461,
+        -1.7573357820510864
+      ],
+      "tail": [
+        -10.673235893249512,
+        9.02535629272461,
+        15.974197387695312
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_ball_r",
+      "parent": "rp_nathan_animated_003_walking_foot_r",
+      "head": [
+        -10.542715072631836,
+        0.8315763473510742,
+        13.966920852661133
+      ],
+      "tail": [
+        -10.542858123779297,
+        -4.271713733673096,
+        13.84658432006836
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_foot_end_r",
+      "parent": "rp_nathan_animated_003_walking_ball_r",
+      "head": [
+        -10.536660194396973,
+        0.7112398147583008,
+        19.070207595825195
+      ],
+      "tail": [
+        -10.536803245544434,
+        -4.392050266265869,
+        18.949871063232422
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_lowerleg_twist_r",
+      "parent": "rp_nathan_animated_003_walking_lowerleg_r",
+      "head": [
+        -10.665754318237305,
+        29.642595291137695,
+        -0.869170069694519
+      ],
+      "tail": [
+        -10.666229248046875,
+        28.310348510742188,
+        30.056686401367188
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_upperleg_twist_r",
+      "parent": "rp_nathan_animated_003_walking_upperleg_r",
+      "head": [
+        -10.638115882873535,
+        72.35784912109375,
+        0.009499330073595047
+      ],
+      "tail": [
+        -10.638102531433105,
+        72.3720932006836,
+        33.15656280517578
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "name": "Armature",
+      "type": "ARMATURE",
+      "vertices": null,
+      "materials": null
+    },
+    {
+      "name": "rp_nathan_animated_003_walking",
+      "type": "EMPTY",
+      "vertices": null,
+      "materials": null
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_CTRL",
+      "type": "EMPTY",
+      "vertices": null,
+      "materials": null
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_geo",
+      "type": "MESH",
+      "vertices": 10828,
+      "materials": [
+        "rp_nathan_animated_003_mat"
+      ]
+    },
+    {
+      "name": "rp_nathan_animated_003_walking_geoGRP",
+      "type": "EMPTY",
+      "vertices": null,
+      "materials": null
+    }
+  ],
+  "images": [
+    {
+      "name": "rp_nathan_animated_003_dif",
+      "path": "/home/runner/work/Giants-hiding/Giants-hiding/private-assets/nathan/../sourceimages/rp_nathan_animated_003_dif.jpg",
+      "size": [
+        8192,
+        8192
+      ]
+    }
+  ]
+}
