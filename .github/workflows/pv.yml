@@ -16,6 +16,8 @@ permissions:
   actions: write
 jobs:
   review:
+    outputs:
+      actor_sha: ${{ steps.actor-download.outputs.sha }}
     if: ${{ !contains(github.event.head_commit.message, '[inspect-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -34,8 +36,13 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+      - run: sudo apt-get update -qq && sudo apt-get install -y blender python3-numpy python3-pil
       - run: python3 -m pip install Pillow==10.4.0
-      - run: npm ci && npm run assets && npm test && npm run build
+      - run: npm ci && npm run assets
+      - id: actor-download
+        run: python3 scripts/scanned-download.py
+      - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-scanned.py
+      - run: npm test && npm run build
       - name: Review frames
         run: |
           python3 -m http.server 5173 --bind 127.0.0.1 --directory dist > /tmp/server.log 2>&1 &
@@ -64,7 +71,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pv-source-assets
-          path: public/assets/
+          path: |
+            public/assets/
+            !public/assets/scanned-actor.glb
+            !public/assets/scanned-actor.json
   render:
     needs: review
     if: ${{ inputs.full == true || contains(github.event.head_commit.message, '[render-pv]') }}
@@ -76,6 +86,7 @@ jobs:
     timeout-minutes: 45
     env:
       CHROMIUM_PATH: /usr/bin/google-chrome
+      RP_EXPECTED_SHA256: ${{ needs.review.outputs.actor_sha }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -87,8 +98,10 @@ jobs:
         with:
           name: pv-source-assets
           path: public/assets/
+      - run: sudo apt-get update -qq && sudo apt-get install -y blender python3-numpy python3-pil ffmpeg
+      - run: python3 scripts/scanned-download.py
+      - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-scanned.py
       - run: npm run build
-      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
       - name: Render consecutive frames
         run: |
           python3 -m http.server 5173 --bind 127.0.0.1 --directory dist > /tmp/server.log 2>&1 &
@@ -121,7 +134,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG=pv-build-${{ github.run_number }}
-          gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title 'Giants Hiding — 30-second visual revision v0.2' --notes-file docs/CREDITS.txt
+          gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title 'Giants Hiding — 30-second visual revision v0.3' --notes-file docs/CREDITS.txt
           gh release upload "$TAG" output/giants-hiding-pv-30s.mp4 output/motion-sheet.jpg output/verification.json docs/CREDITS.txt
       - uses: actions/upload-artifact@v4
         with:

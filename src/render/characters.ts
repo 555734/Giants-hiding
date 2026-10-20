@@ -21,7 +21,7 @@ function ik(a:T.Bone,b:T.Bone,c:T.Bone,target:T.Vector3,pole:T.Vector3){
 }
 function palmQuaternion(finger:T.Vector3,normal:T.Vector3){const y=finger.clone().normalize(),z=normal.clone().cross(y).normalize(),x=y.clone().cross(z).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z))}
 export class Character{
- root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Group;headRest=new T.Quaternion();footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;
+ root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Object3D;headRest=new T.Quaternion();footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;
  constructor(base:T.Group,headGeo:T.BufferGeometry,headMat:T.Material|T.Material[],height:number,giant:boolean,cloth:T.Texture,skin?:SkinMaps){
   this.root.name=giant?'giant-worker':'human-player';this.root.add(this.unit);this.unit.scale.setScalar(height/1.94459);
   const correction=new T.Group();correction.rotation.y=-Math.PI/2;correction.position.y=.996932;this.unit.add(correction);

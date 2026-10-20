@@ -1,0 +1,24 @@
+GIANTS HIDING — HARBOUR ESCAPE, PROTOTYPE PV v0.1
+
+Head scan: Infinite / Lee Perry-Smith 3D Head Scan, by Lee Perry-Smith / Infinite-Realities, CC BY 3.0.
+https://creativecommons.org/licenses/by/3.0/
+Original source: http://www.ir-ltd.net/infinite-3d-head-scan-released/
+Distribution information: https://casual-effects.com/data/
+Converted/distributed by Morgan McGuire and Guedis Cardenas. Three.js GLB distribution used.
+Modified: scale, attachment to body rig, materials, posed animation and AI-edited eye albedo. No endorsement implied.
+Please retain these credits when sharing the footage.
+
+Body mesh: orange juice games, CC0.
+https://orange-juice-games.itch.io/male-base-mesh
+Mirror: https://github.com/BoQsc/Godot-3D-Male-Base-Mesh
+Modified: clothing, removed original head, scale, rig posing and accessories.
+
+Environment, procedural materials, traversal, camera and original procedural Foley created for this project.
+Renderer: Three.js (MIT). Physics: Rapier (Apache-2.0).
+Source: https://github.com/555734/Giants-hiding
+This is a replay-driven 3D prototype, not a completed game's production trailer.
+
+Visual revision v0.2: Poly Haven CC0 assets: Castle Wall Slates and Wood Planks Dirt by Rob Tuytel; Roof Tiles 14 and Kloofendal 48d Partly Cloudy (authors and exact source URLs in Poly Haven asset pages). https://polyhaven.com/license . Download manifests with source URLs and SHA-256 checksums are emitted to public/assets/surfaces/manifest.json. Three.js water normals, Water and GTAOPass: Three.js contributors, MIT. Body geometry additionally subdivided and displaced; skin materials and garment/hair details added. The unfitted procedural nails were removed after visual review.
+
+Human Skin 2: Share Textures, CC0. Source/archive and license: https://cc0-textures.com/t/st-human-skin-2 and https://download.cc0-textures.com/st/human_skin_2-4K.zip . Maps resized and adapted to rest-pose surface projection. Exact ZIP checksum/map names are emitted in public/assets/surfaces/skin-provenance.json.
+Plastered Stone Wall: Rob Tuytel / Poly Haven, CC0, https://polyhaven.com/a/plastered_stone_wall .

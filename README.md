@@ -1,56 +1,54 @@
-# Giants Hiding — Harbour Escape PV
+# Giants Hiding — Harbour Escape PV v0.3
 
-A continuous 30-second third-person 3D traversal prototype, based on the v0.1 storyboard. The player crosses the giant worker's left hand, jumps onto one cargo tray, releases its latch, rises with that same tray, and crouches behind timber while the worker examines the load. The camera stays with the player throughout.
+One continuous 30-second third-person traversal. A normal-size player crosses a giant worker's hand, jumps onto a single cargo tray, releases its latch, rises on that same tray and crouches behind timber as the worker examines the load. The camera follows throughout.
 
-## Run
+This is a replay-controlled 3D gameplay prototype. It is not a finished escape game. The supplied image board is the visual target; reference-level fidelity has not been established.
+
+## Run locally
+
+Requires Node 24, Python 3, Pillow and Blender 4.x with its FBX/glTF import/export support. On Ubuntu, Blender additionally needs its Python numpy/Pillow packages.
 
 ```sh
 npm ci
 python3 -m pip install Pillow==10.4.0
 npm run assets
+python3 scripts/scanned-download.py
+blender -b -t 2 --python-exit-code 1 --python scripts/prepare-scanned.py
 npm run dev
 ```
 
-Open the local URL. Replay starts automatically. Space pauses; R restarts; drag changes the view. P switches to exploration at the current state; WASD moves, Space jumps, C crouches, E operates the latch, G grips the rail. The level is a PV prototype, not a complete escape game.
+Replay starts automatically. Space pauses, R restarts, dragging changes the view. P switches to exploration at the current position; WASD moves, Space jumps, C crouches, E operates the latch and G grips the rail.
 
-## Capture
+The actor is downloaded from Renderpeople's official free-sample page and prepared transiently. Its source meshes, maps and prepared GLB must remain local: the Renderpeople license permits rendered images/animation and real-time use, but forbids redistributing downloadable asset files. Do not publish the prepared GLB or a dist build containing it. This repository and its public workflow artifacts publish code, metadata and rendered footage only. See https://renderpeople.com/general-terms-and-conditions/ and https://renderpeople.com/free-3d-people/ .
+
+## Rendering
 
 ```sh
+npm test
+npm run build
 npm run pv:stills
 python3 -m pip install numpy scipy Pillow
 python3 scripts/audio.py
 npm run pv:render
 ```
 
-Capture requires Chrome/Chromium and FFmpeg. Set `CHROMIUM_PATH` when using a system browser. Output is `output/giants-hiding-pv-30s.mp4`. The renderer advances the same simulation at 60 fixed steps per second and records its canvas at 30 fps in v0.2 (60 fps in v0.1). It does not interpolate storyboard images, cut between scenes, or use generated video. The MP4 is a recording of the replay-controlled prototype; this is not a finished production game's trailer.
+Capture requires Chrome/Chromium and FFmpeg. Set CHROMIUM_PATH if needed. The scene simulation advances at 60 Hz; v0.3 video samples it at 1920×1080 / 30 fps. The output is output/giants-hiding-pv-30s.mp4.
 
-GitHub Actions builds the project and generates review frames. The full-render workflow also produces the MP4, audio, telemetry, and a decoded contact sheet.
+GitHub Actions reviews 11 representative frames, then full captures triggered by a commit message containing [render-pv] render 20 consecutive 1.5-second ranges. Each runner downloads the same actor bundle, checked against the review job's SHA256. Each range starts from the same deterministic simulation. Assembly verifies frame numbers, adjacent state timing/positions and camera positions. The final file is decoded in full and checked for 30 seconds and 900 frames. A contact sheet is extracted from the encoded video. No edits, scene changes or image-to-video interpolation are inserted.
 
 ## Implementation
 
-- `src/simulation/`: kinematic movement, gravity/jump sweeps, planar support, moving-platform carry, latch condition, recorded steering and NPC timing.
-- `src/render/`: one persistent scene, articulated humanoids, two-bone limb IK, city, canal, wall, cargo, materials.
-- `scripts/`: asset integrity checks, deterministic browser capture, Foley and video checks.
-- `docs/`: storyboard timing, asset provenance, capture notes.
+- src/simulation/: deterministic route, jump, simplified support collision, cargo carry, latch and hiding visibility.
+- src/render/: same persistent scene, scanned/skinned character adapter, two-bone IK, world, materials, reflected water and contact AO.
+- scripts/: licensed actor preparation, CC0 material downloads, capture, original Foley, assembly and verification.
+- docs/: timing, asset provenance and visual acceptance review.
 
-The hand uses a simplified support proxy with a shallow ramp fitted to the posed hand along the recorded route. The cargo is a persistent kinematic support. On flat supports the grounded motor integrates horizontal velocity directly, avoiding a Rapier capsule resting-contact stiction issue; airborne motion uses Rapier sweeps. This prototype does not implement the full giant AI, complete escape routes, or mobile release controls.
+The scanned actor replaces the recolored base mesh and closed-eye head used in v0.1/v0.2. The adapter retains the route while fitting the character's native bone axes to hand placement, grip, gaze, stance and crouch. Walk phase follows ground distance. PBR stone/wood/plaster/roof maps use metre-space projection; the city has varied orientations/elevations, foundations and work barges.
 
-## Asset credits (also apply when sharing the video)
+Current limitations include the provisional modern clothing, simplified hand support proxy and giant behavior, repeated city construction and unfinished art direction. Photoreal source textures do not by themselves establish parity with the supplied image.
 
-- **Male base mesh**: orange juice games, CC0. Original: https://orange-juice-games.itch.io/male-base-mesh . Mirror: https://github.com/BoQsc/Godot-3D-Male-Base-Mesh . Modified: clothing/material assignment, removed original head surface, rig posing, scale and accessories.
-- **Infinite / Lee Perry-Smith 3D Head Scan**: Lee Perry-Smith / Infinite-Realities, **CC BY 3.0** (https://creativecommons.org/licenses/by/3.0/). Model conversion/distribution credits: Morgan McGuire and Guedis Cardenas. Source distribution: https://threejs.org/examples/webgl_materials_normalmap.html ; original dataset information: https://casual-effects.com/data/ . Modified: scaled, attached to the body rig, material/normal settings and pose. Asset provenance also documented at https://github.com/keijiro/InfiniteScan . Please retain this credit with the footage; it does not imply endorsement.
-- Three.js: MIT. Rapier: Apache-2.0. City meshes, props, procedural materials, camera and Foley: created for this project.
+## Credits
 
-Downloaded, rigged assets were adapted in code. The face albedo was edited with image generation to open the eyes; the UV-map prompt is in `docs/face-texture.md`. No image-to-3D reconstruction service was used. The original image-board quality is a visual target, not a claim about this prototype's fidelity.
+Current footage: Renderpeople Nathan Animated 003 Walking; Poly Haven CC0 surfaces/environment; Three.js MIT; Rapier Apache-2.0. Full credits and adaptation details are in docs/CREDITS.txt. Original code, city geometry and Foley were made for this project.
 
-The GitHub renderer distributes consecutive frame ranges across runners. Every range starts from the same deterministic simulation and uses the same time-dependent camera and articulated poses; `scripts/assemble.py` checks the adjacent frame numbers, state positions and camera positions before joining encoded frames. No action, camera or location changes are inserted at range boundaries. Distant houses use simpler window details to reduce capture cost.
-
-## Visual revision v0.2
-
-Reference: the supplied harbour image. This is a fidelity target, not an assertion of achieved parity. The replay, camera continuity and player/platform rules are preserved. Upgrades include 2K CC0 photographed Poly Haven masonry/wood/roof maps in metre-space projection, HDR environment lighting, planar water reflection, world/prop shadows, contact ambient occlusion, Phong-subdivided skinned bodies, displaced clothing silhouettes and jacket/hair details. The existing human base is still an adapted base mesh rather than a scanned clothed worker, which remains a material limitation.
-
-Review output is also published to the `pv-previews` branch. Its manifest links each set of frames to the exact source commit and Actions run. Full rendering is triggered only after review via a commit message containing `[render-pv]`.
-
-The v0.2 export uses 20 consecutive 1.5-second ranges at 1920×1080/30fps. This retains the uncut 30-second sequence while allowing the more expensive reflective and AO rendering. Frame-boundary checks now use the actual 1/30-second sampling interval. It is a visual revision; reference-level parity has not been established.
-
-Skin materials: Human Skin 2 by Share Textures, CC0, https://cc0-textures.com/t/st-human-skin-2 . Source ZIP map names and SHA256 are archived with fetched assets. Pillow prepares resized runtime maps; this is a material change rather than a replacement with a scanned hand/garment model. The head scan still has a closed-eye sculpt, and a fitted open-eye head remains an outstanding visual limitation.
+Legacy source/tests also retain the CC0 male base mesh and CC BY 3.0 Lee Perry-Smith head, with their original credits in docs/legacy-asset-credits.txt. These are not used for the v0.3 actor.

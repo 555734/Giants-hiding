@@ -5,3 +5,7 @@ output/
 .DS_Store
 public/assets/*.glb
 public/assets/*.jpg
+
+private-assets/
+public/assets/surfaces/
+public/assets/scanned-actor.json
