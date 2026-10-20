@@ -1,11 +1,13 @@
 import * as T from 'three';
 /** Rest-pose material coordinates keep the detail attached to animated skin. */
-export function skinMaterial(){
- const mat=new T.MeshPhysicalMaterial({color:0xbc8b72,roughness:.58,metalness:0,clearcoat:.08,clearcoatRoughness:.65});
+export type SkinMaps={map:T.Texture;normalMap:T.Texture;roughnessMap:T.Texture};
+export function skinMaterial(maps?:SkinMaps){
+ const mat=new T.MeshPhysicalMaterial({color:maps?0xffefe3:0xbc8b72,roughness:.8,metalness:0,clearcoat:.08,clearcoatRoughness:.65,...maps});mat.normalScale.setScalar(.32);
  mat.onBeforeCompile=s=>{
-  s.vertexShader=s.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 skinP;').replace('#include <begin_vertex>','#include <begin_vertex>\nskinP=position;');
+  s.vertexShader=s.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 skinP; varying vec3 skinN;').replace('#include <begin_vertex>','#include <begin_vertex>\nskinP=position;skinN=normal;');
   s.fragmentShader=s.fragmentShader.replace('#include <common>',`#include <common>
-  varying vec3 skinP;
+  varying vec3 skinP; varying vec3 skinN;
+  vec2 skinUV(){vec3 n=abs(skinN);if(n.y>n.x&&n.y>n.z)return skinP.xz/.08;if(n.x>n.z)return skinP.zy/.08;return skinP.xy/.08;}
   float sh(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453123);}
   float sn(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(sh(i),sh(i+vec3(1,0,0)),f.x),mix(sh(i+vec3(0,1,0)),sh(i+vec3(1,1,0)),f.x),f.y),mix(mix(sh(i+vec3(0,0,1)),sh(i+vec3(1,0,1)),f.x),mix(sh(i+vec3(0,1,1)),sh(i+vec3(1,1,1)),f.x),f.y),f.z);}
   float skinRelief(vec3 p){float pore=sn(p*780.);float lines=pow(abs(sin(p.x*145.+sn(p*65.)*5.)),20.);return pore*.00017+lines*.00020;}
@@ -16,7 +18,10 @@ export function skinMaterial(){
   diffuseColor.rgb*=1.-freckles*.06;
   `);
 
- };mat.customProgramCacheKey=()=> 'worker-skin-v2';return mat;
+  if(maps)for(const key of ['map_fragment','normal_fragment_begin','normal_fragment_maps','roughnessmap_fragment']as const){
+   const chunk=T.ShaderChunk[key].replaceAll('vMapUv','skinUV()').replaceAll('vNormalMapUv','skinUV()').replaceAll('vRoughnessMapUv','skinUV()');s.fragmentShader=s.fragmentShader.replace('#include <'+key+'>',chunk);
+  }
+ };mat.customProgramCacheKey=()=> 'worker-skin-v3';return mat;
 }
 export function clothMaterial(texture:T.Texture,giant:boolean,trousers=false){
  const mat=new T.MeshStandardMaterial({color:trousers?(giant?0x55504a:0x5e503f):(giant?0x9c9688:0x304b5e),map:texture,bumpMap:texture,bumpScale:.0004,roughness:.94});

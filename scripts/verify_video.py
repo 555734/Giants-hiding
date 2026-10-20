@@ -6,7 +6,7 @@ probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams'
 v=next(x for x in probe['streams'] if x['codec_type']=='video');audio=next(x for x in probe['streams'] if x['codec_type']=='audio')
 assert v['codec_name']=='h264';assert audio['codec_name']=='aac';assert abs(float(probe['format']['duration'])-30)<.08
 assert int(v['width'])==1920 and int(v['height'])==1080
-assert v['r_frame_rate']=='60/1';assert int(v['nb_frames'])==1800
+assert v['r_frame_rate']=='30/1';assert int(v['nb_frames'])==900
 subprocess.run(['ffmpeg','-hide_banner','-v','error','-i',str(video),'-f','null','-'],check=True)
 thumb=384;h=216;sheet=Image.new('RGB',(thumb*3,(h+24)*10),(20,29,33));draw=ImageDraw.Draw(sheet)
 for beat in range(10):

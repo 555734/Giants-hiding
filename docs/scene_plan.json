@@ -1,1 +1,114 @@
-{"format_version":"1.0","project":{"title":"Giants Hiding — Harbour Escape PV","width":1920,"height":1080,"fps":60,"duration_sec":30,"shot_count":1,"cuts":0},"style":{"render_subtitles":false,"render_titles":false,"source":"The same replay-driven 3D scene, rendered every fixed step. No image-to-video interpolation."},"scenes":[{"id":"S01","start_sec":0,"end_sec":30,"main_message":"Ride the giant's cargo","subtitle_lines":["Ride the giant's cargo"],"hold_after_action_sec":0.6,"action":{"subject":"Human player","verb":"Cross, jump, release, ride and hide","begin":"Approach the giant's hand from a quay","end":"Crouch on the same raised cargo tray as it moves toward the wall"},"animation_tracks":[{"target":"player","property":"movement, jump and stance","purpose":"Player actions move through the continuous traversal route","semantic":true},{"target":"worker","property":"hand placement, carrying and head inspection","purpose":"The giant's work creates a bridge, moving support and hiding challenge","semantic":true},{"target":"cargo","property":"kinematic support transform","purpose":"The same tray lifts the player from 4m to38m","semantic":true},{"target":"camera","property":"third-person follow","purpose":"Preserve player scale while revealing height and city","semantic":false}],"transition_out":"None; capture ends while movement continues","beats":[{"start":0,"end":3,"action":"Approach the hand"},{"start":3,"end":6,"action":"Step onto the fingers"},{"start":6,"end":9,"action":"Cross the hand"},{"start":9,"end":12,"action":"Jump onto the cargo"},{"start":12,"end":15,"action":"Release the latch"},{"start":15,"end":18,"action":"Hold on during lift"},{"start":18,"end":21,"action":"Move behind the timber"},{"start":21,"end":24,"action":"The worker inspects the load"},{"start":24,"end":27,"action":"Stay below the line of sight"},{"start":27,"end":30,"action":"The worker turns away; route to the wall opens"}]}]}
+{
+  "format_version": "1.0",
+  "project": {
+    "title": "Giants Hiding — Harbour Escape PV",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "duration_sec": 30,
+    "shot_count": 1,
+    "cuts": 0
+  },
+  "style": {
+    "render_subtitles": false,
+    "render_titles": false,
+    "source": "The same 60 Hz replay-driven 3D scene sampled at 30 fps. No image-to-video interpolation."
+  },
+  "scenes": [
+    {
+      "id": "S01",
+      "start_sec": 0,
+      "end_sec": 30,
+      "main_message": "Ride the giant's cargo",
+      "subtitle_lines": [
+        "Ride the giant's cargo"
+      ],
+      "hold_after_action_sec": 0.6,
+      "action": {
+        "subject": "Human player",
+        "verb": "Cross, jump, release, ride and hide",
+        "begin": "Approach the giant's hand from a quay",
+        "end": "Crouch on the same raised cargo tray as it moves toward the wall"
+      },
+      "animation_tracks": [
+        {
+          "target": "player",
+          "property": "movement, jump and stance",
+          "purpose": "Player actions move through the continuous traversal route",
+          "semantic": true
+        },
+        {
+          "target": "worker",
+          "property": "hand placement, carrying and head inspection",
+          "purpose": "The giant's work creates a bridge, moving support and hiding challenge",
+          "semantic": true
+        },
+        {
+          "target": "cargo",
+          "property": "kinematic support transform",
+          "purpose": "The same tray lifts the player from 4m to38m",
+          "semantic": true
+        },
+        {
+          "target": "camera",
+          "property": "third-person follow",
+          "purpose": "Preserve player scale while revealing height and city",
+          "semantic": false
+        }
+      ],
+      "transition_out": "None; capture ends while movement continues",
+      "beats": [
+        {
+          "start": 0,
+          "end": 3,
+          "action": "Approach the hand"
+        },
+        {
+          "start": 3,
+          "end": 6,
+          "action": "Step onto the fingers"
+        },
+        {
+          "start": 6,
+          "end": 9,
+          "action": "Cross the hand"
+        },
+        {
+          "start": 9,
+          "end": 12,
+          "action": "Jump onto the cargo"
+        },
+        {
+          "start": 12,
+          "end": 15,
+          "action": "Release the latch"
+        },
+        {
+          "start": 15,
+          "end": 18,
+          "action": "Hold on during lift"
+        },
+        {
+          "start": 18,
+          "end": 21,
+          "action": "Move behind the timber"
+        },
+        {
+          "start": 21,
+          "end": 24,
+          "action": "The worker inspects the load"
+        },
+        {
+          "start": 24,
+          "end": 27,
+          "action": "Stay below the line of sight"
+        },
+        {
+          "start": 27,
+          "end": 30,
+          "action": "The worker turns away; route to the wall opens"
+        }
+      ]
+    }
+  ]
+}

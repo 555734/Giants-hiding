@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {refineBody,tailorBody} from './refine';
-import {skinMaterial,clothMaterial} from './detail';
+import {skinMaterial,clothMaterial,type SkinMaps} from './detail';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
@@ -22,7 +22,7 @@ function ik(a:T.Bone,b:T.Bone,c:T.Bone,target:T.Vector3,pole:T.Vector3){
 function palmQuaternion(finger:T.Vector3,normal:T.Vector3){const y=finger.clone().normalize(),z=normal.clone().cross(y).normalize(),x=y.clone().cross(z).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z))}
 export class Character{
  root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Group;headRest=new T.Quaternion();footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;
- constructor(base:T.Group,headGeo:T.BufferGeometry,headMat:T.Material|T.Material[],height:number,giant:boolean,cloth:T.Texture){
+ constructor(base:T.Group,headGeo:T.BufferGeometry,headMat:T.Material|T.Material[],height:number,giant:boolean,cloth:T.Texture,skin?:SkinMaps){
   this.root.name=giant?'giant-worker':'human-player';this.root.add(this.unit);this.unit.scale.setScalar(height/1.94459);
   const correction=new T.Group();correction.rotation.y=-Math.PI/2;correction.position.y=.996932;this.unit.add(correction);
   const rig=clone(base);correction.add(rig);
@@ -38,7 +38,7 @@ export class Character{
   }
   geo.clearGroups();for(let material=0;material<4;material++){const start=newIndex.length;newIndex.push(...byMaterial[material]);geo.addGroup(start,byMaterial[material].length,material)}geo.setIndex(newIndex);
   this.body.geometry=tailorBody(refineBody(geo,giant?2:1));this.body.material=[
-   skinMaterial(),
+   skinMaterial(skin),
    clothMaterial(cloth,giant),
    clothMaterial(cloth,giant,true),
    new T.MeshStandardMaterial({color:0x352b24,roughness:.7})
@@ -137,6 +137,9 @@ export async function loadCharacters(scene:T.Scene,cloth:T.Texture){
   `);
  };
  const headMat=new T.MeshStandardMaterial({map:col,normalMap:normal,normalScale:new T.Vector2(.65,.65),roughness:.68,color:0xffead7});
- const human=new Character(base.scene,headGeo,headMat,1.7,false,cloth),giant=new Character(base.scene,headGeo,[headMat,eyeMat],60,true,cloth);scene.add(human.root,giant.root,human.shadow);
+ const skinTextures=await Promise.all(['color','normal','roughness'].map(k=>tl.loadAsync('./assets/surfaces/skin-'+k+'.jpg')));
+ skinTextures.forEach((t,i)=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;if(i===0)t.colorSpace=T.SRGBColorSpace;});
+ const skin:SkinMaps={map:skinTextures[0],normalMap:skinTextures[1],roughnessMap:skinTextures[2]};
+ const human=new Character(base.scene,headGeo,headMat,1.7,false,cloth,skin),giant=new Character(base.scene,headGeo,[headMat,eyeMat],60,true,cloth,skin);scene.add(human.root,giant.root,human.shadow);
  return{human,giant,update(s:State){eyeAmount.value=s.inspect;human.updatePlayer(s);giant.updateGiant(s)}};
 }

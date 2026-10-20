@@ -5,8 +5,8 @@ import {once} from 'node:events';
 import path from 'node:path';
 const args=process.argv.slice(2),stills=args.includes('--stills');
 const get=(flag,def)=>{const i=args.indexOf(flag);return i<0?def:args[i+1]};
-const chunkArg=get('--chunk',null),chunk=chunkArg===null?null:Number(chunkArg),start=chunk===null?0:chunk*3,duration=chunk===null?30:3;
-const width=Number(get('--width',stills?1280:1920)),height=Number(get('--height',stills?720:1080)),fps=Number(get('--fps',60));
+const chunkArg=get('--chunk',null),chunk=chunkArg===null?null:Number(chunkArg),start=chunk===null?0:chunk*1.5,duration=chunk===null?30:1.5;
+const width=Number(get('--width',stills?1280:1920)),height=Number(get('--height',stills?720:1080)),fps=Number(get('--fps',30));
 if(!stills&&spawnSync('ffmpeg',['-version'],{stdio:'ignore'}).status!==0)throw new Error('FFmpeg is required for capture');
 const out=path.resolve(get('--out','output'));await mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||chromium.executablePath(),args:['--no-sandbox','--disable-dev-shm-usage','--use-angle=swiftshader','--enable-unsafe-swiftshader','--hide-scrollbars']});
@@ -25,13 +25,13 @@ try{
  }else{
   const file=path.join(out,chunk===null?'giants-hiding-pv-30s.mp4':`part-${String(chunk).padStart(2,'0')}.mp4`);
   const inputs=chunk===null?['-i',path.join(out,'foley.wav'),'-map','0:v','-map','1:a','-c:a','aac','-b:a','192k']:['-an'];
-  const enc=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','image2pipe','-vcodec','mjpeg','-framerate',String(fps),'-i','pipe:0',...inputs,'-c:v','libx264','-preset','medium','-crf','19','-pix_fmt','yuv420p','-t',String(duration),'-metadata','title=Giants Hiding — Harbour Escape PV v0.1','-metadata','comment=Head scan: Lee Perry-Smith / Infinite-Realities, CC BY 3.0. Body: orange juice games, CC0. Adapted meshes, eye albedo and poses. Full credits: github.com/555734/Giants-hiding/blob/main/docs/CREDITS.txt','-movflags','+faststart',file],{stdio:['pipe','inherit','inherit']});
+  const enc=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','image2pipe','-vcodec','mjpeg','-framerate',String(fps),'-i','pipe:0',...inputs,'-c:v','libx264','-preset','medium','-crf','19','-pix_fmt','yuv420p','-t',String(duration),'-metadata','title=Giants Hiding — Harbour Escape PV v0.2','-metadata','comment=Head scan: Lee Perry-Smith / Infinite-Realities, CC BY 3.0. Body: orange juice games, CC0. Adapted meshes, eye albedo and poses. Full credits: github.com/555734/Giants-hiding/blob/main/docs/CREDITS.txt','-movflags','+faststart',file],{stdio:['pipe','inherit','inherit']});
   let encoderError;enc.on('error',e=>encoderError=e);enc.stdin.on('error',e=>encoderError=e);
   const begin=Date.now(),first=Math.round(start*fps),end=Math.round((start+duration)*fps);
   for(let n=first;n<end;n++){
    if(encoderError)throw encoderError;
    const jpeg=await page.evaluate(t=>window.__PV.jpeg(t),n/fps),bytes=Buffer.from(jpeg,'base64');if(!enc.stdin.write(bytes))await once(enc.stdin,'drain');
-   if(n%fps===0||n===end-1){const d=await page.evaluate(()=>window.__PV.diagnostics());d.frame=n;telemetry.push(d);console.log(`Rendered frame ${n}/1800; elapsed ${((Date.now()-begin)/1000).toFixed(1)}s`)}
+   if(n===first||n%fps===0||n===end-1){const d=await page.evaluate(()=>window.__PV.diagnostics());d.frame=n;telemetry.push(d);console.log(`Rendered frame ${n}/${fps*30}; elapsed ${((Date.now()-begin)/1000).toFixed(1)}s`)}
    if(n%(fps*3)===Math.round(fps*1.5))await writeFile(path.join(out,`encoded-source-${n}.jpg`),bytes);
   }
   enc.stdin.end();const [code]=await once(enc,'close');if(code!==0)throw new Error(`ffmpeg exit ${code}`);console.log('Video:',file);

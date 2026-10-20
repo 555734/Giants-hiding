@@ -6,6 +6,7 @@ A continuous 30-second third-person 3D traversal prototype, based on the v0.1 st
 
 ```sh
 npm ci
+python3 -m pip install Pillow==10.4.0
 npm run assets
 npm run dev
 ```
@@ -21,7 +22,7 @@ python3 scripts/audio.py
 npm run pv:render
 ```
 
-Capture requires Chrome/Chromium and FFmpeg. Set `CHROMIUM_PATH` when using a system browser. Output is `output/giants-hiding-pv-30s.mp4`. The renderer advances the same simulation at 60 fixed steps per second and records its canvas frame by frame. It does not interpolate storyboard images, cut between scenes, or use generated video. The MP4 is a recording of the replay-controlled prototype; this is not a finished production game's trailer.
+Capture requires Chrome/Chromium and FFmpeg. Set `CHROMIUM_PATH` when using a system browser. Output is `output/giants-hiding-pv-30s.mp4`. The renderer advances the same simulation at 60 fixed steps per second and records its canvas at 30 fps in v0.2 (60 fps in v0.1). It does not interpolate storyboard images, cut between scenes, or use generated video. The MP4 is a recording of the replay-controlled prototype; this is not a finished production game's trailer.
 
 GitHub Actions builds the project and generates review frames. The full-render workflow also produces the MP4, audio, telemetry, and a decoded contact sheet.
 
@@ -46,6 +47,10 @@ The GitHub renderer distributes consecutive frame ranges across runners. Every r
 
 ## Visual revision v0.2
 
-Reference: the supplied harbour image. This is a fidelity target, not an assertion of achieved parity. The replay, camera continuity and player/platform rules are preserved. Upgrades include 2K CC0 photographed Poly Haven masonry/wood/roof maps in metre-space projection, HDR environment lighting, planar water reflection, world/prop shadows, contact ambient occlusion, Phong-subdivided skinned bodies, displaced clothing silhouettes, jacket details and attached fingernails. The existing human base is still an adapted base mesh rather than a scanned clothed worker, which remains a material limitation.
+Reference: the supplied harbour image. This is a fidelity target, not an assertion of achieved parity. The replay, camera continuity and player/platform rules are preserved. Upgrades include 2K CC0 photographed Poly Haven masonry/wood/roof maps in metre-space projection, HDR environment lighting, planar water reflection, world/prop shadows, contact ambient occlusion, Phong-subdivided skinned bodies, displaced clothing silhouettes and jacket/hair details. The existing human base is still an adapted base mesh rather than a scanned clothed worker, which remains a material limitation.
 
 Review output is also published to the `pv-previews` branch. Its manifest links each set of frames to the exact source commit and Actions run. Full rendering is triggered only after review via a commit message containing `[render-pv]`.
+
+The v0.2 export uses 20 consecutive 1.5-second ranges at 1920×1080/30fps. This retains the uncut 30-second sequence while allowing the more expensive reflective and AO rendering. Frame-boundary checks now use the actual 1/30-second sampling interval. It is a visual revision; reference-level parity has not been established.
+
+Skin materials: Human Skin 2 by Share Textures, CC0, https://cc0-textures.com/t/st-human-skin-2 . Source ZIP map names and SHA256 are archived with fetched assets. Pillow prepares resized runtime maps; this is a material change rather than a replacement with a scanned hand/garment model. The head scan still has a closed-eye sculpt, and a fitted open-eye head remains an outstanding visual limitation.

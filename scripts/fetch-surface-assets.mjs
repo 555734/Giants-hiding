@@ -12,3 +12,5 @@ for(const [name,id]of [['stone','castle_wall_slates'],['wood','wood_planks_dirt'
 await save('sky.hdr','https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/kloofendal_48d_partly_cloudy_2k.hdr');
 await save('water-normal.jpg','https://raw.githubusercontent.com/mrdoob/three.js/r186/examples/textures/waternormals.jpg');
 await writeFile(root+'/manifest.json',JSON.stringify(manifest,null,2));
+
+const {execFileSync}=await import('node:child_process');execFileSync('python3',['scripts/prepare-skin.py'],{stdio:'inherit'});
