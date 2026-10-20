@@ -1,0 +1,25 @@
+{
+  "name": "giants-hiding",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "pv:stills": "node scripts/capture.mjs --stills",
+    "pv:render": "node scripts/capture.mjs",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "assets": "node scripts/fetch-assets.mjs"
+  },
+  "dependencies": {
+    "three": "0.186.1",
+    "@dimforge/rapier3d-compat": "0.19.3"
+  },
+  "devDependencies": {
+    "vite": "7.3.1",
+    "typescript": "5.9.3",
+    "@types/three": "0.183.1",
+    "playwright": "1.62.1",
+    "tsx": "4.21.0"
+  }
+}

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+output/
+.artifacts/
+.DS_Store
+public/assets/*.glb
+public/assets/*.jpg
