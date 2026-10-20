@@ -1,3 +1,5 @@
+import sys
+sys.path.append('/usr/lib/python3/dist-packages')
 import bpy,json
 from pathlib import Path
 bpy.ops.wm.read_factory_settings(use_empty=True)
