@@ -18,7 +18,11 @@ test('scanned actor keeps the same carrying hand and gaze in continuous and dist
   const pa=a.bones[bone].getWorldPosition(new T.Vector3()),pb=b.bones[bone].getWorldPosition(new T.Vector3());
   assert.ok(pa.toArray().every(Number.isFinite));assert.ok(pa.distanceTo(pb)<1e-7);
  }
- assert.ok(a.head.getWorldQuaternion(new T.Quaternion()).angleTo(b.head.getWorldQuaternion(new T.Quaternion()))<1e-6);
+ // FBX transforms can carry minute scale/decomposition drift; quaternion angles require unit inputs.
+ const qa=a.head.getWorldQuaternion(new T.Quaternion()),qb=b.head.getWorldQuaternion(new T.Quaternion());
+ const gazeAngle=qa.clone().normalize().angleTo(qb.clone().normalize());
+ console.log('Scanned gaze comparison',JSON.stringify({continuousQuaternionLength:qa.length(),distributedQuaternionLength:qb.length(),gazeAngle}));
+ assert.ok(gazeAngle<1e-6, 'Head orientation differs by '+gazeAngle+' radians');
  const human=new ScannedCharacter(asset.scene,contract,1.7,false);g.seek(25.5);human.updatePlayer(g.state);
  for(const side of ['L','R'])assert.ok(Math.abs(human.bones['foot'+side].getWorldPosition(new T.Vector3()).y-(g.state.y+.075))<.03);
  g.world.free();
