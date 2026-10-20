@@ -32,8 +32,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload pv-build-22 output/frame-25.50.jpg --clobber
-      - name: Select the sheet extracted from the encoded MP4
-        run: cp output/motion-sheet.jpg output/frame-encoded-motion-sheet.jpg
+      - name: Prepare a compact sheet extracted from the encoded MP4
+        run: |
+          python3 -m pip install Pillow==10.4.0
+          python3 - <<'PY'
+          from PIL import Image
+          with Image.open('output/motion-sheet.jpg') as im:
+              im.thumbnail((960,2000),Image.Resampling.LANCZOS)
+              im.save('output/frame-encoded-motion-sheet.jpg',quality=80)
+          PY
       - name: Publish review files with readable image data
         env:
           GH_TOKEN: ${{ github.token }}
