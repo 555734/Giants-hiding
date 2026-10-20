@@ -4,7 +4,7 @@ import type {State} from '../simulation/game';
 import {smooth} from '../simulation/replay';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 export function buildWorld(scene:T.Scene){
- const m=materials(),r=seeded(1217),box=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(1,1,1,16);
+ const m=materials(),r=seeded(1217),windowPlane=new T.PlaneGeometry(1,1),box=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(1,1,1,16);
  const buckets=new Map<string,{geometry:T.BufferGeometry;mat:T.Material;matrices:T.Matrix4[];colors:T.Color[]}>();
  const obj=new T.Object3D();
  function inst(key:string,geo:T.BufferGeometry,mat:T.Material,x:number,y:number,z:number,sx:number,sy:number,sz:number,ry=0,col?:T.Color){
@@ -31,6 +31,7 @@ export function buildWorld(scene:T.Scene){
  for(let x of [3.0,7.6])for(let z of [-4,-.2])b('posts',m.wood,x,2.0,z,.4,5.5,.4);
  for(let z=-16;z<-5;z+=3.5)b('rail',m.wood,2.0,4.85,z,.16,.16,3.3);
  function house(x:number,z:number,w:number,d:number,h:number){
+  const detailed=x*x+z*z<95*95;
   const tint=new T.Color().setHSL(.09+r()*.035,.1+r()*.08,.72+r()*.2);
   b('house',m.stone,x,4+h/2,z,w,h,d,0,tint);
   inst('roofs',roofGeometry,m.roof,x,4+h,z,w+1,1.5+w*.25,d+.9,0,new T.Color().setHSL(.055+r()*.025,.25,.62+r()*.3));
@@ -39,14 +40,14 @@ export function buildWorld(scene:T.Scene){
   for(let floor=0;floor<floors;floor++){
    const y=5.6+floor*3.05;
    for(let xx=x-w/2+1;xx<x+w/2-.5;xx+=1.9)for(let sign of [-1,1]){
-    b('windows',m.window,xx,y,z+sign*(d/2+.025),.68,1.2,.05);
-    b('windowframe',m.cream,xx,y-.65,z+sign*(d/2+.08),.95,.1,.15);
+    inst('windows',windowPlane,m.window,xx,y,z+sign*(d/2+.025),.68,1.2,1,sign>0?0:Math.PI);
+    if(detailed){b('windowframe',m.cream,xx,y-.65,z+sign*(d/2+.08),.95,.1,.15);
     b('shutter',m.wood,xx-.47,y,z+sign*(d/2+.1),.18,1.3,.08);
-    b('shutter',m.wood,xx+.47,y,z+sign*(d/2+.1),.18,1.3,.08);
+    b('shutter',m.wood,xx+.47,y,z+sign*(d/2+.1),.18,1.3,.08);}
    }
    for(let zz=z-d/2+1;zz<z+d/2-.5;zz+=2.1)for(let sign of [-1,1]){
-    b('windows',m.window,x+sign*(w/2+.025),y,zz,.05,1.2,.65);
-    b('windowframe',m.cream,x+sign*(w/2+.06),y-.65,zz,.15,.1,.85)
+    inst('windows',windowPlane,m.window,x+sign*(w/2+.025),y,zz,.65,1.2,1,sign>0?Math.PI/2:-Math.PI/2);
+    if(detailed)b('windowframe',m.cream,x+sign*(w/2+.06),y-.65,zz,.15,.1,.85)
    }
   }
   b('door',m.wood,x,5.1,z-d/2-.07,.95,2.2,.12);

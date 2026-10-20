@@ -41,3 +41,5 @@ The hand uses a simplified support proxy with a shallow ramp fitted to the posed
 - Three.js: MIT. Rapier: Apache-2.0. City meshes, props, procedural materials, camera and Foley: created for this project.
 
 Downloaded, rigged assets were adapted in code. The face albedo was edited with image generation to open the eyes; the UV-map prompt is in `docs/face-texture.md`. No image-to-3D reconstruction service was used. The original image-board quality is a visual target, not a claim about this prototype's fidelity.
+
+The GitHub renderer distributes consecutive frame ranges across runners. Every range starts from the same deterministic simulation and uses the same time-dependent camera and articulated poses; `scripts/assemble.py` checks the adjacent frame numbers, state positions and camera positions before joining encoded frames. No action, camera or location changes are inserted at range boundaries. Distant houses use simpler window details to reduce capture cost.

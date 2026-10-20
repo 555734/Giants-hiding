@@ -8,34 +8,37 @@ on:
         default: true
   push:
     branches: [main]
+concurrency:
+  group: pv-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: write
+  actions: write
 jobs:
-  capture:
+  review:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 15
     env:
       CHROMIUM_PATH: /usr/bin/google-chrome
     steps:
+      - name: Stop superseded captures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for RUN in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow pv.yml --branch "$GITHUB_REF_NAME" --status in_progress --json databaseId --jq '.[].databaseId'); do
+            if [ "$RUN" != "$GITHUB_RUN_ID" ]; then gh run cancel "$RUN" --repo "$GITHUB_REPOSITORY" || true; fi
+          done
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: npm
       - run: npm ci && npm run assets && npm test && npm run build
-      - name: Start prototype
+      - name: Review frames
         run: |
-          npm run dev > /tmp/giants-vite.log 2>&1 &
-          python3 - <<'PY'
-          import urllib.request,time
-          for i in range(60):
-            try:
-              urllib.request.urlopen('http://127.0.0.1:5173/');break
-            except Exception:time.sleep(1)
-          else:raise SystemExit('Vite did not start')
-          PY
-      - name: Capture review frames
-        run: npm run pv:stills
+          python3 -m http.server 5173 --bind 127.0.0.1 --directory dist > /tmp/server.log 2>&1 &
+          sleep 2
+          npm run pv:stills
       - name: Publish review frames
         env:
           GH_TOKEN: ${{ github.token }}
@@ -46,19 +49,59 @@ jobs:
             for p in pathlib.Path('output').glob('frame-*.jpg'):z.write(p,p.name)
             z.write('output/stills-telemetry.json','stills-telemetry.json')
           PY
-          gh release view pv-review >/dev/null 2>&1 || gh release create pv-review --title 'PV review frames — work in progress' --prerelease --notes 'Review frames from the continuous 3D prototype. See README for asset credits.'
+          gh release view pv-review >/dev/null 2>&1 || gh release create pv-review --title 'PV review frames — work in progress' --prerelease --notes-file docs/CREDITS.txt
           gh release upload pv-review output/review-frames.zip --clobber
-      - name: Full MP4
-        if: ${{ inputs.full == true || contains(github.event.head_commit.message, '[render-pv]') }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pv-review-frames
+          path: output/
+  render:
+    needs: review
+    if: ${{ inputs.full == true || contains(github.event.head_commit.message, '[render-pv]') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        chunk: [0,1,2,3,4,5,6,7,8,9]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci && npm run assets && npm run build
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - name: Render consecutive frames
         run: |
+          python3 -m http.server 5173 --bind 127.0.0.1 --directory dist > /tmp/server.log 2>&1 &
+          sleep 2
+          node scripts/capture.mjs --chunk ${{ matrix.chunk }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pv-part-${{ matrix.chunk }}
+          path: output/
+  assemble:
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pv-part-*
+          path: output/parts
+          merge-multiple: true
+      - run: |
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
           python3 -m pip install numpy==1.26.4 scipy==1.13.1 Pillow==10.4.0
           python3 scripts/audio.py
-          npm run pv:render
+          python3 scripts/assemble.py
           python3 scripts/verify_video.py
       - name: Publish rendered video
-        if: ${{ inputs.full == true || contains(github.event.head_commit.message, '[render-pv]') }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -66,8 +109,10 @@ jobs:
           gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title 'Giants Hiding — 30-second 3D prototype PV' --notes-file docs/CREDITS.txt
           gh release upload "$TAG" output/giants-hiding-pv-30s.mp4 output/motion-sheet.jpg output/verification.json docs/CREDITS.txt
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: giants-hiding-pv-${{ github.sha }}
-          path: output/
-          retention-days: 30
+          path: |
+            output/giants-hiding-pv-30s.mp4
+            output/motion-sheet.jpg
+            output/verification.json
+            output/capture-telemetry.json

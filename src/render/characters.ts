@@ -19,7 +19,7 @@ function ik(a:T.Bone,b:T.Bone,c:T.Bone,target:T.Vector3,pole:T.Vector3){
 }
 function palmQuaternion(finger:T.Vector3,normal:T.Vector3){const y=finger.clone().normalize(),z=normal.clone().cross(y).normalize(),x=y.clone().cross(z).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z))}
 export class Character{
- root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Group;footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;
+ root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Group;headRest=new T.Quaternion();footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;
  constructor(base:T.Group,headGeo:T.BufferGeometry,headMat:T.Material,height:number,giant:boolean,cloth:T.Texture){
   this.root.name=giant?'giant-worker':'human-player';this.root.add(this.unit);this.unit.scale.setScalar(height/1.94459);
   const correction=new T.Group();correction.rotation.y=-Math.PI/2;correction.position.y=.996932;this.unit.add(correction);
@@ -43,7 +43,7 @@ export class Character{
   ];this.body.castShadow=this.body.receiveShadow=true;this.body.frustumCulled=false;
   this.head=new T.Group();this.head.position.set(0,1.69,.015);this.unit.add(this.head);
   const h=new T.Mesh(headGeo,headMat);h.scale.setScalar(.06);h.castShadow=h.receiveShadow=true;this.head.add(h);
-  this.root.updateMatrixWorld(true);this.bones.spine004.attach(this.head);
+  this.root.updateMatrixWorld(true);this.bones.spine004.attach(this.head);this.headRest.copy(this.head.quaternion);
   for(const side of ['L','R'])this.footRest[side]=this.bones['foot'+side].getWorldQuaternion(new T.Quaternion());
   const accessory=(geometry:T.BufferGeometry,material:T.Material,p:T.Vector3,bone:string)=>{const o=new T.Mesh(geometry,material);o.position.copy(p);o.castShadow=o.receiveShadow=true;this.unit.add(o);this.root.updateMatrixWorld(true);this.bones[bone].attach(o);return o};
   accessory(new T.CapsuleGeometry(.058,.11,6,12),(this.body.material as T.Material[])[0],v(0,1.63,0),'spine004');
@@ -58,7 +58,7 @@ export class Character{
   }
   this.shadow=new T.Mesh(new T.CircleGeometry(height*.16,24),new T.MeshBasicMaterial({color:0x172526,transparent:true,opacity:giant?.11:.24,depthWrite:false}));this.shadow.rotation.x=-Math.PI/2;
  }
- resetPose(){for(const [n,p]of this.rest){this.bones[n].quaternion.copy(p.q);this.bones[n].position.copy(p.p)}this.root.updateMatrixWorld(true)}
+ resetPose(){this.head.quaternion.copy(this.headRest);for(const [n,p]of this.rest){this.bones[n].quaternion.copy(p.q);this.bones[n].position.copy(p.p)}this.root.updateMatrixWorld(true)}
  local(x:number,y:number,z:number){return this.root.localToWorld(v(x,y,z))}
  bendSpine(angle:number){for(const n of ['spine001','spine002','spine003'])this.bones[n].quaternion.multiply(new T.Quaternion().setFromAxisAngle(v(1,0,0),angle/3));this.root.updateMatrixWorld(true)}
  legs(left:T.Vector3,right:T.Vector3,poles:T.Vector3){
