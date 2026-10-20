@@ -18,13 +18,21 @@ jobs:
           node-version: '24'
       - uses: actions/download-artifact@v4
         with:
-          name: pv-review-frames
-          run-id: 39464063549
+          name: giants-hiding-pv-bf01a57682fa076c1eb877b95d6ea37b7615b19f
+          run-id: 39473469033
           github-token: ${{ github.token }}
           path: output
+      - uses: actions/download-artifact@v4
+        with:
+          name: pv-review-frames
+          run-id: 39473469033
+          github-token: ${{ github.token }}
+          path: output
+      - name: Select the sheet extracted from the encoded MP4
+        run: cp output/motion-sheet.jpg output/frame-encoded-motion-sheet.jpg
       - name: Publish review files with readable image data
         env:
           GH_TOKEN: ${{ github.token }}
-          PV_SOURCE_SHA: 4807e5f5037532161d1a1eaf068dcffc2626f9e4
-          PV_SOURCE_RUN: '39464063549'
+          PV_SOURCE_SHA: bf01a57682fa076c1eb877b95d6ea37b7615b19f
+          PV_SOURCE_RUN: '39473469033'
         run: node scripts/publish-previews.mjs
