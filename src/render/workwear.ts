@@ -28,22 +28,12 @@ export function fitWorkwear(actor:Actor){
   const mesh=new T.Mesh(geo,mat);mesh.position.copy(pos);if(q)mesh.quaternion.copy(q);actor.unit.add(mesh);mesh.castShadow=mesh.receiveShadow=true;actor.root.updateMatrixWorld(true);actor.bones[bone].attach(mesh);return mesh;
  }
  const v=(x:number,y:number,z:number)=>new T.Vector3(x,y,z);
- for(const side of ['L','R']){
-  const elbow=actor.unit.worldToLocal(actor.bones['forearm'+side].getWorldPosition(new T.Vector3())),wrist=actor.unit.worldToLocal(actor.bones['hand'+side].getWorldPosition(new T.Vector3())),dir=wrist.clone().sub(elbow).normalize();
-  const center=elbow.clone().lerp(wrist,.52),q=new T.Quaternion().setFromUnitVectors(v(0,0,1),dir);
-  for(const d of [-.012,.008,.028])attach(new T.TorusGeometry(.064,.012,6,20),cloth,center.clone().addScaledVector(dir,d),'forearm'+side,q);
- }
- for(const sign of [-1,1]){
-  attach(new RoundedBoxGeometry(.092,.19,.023,3,.009),cloth,v(sign*.065,1.60,.145),'spine003',new T.Quaternion().setFromAxisAngle(v(0,0,1),sign*.35));
- }
- for(let y=1.16;y<1.57;y+=.085)attach(new T.SphereGeometry(.009,8,6),iron,v(.012,y,.18),y<1.35?'spine001':'spine002');
  if(!giant){
   const bag=attach(new RoundedBoxGeometry(.27,.30,.105,4,.025),leather,v(.14,1.16,-.19),'spine001');bag.rotation.z+=.12;
   attach(new RoundedBoxGeometry(.29,.13,.025,3,.012),leather,v(.14,1.255,-.25),'spine001');
   attach(new T.BoxGeometry(.055,.035,.015),iron,v(.14,1.21,-.272),'spine001');
   const strap=new T.CatmullRomCurve3([v(-.13,1.66,-.04),v(-.17,1.56,-.16),v(.01,1.36,-.23),v(.15,1.14,-.26)]);
   attach(new T.TubeGeometry(strap,24,.018,5,false),leather,v(0,0,0),'spine002');
-  const scarf=new T.MeshStandardMaterial({color:0xb4ab92,map:fabric(),roughness:1});
-  attach(new T.TorusGeometry(.102,.029,8,28),scarf,v(0,1.655,.015),'spine003',new T.Quaternion().setFromAxisAngle(v(1,0,0),Math.PI/2));
+
  }
 }

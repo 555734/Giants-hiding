@@ -34,7 +34,7 @@ npm run pv:render
 
 Capture requires Chrome/Chromium and FFmpeg. Set CHROMIUM_PATH if needed. The scene simulation advances at 60 Hz; v0.4 video samples it at 1920×1080 / 30 fps. The output is output/giants-hiding-pv-30s.mp4.
 
-GitHub Actions reviews 11 representative frames, then full captures triggered by a commit message containing [render-pv] render 20 consecutive 1.5-second ranges. Each runner downloads the same actor bundle, checked against the review job's SHA256. Each range starts from the same deterministic simulation. Assembly verifies frame numbers, adjacent state timing/positions and camera positions. The final file is decoded in full and checked for 30 seconds and 900 frames. A contact sheet is extracted from the encoded video. No edits, scene changes or image-to-video interpolation are inserted.
+GitHub Actions reviews representative frames, including the takeoff transition, then full captures triggered by a commit message containing [render-pv] render 20 consecutive 1.5-second ranges. Each runner downloads the same actor bundle, checked against the review job's SHA256. Each range starts from the same deterministic simulation. Assembly verifies frame numbers, adjacent state timing/positions and camera positions. The final file is decoded in full and checked for 30 seconds and 900 frames. A contact sheet is extracted from the encoded video. No edits, scene changes or image-to-video interpolation are inserted.
 
 ## Implementation
 
@@ -55,4 +55,4 @@ Legacy source/tests also retain the CC0 male base mesh and CC BY 3.0 Lee Perry-S
 
 ## v0.4 visual pass
 
-The cargo uses baked irregular timbers, cut-end rings and cracks, braided rope, iron straps and bolts, plus hoist chains connected to a dock gantry. Building facades have lighter limewash, arched windows, corner masonry, cornices and balconies. Character scan materials are classified into workwear, trousers and boots; a skinned sleeve shell and fitted cuffs/collar/scarf/satchel replace parts of the modern T-shirt appearance. A ray query adjusts the rendered feet to the visible supporting hand; crouched hands meet the front cargo beam. The deterministic simulation and 30-second route are retained. Visual acceptance is checked in rendered frames before a new full capture.
+The cargo uses baked irregular timbers, cut-end rings and cracks, braided rope, iron straps and bolts, plus hoist chains connected to a dock gantry. Building facades have lighter limewash, arched windows, corner masonry, cornices and balconies. Character scan materials are classified into workwear, trousers and boots; a skinned sleeve shell and a fitted satchel replace parts of the modern T-shirt appearance. A ray query adjusts the rendered feet to the visible supporting hand; crouched hands meet the front cargo beam. The deterministic simulation and 30-second route are retained. Visual acceptance is checked in rendered frames before a new full capture.

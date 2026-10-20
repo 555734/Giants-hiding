@@ -61,7 +61,7 @@ export class ScannedCharacter implements Character{
    if(s.grip>.1)target.lerp(v(s.x+sign*.22,s.cargoY+.86,2.95+s.cargoZ),s.grip);
    if(interact>.1)target.lerp(v(4.35+sign*.12,s.cargoY+.35,2.4+s.cargoZ),interact);
    if(s.crouch>.2)target=v(s.x+sign*.25,s.cargoY+.91,2.94+s.cargoZ);
-   this.arm(side,target,this.local(sign*.34,.45-down*.15,.08));
+   this.arm(side,target,this.local(sign*.34,.45-down*.15,.08),s.crouch>.2?frame(v(0,-.15,1),v(0,-1,-.15)):undefined);
   }
   this.shadow.position.set(s.x,s.onCargo?s.cargoY+.012:4.012,s.z);this.shadow.visible=s.y<6||s.onCargo;
  }
@@ -85,8 +85,11 @@ export async function loadScannedCharacters(scene:T.Scene,inspectContact=false){
  const contract=await response.json() as RigContract,asset=await new GLTFLoader().loadAsync('./assets/scanned-actor.glb');
  const human=new ScannedCharacter(asset.scene,contract,1.7,false),giant=new ScannedCharacter(asset.scene,contract,60,true);
  scene.add(human.root,giant.root,human.shadow);
- const ray=new T.Raycaster();let supportSurfaceY:number|null=null;
- return{human,giant,get supportSurfaceY(){return supportSurfaceY;},update(s:Parameters<Character['updatePlayer']>[0]){
+ const ray=new T.Raycaster();let supportSurfaceY:number|null=null,takeoffOffset=0;
+ return{human,giant,calibrateTakeoff(s:State){
+  giant.updateGiant(s);giant.root.updateMatrixWorld(true);ray.set(v(s.x,s.y+1.5,s.z),v(0,-1,0));ray.far=3;
+  const hits=ray.intersectObject(giant.root,true);takeoffOffset=hits.length?T.MathUtils.clamp(hits[0].point.y-s.y,-.45,.60):0;
+ },get supportSurfaceY(){return supportSurfaceY;},update(s:Parameters<Character['updatePlayer']>[0]){
   giant.updateGiant(s);supportSurfaceY=null;human.groundOffset=0;
   // This is a render-side foot IK correction; simulation and replay remain independent.
   if(s.grounded&&!s.onCargo&&s.z>-3.3&&s.z<2.3){
@@ -96,6 +99,7 @@ export async function loadScannedCharacters(scene:T.Scene,inspectContact=false){
     human.groundOffset=T.MathUtils.clamp(supportSurfaceY-s.y,-.45,.60)*weight;
    }
   }
+  if(!s.grounded&&s.mode==='replay'&&s.t>=10.3&&s.t<11.1)human.groundOffset=takeoffOffset*(1-smooth(10.3,11.1,s.t));
   human.updatePlayer(s);
   if(inspectContact)human.root.updateMatrixWorld(true);
  }};

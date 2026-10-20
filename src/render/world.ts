@@ -123,8 +123,9 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
  }
  // A tall dock gantry connects the load to visible hoist lines.
  for(const x of [2.97,6.53]){b('hoist-gantry',m.wood,x,65.0,6.3,.48,.62,4.2);b('hoist-gantry-iron',m.iron,x,65,4.6,.68,.82,.7);}
- for(const x of [-6,15]){b('hoist-piers',m.wood,x,33,9,1.0,64,1.0);b('hoist-piers',m.iron,x,5,9,1.25,.6,1.25);}
- b('hoist-crossbeam',m.wood,4.5,65,9,23,.95,1.1);
+ for(const x of [15]){b('hoist-piers',m.wood,x,33,9,1.0,64,1.0);b('hoist-piers',m.iron,x,5,9,1.25,.6,1.25);}
+ b('hoist-crossbeam',m.wood,8.5,65,9,14,.95,1.1);
+ const brace=new T.Mesh(new T.BoxGeometry(.55,Math.sqrt(11*11+10*10),.65),m.wood);brace.position.set(9.5,60,9);brace.rotation.z=Math.atan2(11,10);brace.castShadow=true;scene.add(brace);
  crane(9,-1,14);crane(-12,24,18);crane(19,60,21);crane(-13,143,26);crane(15,303,51);
  for(let k=0;k<30;k++){
   const x=3+r()*4,z=-5-r()*9;

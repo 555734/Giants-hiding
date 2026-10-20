@@ -18,7 +18,7 @@ try{
 
  const telemetry=[];
  if(stills){
-  for(const t of [0,1.5,4.5,7.5,9.9,10.3,10.35,10.5,13.5,16.5,19.5,22.5,25.5,28.5]){
+  for(const t of get('--times','0,1.5,4.5,7.5,9.9,10.3,10.35,10.5,13.5,16.5,19.5,22.5,25.5,28.5').split(',').map(Number)){
    const jpeg=await page.evaluate(t=>window.__PV.jpeg(t),t);await writeFile(path.join(out,`frame-${t.toFixed(2).padStart(5,'0')}.jpg`),Buffer.from(jpeg,'base64'));
    const d=await page.evaluate(()=>window.__PV.diagnostics());telemetry.push(d);console.log(t,JSON.stringify(d.state));
   }

@@ -63,7 +63,7 @@ for polygon in body.data.polygons:
  vv=sum(uv_layer[li].uv.y for li in polygon.loop_indices)/len(polygon.loop_indices)
  rgb=pixel[min(pw-1,max(0,int(u*pw))),min(ph-1,max(0,int((1-vv)*ph)))]
  white=min(rgb)>75 and max(rgb)-min(rgb)<44
- torso=sum(value for key,value in group.items() if key.startswith(('hip','spine_','upperarm_','clavicle_')))
+ torso=sum(value for key,value in group.items() if key.startswith(('hip','spine_','upperarm_','shoulder_','neck')))
  legs=sum(value for key,value in group.items() if key.startswith(('upperleg_','lowerleg_')))
  feet=sum(value for key,value in group.items() if key.startswith(('foot_','ball_')))
  if torso>.45 and white:polygon.material_index=shirt_id
@@ -76,7 +76,7 @@ arm_selected=set()
 for vertex in body.data.vertices:
  w=weights[vertex.index]
  for side in ['l','r']:
-  upper=w.get('upperarm_'+side,0);lower=w.get('lowerarm_'+side,0)
+  upper=sum(value for key,value in w.items() if key.startswith('upperarm') and key.endswith('_'+side));lower=sum(value for key,value in w.items() if key.startswith('lowerarm') and key.endswith('_'+side))
   if upper+lower<.72:continue
   a=body.matrix_world@vertex.co
   elbow=arm.matrix_world@arm.data.bones[prefix+'lowerarm_'+side].head_local
@@ -86,7 +86,20 @@ for vertex in body.data.vertices:
 faces=[polygon for polygon in body.data.polygons if all(vi in arm_selected for vi in polygon.vertices)]
 indices=sorted({vi for polygon in faces for vi in polygon.vertices});lookup={old:i for i,old in enumerate(indices)}
 mesh=bpy.data.meshes.new('tailored-work-sleeves')
-mesh.from_pydata([body.data.vertices[vi].co+body.data.vertices[vi].normal*.009 for vi in indices],[],[[lookup[vi] for vi in polygon.vertices] for polygon in faces]);mesh.update()
+normal_matrix=body.matrix_world.to_3x3().inverted().transposed();inverse=body.matrix_world.inverted()
+def fabric_point(vi):
+ vertex=body.data.vertices[vi];point=body.matrix_world@vertex.co;normal=(normal_matrix@vertex.normal).normalized()
+ # Millimetres in world space, independent of the FBX's centimetre transforms.
+ distance=.007
+ for side in ['l','r']:
+  elbow=arm.matrix_world@arm.data.bones[prefix+'lowerarm_'+side].head_local
+  wrist=arm.matrix_world@arm.data.bones[prefix+'hand_'+side].head_local;direction=wrist-elbow
+  fraction=(point-elbow).dot(direction)/direction.length_squared
+  near=abs(fraction-.48)
+  if near<.07:distance+=.006*(1-near/.07)
+ distance+=.0015*math.sin(point.x*180+point.y*97+point.z*113)
+ return inverse@(point+normal*distance)
+mesh.from_pydata([fabric_point(vi) for vi in indices],[],[[lookup[vi] for vi in polygon.vertices] for polygon in faces]);mesh.update()
 sleeves=bpy.data.objects.new('tailored-work-sleeves',mesh);bpy.context.collection.objects.link(sleeves)
 sleeves.parent=body.parent;sleeves.matrix_world=body.matrix_world.copy()
 mesh.materials.append(cloth)
