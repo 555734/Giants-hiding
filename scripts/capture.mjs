@@ -18,14 +18,14 @@ try{
 
  const telemetry=[];
  if(stills){
-  for(const t of [0,1.5,4.5,7.5,10.5,13.5,16.5,19.5,22.5,25.5,28.5]){
-   const jpeg=await page.evaluate(t=>window.__PV.jpeg(t),t);await writeFile(path.join(out,`frame-${t.toFixed(1).padStart(4,'0')}.jpg`),Buffer.from(jpeg,'base64'));
+  for(const t of [0,1.5,4.5,7.5,9.9,10.3,10.35,10.5,13.5,16.5,19.5,22.5,25.5,28.5]){
+   const jpeg=await page.evaluate(t=>window.__PV.jpeg(t),t);await writeFile(path.join(out,`frame-${t.toFixed(2).padStart(5,'0')}.jpg`),Buffer.from(jpeg,'base64'));
    const d=await page.evaluate(()=>window.__PV.diagnostics());telemetry.push(d);console.log(t,JSON.stringify(d.state));
   }
  }else{
   const file=path.join(out,chunk===null?'giants-hiding-pv-30s.mp4':`part-${String(chunk).padStart(2,'0')}.mp4`);
   const inputs=chunk===null?['-i',path.join(out,'foley.wav'),'-map','0:v','-map','1:a','-c:a','aac','-b:a','192k']:['-an'];
-  const enc=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','image2pipe','-vcodec','mjpeg','-framerate',String(fps),'-i','pipe:0',...inputs,'-c:v','libx264','-preset','medium','-crf','19','-pix_fmt','yuv420p','-t',String(duration),'-metadata','title=Giants Hiding — Harbour Escape PV v0.3','-metadata','comment=Character: Renderpeople Nathan Animated 003 Walking, licensed free sample. Adapted scale, textures and poses. Full credits: github.com/555734/Giants-hiding/blob/main/docs/CREDITS.txt','-movflags','+faststart',file],{stdio:['pipe','inherit','inherit']});
+  const enc=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','image2pipe','-vcodec','mjpeg','-framerate',String(fps),'-i','pipe:0',...inputs,'-c:v','libx264','-preset','medium','-crf','19','-pix_fmt','yuv420p','-t',String(duration),'-metadata','title=Giants Hiding — Harbour Escape PV v0.4','-metadata','comment=Character: Renderpeople Nathan Animated 003 Walking, licensed free sample. Adapted scale, textures and poses. Full credits: github.com/555734/Giants-hiding/blob/main/docs/CREDITS.txt','-movflags','+faststart',file],{stdio:['pipe','inherit','inherit']});
   let encoderError;enc.on('error',e=>encoderError=e);enc.stdin.on('error',e=>encoderError=e);
   const begin=Date.now(),first=Math.round(start*fps),end=Math.round((start+duration)*fps);
   for(let n=first;n<end;n++){

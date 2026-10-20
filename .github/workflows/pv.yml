@@ -134,7 +134,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG=pv-build-${{ github.run_number }}
-          gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title 'Giants Hiding — 30-second visual revision v0.3' --notes-file docs/CREDITS.txt
+          gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title 'Giants Hiding — 30-second visual revision v0.4' --notes-file docs/CREDITS.txt
           gh release upload "$TAG" output/giants-hiding-pv-30s.mp4 output/motion-sheet.jpg output/verification.json docs/CREDITS.txt
       - uses: actions/upload-artifact@v4
         with:

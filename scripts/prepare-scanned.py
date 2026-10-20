@@ -18,7 +18,7 @@ def texture(suffix,kind):
  dest=processed/(kind+'.jpg')
  with Image.open(file) as im:
   im=im.convert('RGB');im.thumbnail((4096,4096),Image.Resampling.LANCZOS)
-  if kind=='roughness':im=ImageOps.invert(im).point(lambda x:max(76,min(245,x+25)))
+  if kind=='roughness':im=ImageOps.invert(im).point(lambda x:max(118,min(245,x+42)))
   im.save(dest,quality=96)
  img=bpy.data.images.load(str(dest.resolve()),check_existing=True)
  if kind!='color':img.colorspace_settings.name='Non-Color'
@@ -38,6 +38,67 @@ for side in ['L','R']:
  for alias,suffix in [('f_index','index'),('f_middle','middle'),('f_ring','ring'),('f_pinky','pinky'),('thumb','thumb')]:
   for segment in ['01','02','03']:aliases[alias+segment+side]=prefix+suffix+'_'+segment+'_'+side.lower()
 assert all(n in arm.data.bones for n in aliases.values())
+# Identify photographed garment surfaces before export; skin uses the original scan material.
+body=max((o for o in bpy.data.objects if o.type=='MESH'),key=lambda o:len(o.data.vertices))
+base=body.data.materials[0]
+shirt=base.copy();shirt.name='Work jacket'
+trousers=base.copy();trousers.name='Work trousers'
+boots=base.copy();boots.name='Work boots'
+for mat in [shirt,trousers,boots]:body.data.materials.append(mat)
+shirt_id=len(body.data.materials)-3;trousers_id=shirt_id+1;boots_id=shirt_id+2
+photo=Image.open(processed/'color.jpg').convert('RGB');pixel=photo.load();pw,ph=photo.size
+uv_layer=body.data.uv_layers.active.data
+def influences(vertex):
+ out={}
+ for group in vertex.groups:
+  name=body.vertex_groups[group.group].name.removeprefix(prefix)
+  out[name]=out.get(name,0)+group.weight
+ return out
+weights=[influences(vertex) for vertex in body.data.vertices]
+for polygon in body.data.polygons:
+ group={}
+ for vi in polygon.vertices:
+  for key,value in weights[vi].items():group[key]=group.get(key,0)+value/len(polygon.vertices)
+ u=sum(uv_layer[li].uv.x for li in polygon.loop_indices)/len(polygon.loop_indices)
+ vv=sum(uv_layer[li].uv.y for li in polygon.loop_indices)/len(polygon.loop_indices)
+ rgb=pixel[min(pw-1,max(0,int(u*pw))),min(ph-1,max(0,int((1-vv)*ph)))]
+ white=min(rgb)>75 and max(rgb)-min(rgb)<44
+ torso=sum(value for key,value in group.items() if key.startswith(('hip','spine_','upperarm_','clavicle_')))
+ legs=sum(value for key,value in group.items() if key.startswith(('upperleg_','lowerleg_')))
+ feet=sum(value for key,value in group.items() if key.startswith(('foot_','ball_')))
+ if torso>.45 and white:polygon.material_index=shirt_id
+ elif feet>.48:polygon.material_index=boots_id
+ elif legs>.60:polygon.material_index=trousers_id
+# A skinned fabric shell extends the photographed short sleeves to the middle forearms.
+cloth=bpy.data.materials.new('Rolled sleeve cloth');cloth.use_nodes=True
+cloth.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.93
+arm_selected=set()
+for vertex in body.data.vertices:
+ w=weights[vertex.index]
+ for side in ['l','r']:
+  upper=w.get('upperarm_'+side,0);lower=w.get('lowerarm_'+side,0)
+  if upper+lower<.72:continue
+  a=body.matrix_world@vertex.co
+  elbow=arm.matrix_world@arm.data.bones[prefix+'lowerarm_'+side].head_local
+  wrist=arm.matrix_world@arm.data.bones[prefix+'hand_'+side].head_local
+  direction=wrist-elbow;fraction=(a-elbow).dot(direction)/direction.length_squared
+  if upper>.52 or fraction<.52:arm_selected.add(vertex.index)
+faces=[polygon for polygon in body.data.polygons if all(vi in arm_selected for vi in polygon.vertices)]
+indices=sorted({vi for polygon in faces for vi in polygon.vertices});lookup={old:i for i,old in enumerate(indices)}
+mesh=bpy.data.meshes.new('tailored-work-sleeves')
+mesh.from_pydata([body.data.vertices[vi].co+body.data.vertices[vi].normal*.009 for vi in indices],[],[[lookup[vi] for vi in polygon.vertices] for polygon in faces]);mesh.update()
+sleeves=bpy.data.objects.new('tailored-work-sleeves',mesh);bpy.context.collection.objects.link(sleeves)
+sleeves.parent=body.parent;sleeves.matrix_world=body.matrix_world.copy()
+mesh.materials.append(cloth)
+sleeve_uv=mesh.uv_layers.new(name='workwear-uv')
+for polygon,original in zip(mesh.polygons,faces):
+ for li,old_li in zip(polygon.loop_indices,original.loop_indices):sleeve_uv.data[li].uv=uv_layer[old_li].uv
+for vg in body.vertex_groups:sleeves.vertex_groups.new(name=vg.name)
+for old,new in lookup.items():
+ for vg in body.data.vertices[old].groups:sleeves.vertex_groups[vg.group].add([new],vg.weight,'REPLACE')
+modifier=sleeves.modifiers.new('native-scan-skin','ARMATURE');modifier.object=arm
+for polygon in mesh.polygons:polygon.use_smooth=True
+print('Prepared workwear:',len(faces),'sleeve polygons;',sum(p.material_index==shirt_id for p in body.data.polygons),'shirt polygons')
 points=[o.matrix_world@Vector(c) for o in bpy.data.objects if o.type=='MESH' for c in o.bound_box]
 lo=Vector((min(p.x for p in points),min(p.y for p in points),min(p.z for p in points)));hi=Vector((max(p.x for p in points),max(p.y for p in points),max(p.z for p in points)))
 hip=arm.matrix_world@arm.data.bones[prefix+'hip'].head_local

@@ -1,4 +1,4 @@
-# Giants Hiding — Harbour Escape PV v0.3
+# Giants Hiding — Harbour Escape PV v0.4
 
 One continuous 30-second third-person traversal. A normal-size player crosses a giant worker's hand, jumps onto a single cargo tray, releases its latch, rises on that same tray and crouches behind timber as the worker examines the load. The camera follows throughout.
 
@@ -32,7 +32,7 @@ python3 scripts/audio.py
 npm run pv:render
 ```
 
-Capture requires Chrome/Chromium and FFmpeg. Set CHROMIUM_PATH if needed. The scene simulation advances at 60 Hz; v0.3 video samples it at 1920×1080 / 30 fps. The output is output/giants-hiding-pv-30s.mp4.
+Capture requires Chrome/Chromium and FFmpeg. Set CHROMIUM_PATH if needed. The scene simulation advances at 60 Hz; v0.4 video samples it at 1920×1080 / 30 fps. The output is output/giants-hiding-pv-30s.mp4.
 
 GitHub Actions reviews 11 representative frames, then full captures triggered by a commit message containing [render-pv] render 20 consecutive 1.5-second ranges. Each runner downloads the same actor bundle, checked against the review job's SHA256. Each range starts from the same deterministic simulation. Assembly verifies frame numbers, adjacent state timing/positions and camera positions. The final file is decoded in full and checked for 30 seconds and 900 frames. A contact sheet is extracted from the encoded video. No edits, scene changes or image-to-video interpolation are inserted.
 
@@ -52,3 +52,7 @@ Current limitations include the provisional modern clothing, simplified hand sup
 Current footage: Renderpeople Nathan Animated 003 Walking; Poly Haven CC0 surfaces/environment; Three.js MIT; Rapier Apache-2.0. Full credits and adaptation details are in docs/CREDITS.txt. Original code, city geometry and Foley were made for this project.
 
 Legacy source/tests also retain the CC0 male base mesh and CC BY 3.0 Lee Perry-Smith head, with their original credits in docs/legacy-asset-credits.txt. These are not used for the v0.3 actor.
+
+## v0.4 visual pass
+
+The cargo uses baked irregular timbers, cut-end rings and cracks, braided rope, iron straps and bolts, plus hoist chains connected to a dock gantry. Building facades have lighter limewash, arched windows, corner masonry, cornices and balconies. Character scan materials are classified into workwear, trousers and boots; a skinned sleeve shell and fitted cuffs/collar/scarf/satchel replace parts of the modern T-shirt appearance. A ray query adjusts the rendered feet to the visible supporting hand; crouched hands meet the front cargo beam. The deterministic simulation and 30-second route are retained. Visual acceptance is checked in rendered frames before a new full capture.

@@ -1,7 +1,7 @@
-Giants Hiding — Harbour Escape PV v0.3
+Giants Hiding — Harbour Escape PV v0.4
 
 Character: Nathan Animated 003 Walking, Renderpeople GmbH. Official free sample: https://renderpeople.com/free-3d-people/ . Download: https://renderpeople.com/sample/free/renderpeople_free_animated_people_FBX.zip .
-Used under https://renderpeople.com/general-terms-and-conditions/ . The model and textures are not redistributed here. Rendered footage only. Adaptations: texture resizing/roughness conversion, normalized scale, skinning/IK pose adapter, hand/grip/gaze placement. No endorsement implied.
+Used under https://renderpeople.com/general-terms-and-conditions/ . The model and textures are not redistributed here. Rendered footage only. Adaptations: texture resizing/roughness conversion, normalized scale, skinning/IK pose adapter, hand/grip/gaze placement, dyed workwear, skinned rolled-sleeve shells and fitted accessories. No endorsement implied.
 
 Surfaces: Castle Wall Slates, Wood Planks Dirt, Plastered Stone Wall by Rob Tuytel / Poly Haven; Roof Tiles 14; Kloofendal 48d Partly Cloudy environment. CC0, https://polyhaven.com/license . Exact source URLs and SHA256 manifests are prepared with fetched assets.
 
@@ -9,6 +9,6 @@ Water normal and rendering utilities: Three.js contributors, MIT.
 Three.js: MIT. Rapier: Apache-2.0.
 City/canal/cargo/boat geometry, replay, camera, original Foley and capture code: made for this project.
 
-The previous CC0 male base and CC BY 3.0 Lee Perry-Smith head remain credited in docs/legacy-asset-credits.txt for repository legacy sources/tests, but are not the v0.3 actor.
+The previous CC0 male base and CC BY 3.0 Lee Perry-Smith head remain credited in docs/legacy-asset-credits.txt for repository legacy sources/tests, but are not the v0.4 actor.
 
 This is a prototype visual revision. Reference-image fidelity is a target, not a claim.
