@@ -1,0 +1,27 @@
+name: Inspect scanned actor
+on:
+  push:
+    branches: [visual-assets-trial]
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/scanned-download.py
+      - run: sudo apt-get update -qq && sudo apt-get install -y blender
+      - run: blender -b -t 2 --python scripts/scanned-inspect.py
+      - name: Publish metadata only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64,json,subprocess,os
+          data=base64.b64encode(open('scan-inspection.json','rb').read()).decode()
+          body={'message':'Inspect licensed actor structure (metadata only)','content':data,'branch':'visual-assets-trial'}
+          p=subprocess.run(['gh','api','repos/'+os.environ['GITHUB_REPOSITORY']+'/contents/docs/scanned-inspection.json'],capture_output=True,text=True)
+          if p.returncode==0:body['sha']=json.loads(p.stdout)['sha']
+          subprocess.run(['gh','api','--method','PUT','repos/'+os.environ['GITHUB_REPOSITORY']+'/contents/docs/scanned-inspection.json','--input','-'],input=json.dumps(body),text=True,check=True)
+          PY
