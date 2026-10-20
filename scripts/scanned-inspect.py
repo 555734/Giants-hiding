@@ -1,7 +1,7 @@
 import bpy,json
 from pathlib import Path
 bpy.ops.wm.read_factory_settings(use_empty=True)
-files=sorted(Path('private-assets').rglob('*.fbx'));assert files,list(Path('private-assets').rglob('*'))
+files=sorted(p for p in Path('private-assets').rglob('*') if p.suffix.lower()=='.fbx');assert files,list(Path('private-assets').rglob('*'))
 bpy.ops.import_scene.fbx(filepath=str(files[0].resolve()),use_anim=False)
 for o in bpy.data.objects:
  if o.animation_data:o.animation_data_clear()

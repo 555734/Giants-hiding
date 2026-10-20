@@ -14,4 +14,8 @@ data=urllib.request.urlopen(url,timeout=180).read()
 with zipfile.ZipFile(io.BytesIO(data)) as z:
  print('Sample archive files:',json.dumps(z.namelist(),indent=2))
  z.extractall(out)
+for archive in out.rglob('*.zip'):
+ if 'nathan' in archive.name.lower():
+  with zipfile.ZipFile(archive) as z:
+   print('Nathan nested files:',json.dumps(z.namelist(),indent=2));z.extractall(out/'nathan')
 (out/'source.json').write_text(json.dumps({'url':url,'license':'https://renderpeople.com/general-terms-and-conditions/','redistribute_assets':False},indent=2))
