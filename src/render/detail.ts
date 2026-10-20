@@ -11,8 +11,8 @@ export function skinMaterial(){
   float skinRelief(vec3 p){float pore=sn(p*780.);float lines=pow(abs(sin(p.x*145.+sn(p*65.)*5.)),20.);return pore*.00017+lines*.00020;}
   `);
   s.fragmentShader=s.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
-  float patch=sn(skinP*42.);float freckles=smoothstep(.75,.85,sn(skinP*255.));
-  diffuseColor.rgb*=mix(vec3(.86,.81,.76),vec3(1.08,1.02,.96),patch);
+  float mottling=sn(skinP*42.);float freckles=smoothstep(.75,.85,sn(skinP*255.));
+  diffuseColor.rgb*=mix(vec3(.86,.81,.76),vec3(1.08,1.02,.96),mottling);
   diffuseColor.rgb*=1.-freckles*.16;
   `).replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
   vec3 dp1=dFdx(-vViewPosition),dp2=dFdy(-vViewPosition);

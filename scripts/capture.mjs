@@ -13,7 +13,9 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.CH
 try{
  const page=await browser.newPage({viewport:{width,height},deviceScaleFactor:1});
  let browserErrors=[];page.on('pageerror',e=>{browserErrors.push(String(e));console.error('BROWSER ERROR',e)});page.on('console',m=>{if(m.type()==='error'&&!m.text().includes('favicon')){browserErrors.push(m.text());console.error('BROWSER',m.text())}});
- await page.goto(get('--url','http://127.0.0.1:5173/?capture=1'),{waitUntil:'networkidle'});await page.waitForFunction(()=>window.__PV?.ready,null,{timeout:90000});
+ await page.goto(get('--url','http://127.0.0.1:5173/?capture=1'),{waitUntil:'networkidle',timeout:180000});await page.waitForFunction(()=>window.__PV?.ready,null,{timeout:180000});
+ if(browserErrors.length)throw new Error('Browser errors: '+browserErrors.join('\n'));
+
  const telemetry=[];
  if(stills){
   for(const t of [0,1.5,4.5,7.5,10.5,13.5,16.5,19.5,22.5,25.5,28.5]){
