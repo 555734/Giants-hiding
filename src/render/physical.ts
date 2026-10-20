@@ -15,7 +15,10 @@ function metreUV(mat:T.MeshStandardMaterial,metres:number){
   varying vec3 surfaceP; varying vec3 surfaceN;
   vec2 realUV(){vec3 n=abs(normalize(surfaceN)); if(n.y>n.x&&n.y>n.z)return surfaceP.xz/${metres.toFixed(3)}; if(n.x>n.z)return surfaceP.zy/${metres.toFixed(3)};return surfaceP.xy/${metres.toFixed(3)};}
   `);
-  s.fragmentShader=s.fragmentShader.replaceAll('vMapUv','realUV()').replaceAll('vNormalMapUv','realUV()').replaceAll('vRoughnessMapUv','realUV()');
+  for(const key of ['map_fragment','normal_fragment_begin','normal_fragment_maps','roughnessmap_fragment']as const){
+   const chunk=T.ShaderChunk[key].replaceAll('vMapUv','realUV()').replaceAll('vNormalMapUv','realUV()').replaceAll('vRoughnessMapUv','realUV()');
+   s.fragmentShader=s.fragmentShader.replace('#include <'+key+'>',chunk);
+  }
  };
  mat.customProgramCacheKey=()=> 'metre-projection-'+metres;mat.needsUpdate=true;
 }

@@ -26,7 +26,7 @@ async function start(){
  // Fixed noise seed: distributed ranges must use the same spatial AO pattern.
  const random=Math.random;let ao:GTAOPass;
  try{Math.random=seeded(2177);ao=new GTAOPass(scene,camera,Math.round(innerWidth*.5),Math.round(innerHeight*.5));}finally{Math.random=random;}
- ao.updateGtaoMaterial({radius:.62,thickness:.8,distanceExponent:1.5,distanceFallOff:1,scale:1,samples:8,screenSpaceRadius:false});ao.blendIntensity=.85;composer.addPass(ao);
+ ao.updateGtaoMaterial({radius:.62,thickness:.8,distanceExponent:1.5,distanceFallOff:1,scale:1,samples:8,screenSpaceRadius:false});ao.blendIntensity=.85;composer.addPass(ao);ao.setSize(Math.round(innerWidth*.5),Math.round(innerHeight*.5));
  composer.addPass(new OutputPass());
  let paused=false,manual=false,lookX=0,lookY=0,drag=false,lastX=0,lastY=0;
  const keys=new Set<string>();
