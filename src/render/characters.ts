@@ -26,15 +26,15 @@ export class Character{
   const rig=clone(base);correction.add(rig);
   rig.traverse(o=>{if((o as T.Bone).isBone){const b=o as T.Bone;this.bones[b.name]=b;this.rest.set(b.name,{q:b.quaternion.clone(),p:b.position.clone()})}if((o as T.SkinnedMesh).isSkinnedMesh)this.body=o as T.SkinnedMesh});
   const geo=this.body.geometry.clone(),pos=geo.getAttribute('position'),idx=geo.getIndex()!,skinIndices=geo.getAttribute('skinIndex'),weights=geo.getAttribute('skinWeight');
-  const newIndex:number[]=[],groups:{start:number;count:number;mat:number}[]=[];
+  const newIndex:number[]=[],byMaterial:number[][]=[[],[],[],[]];
   for(let i=0;i<idx.count;i+=3){
-   const ids=[idx.getX(i),idx.getX(i+1),idx.getX(i+2)],y=ids.reduce((s,j)=>s+pos.getY(j),0)/3;
+   const ids=[idx.getX(i),idx.getX(i+1),idx.getX(i+2)],y=ids.reduce((s,j)=>s+pos.getY(j),0)/3+.996932;
    if(y>1.642)continue;
    let hand=0,forearm=0;for(const j of ids)for(let k=0;k<4;k++){const name=this.body.skeleton.bones[skinIndices.getComponent(j,k)]?.name??'';const w=weights.getComponent(j,k);if(/hand|f_|thumb/.test(name))hand+=w;if(/forearm/.test(name))forearm+=w}
    let mat=y<.32?3:y<.96?2:1;if(hand>.7||(giant&&forearm>1.3))mat=0;
-   const start=newIndex.length;newIndex.push(...ids);const last=groups.at(-1);if(last&&last.mat===mat)last.count+=3;else groups.push({start,count:3,mat});
+   byMaterial[mat].push(...ids);
   }
-  geo.setIndex(newIndex);geo.clearGroups();for(const g of groups)geo.addGroup(g.start,g.count,g.mat);geo.computeVertexNormals();
+  geo.clearGroups();for(let material=0;material<4;material++){const start=newIndex.length;newIndex.push(...byMaterial[material]);geo.addGroup(start,byMaterial[material].length,material)}geo.setIndex(newIndex);
   this.body.geometry=geo;this.body.material=[
    new T.MeshStandardMaterial({color:0xbc8971,roughness:.68}),
    new T.MeshStandardMaterial({color:giant?0x817a69:0x27495f,map:cloth,bumpMap:cloth,bumpScale:.012,roughness:.95}),
@@ -85,7 +85,7 @@ export class Character{
  }
  updateGiant(s:State){
   const a=s.giantRise,inspect=s.inspect,ret=s.handRetreat;
-  this.root.position.set(-19+9*a-7*inspect,-22*(1-a)-6*inspect,12);this.root.rotation.y=Math.PI/2;this.resetPose();
+  this.root.position.set(-19+9*a-7*inspect,-28*(1-a)-6*inspect,12);this.root.rotation.y=Math.PI/2;this.resetPose();
   this.bendSpine(1.12*(1-a)+.23*a+.68*inspect);
   this.legs(v(-22+5*a,2.1,6),v(-23+5*a,2.1,18),v(-2,7,12));
   const left=v(-11*ret,3.55+12*ret+18*a,3.45);
@@ -104,7 +104,7 @@ export class Character{
 }
 export async function loadCharacters(scene:T.Scene,cloth:T.Texture){
  const loader=new GLTFLoader(),tl=new T.TextureLoader();
- const [base,hg,col,normal]=await Promise.all([loader.loadAsync('./assets/human-base.glb'),loader.loadAsync('./assets/LeePerrySmith.glb'),tl.loadAsync('./assets/Map-COL.jpg'),tl.loadAsync('./assets/Infinite-Level_02_Tangent_SmoothUV.jpg')]);col.colorSpace=T.SRGBColorSpace;col.flipY=normal.flipY=false;col.anisotropy=4;
+ const [base,hg,col,normal]=await Promise.all([loader.loadAsync('./assets/human-base.glb'),loader.loadAsync('./assets/LeePerrySmith.glb'),tl.loadAsync('./assets/Map-COL.jpg'),tl.loadAsync('./assets/Infinite-Level_02_Tangent_SmoothUV.jpg')]);col.colorSpace=T.SRGBColorSpace;col.flipY=normal.flipY=true;col.anisotropy=4;
  let headGeo!:T.BufferGeometry;hg.scene.traverse(o=>{if((o as T.Mesh).isMesh)headGeo=(o as T.Mesh).geometry});
  const headMat=new T.MeshStandardMaterial({map:col,normalMap:normal,normalScale:new T.Vector2(.65,.65),roughness:.68,color:0xffead7});
  const human=new Character(base.scene,headGeo,headMat,1.7,false,cloth),giant=new Character(base.scene,headGeo,headMat,60,true,cloth);scene.add(human.root,giant.root,human.shadow);

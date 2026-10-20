@@ -75,7 +75,7 @@ export function buildWorld(scene:T.Scene){
   inst('steeples',new T.ConeGeometry(1,1,4),m.roof,x,h+6,z,8,12,8,Math.PI/4);
  }
  function bridge(z:number){
-  const shape=new T.Shape();shape.moveTo(-13,0);shape.lineTo(-13,7);shape.lineTo(20,7);shape.lineTo(20,0);shape.lineTo(14,0);shape.absarc(3.5,0,10.5,0,Math.PI,false);shape.lineTo(-13,0);
+  const shape=new T.Shape();shape.moveTo(-13,0);shape.lineTo(-13,7);shape.lineTo(20,7);shape.lineTo(20,0);shape.lineTo(14,0);shape.bezierCurveTo(10.5,7,-3.5,7,-7,0);shape.lineTo(-13,0);
   const geo=new T.ExtrudeGeometry(shape,{depth:4,bevelEnabled:false,curveSegments:18});const mesh=new T.Mesh(geo,m.stone);mesh.position.set(0,0,z);mesh.castShadow=mesh.receiveShadow=true;scene.add(mesh);
   for(let side of [0,4]){b('bridgebarrier',m.stone,3.5,7.5,z+side,33,1,.4);b('bridgerail',m.cream,3.5,8.1,z+side,34,.22,.6)}
  }
@@ -104,7 +104,7 @@ export function buildWorld(scene:T.Scene){
  const add=(geo:T.BufferGeometry,mat:T.Material,x:number,y:number,z:number,parent:T.Object3D=cargo)=>{const o=new T.Mesh(geo,mat);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;parent.add(o);return o};
  for(let x=-1.85;x<2;x+=.3)add(new T.BoxGeometry(.28,.24,7),m.wood,x,-.12,0);
  for(let z of [-3.1,0,3.1])add(new T.BoxGeometry(4.15,.24,.2),m.iron,0,-.3,z);
- for(let y=0;y<3;y++)for(let x=-1;x<=1;x++)add(new T.BoxGeometry(.82,.42,3.25),m.wood,x*.85,.23+y*.43,.72);
+ for(let y=0;y<3;y++)for(let x=-1;x<=1;x++)add(new T.BoxGeometry(.82,.42,3.25),m.wood,x*.85,.23+y*.43,.32);
  for(let x of [-1.45,1.45]){add(new T.BoxGeometry(.14,1.58,.14),m.wood,x,.7,-1.55);add(new T.BoxGeometry(.16,1.55,.16),m.wood,x,.7,2.6)}
  add(new T.BoxGeometry(3.15,.16,.16),m.wood,0,.84,-1.55);
  for(let z of [-.6,1.9]){const curve=new T.CatmullRomCurve3([V(-1.47,.12,z),V(-1.46,1.4,z),V(0,1.43,z),V(1.46,1.4,z),V(1.47,.12,z)]);add(new T.TubeGeometry(curve,20,.045,6,false),m.rope,0,0,0)}
