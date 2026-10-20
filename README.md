@@ -43,3 +43,9 @@ The hand uses a simplified support proxy with a shallow ramp fitted to the posed
 Downloaded, rigged assets were adapted in code. The face albedo was edited with image generation to open the eyes; the UV-map prompt is in `docs/face-texture.md`. No image-to-3D reconstruction service was used. The original image-board quality is a visual target, not a claim about this prototype's fidelity.
 
 The GitHub renderer distributes consecutive frame ranges across runners. Every range starts from the same deterministic simulation and uses the same time-dependent camera and articulated poses; `scripts/assemble.py` checks the adjacent frame numbers, state positions and camera positions before joining encoded frames. No action, camera or location changes are inserted at range boundaries. Distant houses use simpler window details to reduce capture cost.
+
+## Visual revision v0.2
+
+Reference: the supplied harbour image. This is a fidelity target, not an assertion of achieved parity. The replay, camera continuity and player/platform rules are preserved. Upgrades include 2K CC0 photographed Poly Haven masonry/wood/roof maps in metre-space projection, HDR environment lighting, planar water reflection, world/prop shadows, contact ambient occlusion, Phong-subdivided skinned bodies, displaced clothing silhouettes, jacket details and attached fingernails. The existing human base is still an adapted base mesh rather than a scanned clothed worker, which remains a material limitation.
+
+Review output is also published to the `pv-previews` branch. Its manifest links each set of frames to the exact source commit and Actions run. Full rendering is triggered only after review via a commit message containing `[render-pv]`.

@@ -12,3 +12,5 @@ for(const a of assets){
  }
  console.log('Verified asset:',a.name);
 }
+
+await import('./fetch-surface-assets.mjs');

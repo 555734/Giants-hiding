@@ -17,3 +17,5 @@ Environment, procedural materials, traversal, camera and original procedural Fol
 Renderer: Three.js (MIT). Physics: Rapier (Apache-2.0).
 Source: https://github.com/555734/Giants-hiding
 This is a replay-driven 3D prototype, not a completed game's production trailer.
+
+Visual revision v0.2: Poly Haven CC0 assets: Castle Wall Slates and Wood Planks Dirt by Rob Tuytel; Roof Tiles 14 and Kloofendal 48d Partly Cloudy (authors and exact source URLs in Poly Haven asset pages). https://polyhaven.com/license . Download manifests with source URLs and SHA-256 checksums are emitted to public/assets/surfaces/manifest.json. Three.js water normals, Water and GTAOPass: Three.js contributors, MIT. Body geometry additionally subdivided and displaced; procedural skin detail, garment details and nails added.

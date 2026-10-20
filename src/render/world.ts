@@ -1,10 +1,12 @@
 import * as T from 'three';
+import {Water} from 'three/addons/objects/Water.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {materials,seeded} from './materials';
 import type {State} from '../simulation/game';
 import {smooth} from '../simulation/replay';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
-export function buildWorld(scene:T.Scene){
- const m=materials(),r=seeded(1217),windowPlane=new T.PlaneGeometry(1,1),box=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(1,1,1,16);
+export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
+ const m=materials(),r=seeded(1217),windowPlane=new T.PlaneGeometry(1,1),box=new RoundedBoxGeometry(1,1,1,2,.018),cylinder=new T.CylinderGeometry(1,1,1,16);
  const buckets=new Map<string,{geometry:T.BufferGeometry;mat:T.Material;matrices:T.Matrix4[];colors:T.Color[]}>();
  const obj=new T.Object3D();
  function inst(key:string,geo:T.BufferGeometry,mat:T.Material,x:number,y:number,z:number,sx:number,sy:number,sz:number,ry=0,col?:T.Color){
@@ -98,14 +100,14 @@ export function buildWorld(scene:T.Scene){
  const personMat=new T.MeshStandardMaterial({color:0x4b5253,roughness:1});
  for(let k=0;k<48;k++){const z=20+r()*250,x=r()>.5?19.5:-12.5;inst('people',new T.CapsuleGeometry(.18,.8,3,5),personMat,x,4.65,z,1,1,1);inst('heads',new T.SphereGeometry(.14,6,4),m.cream,x,5.35,z,1,1,1)}
  for(const data of buckets.values()){
-  const mesh=new T.InstancedMesh(data.geometry,data.mat,data.matrices.length);for(let i=0;i<data.matrices.length;i++){mesh.setMatrixAt(i,data.matrices[i]);mesh.setColorAt(i,data.colors[i])}mesh.receiveShadow=true;mesh.castShadow=false;mesh.computeBoundingSphere();scene.add(mesh)
+  const mesh=new T.InstancedMesh(data.geometry,data.mat,data.matrices.length);for(let i=0;i<data.matrices.length;i++){mesh.setMatrixAt(i,data.matrices[i]);mesh.setColorAt(i,data.colors[i])}mesh.receiveShadow=true;mesh.castShadow=true;mesh.computeBoundingSphere();scene.add(mesh)
  }
  // Cargo is a single persistent group and kinematic support.
  const cargo=new T.Group();cargo.name='one-cargo-tray';scene.add(cargo);
  const add=(geo:T.BufferGeometry,mat:T.Material,x:number,y:number,z:number,parent:T.Object3D=cargo)=>{const o=new T.Mesh(geo,mat);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;parent.add(o);return o};
- for(let x=-1.85;x<2;x+=.3)add(new T.BoxGeometry(.28,.24,7),m.wood,x,-.12,0);
+ for(let x=-1.85;x<2;x+=.3)add(new RoundedBoxGeometry(.28,.24,7,2,.015),m.wood,x,-.12,0);
  for(let z of [-3.1,0,3.1])add(new T.BoxGeometry(4.15,.24,.2),m.iron,0,-.3,z);
- for(let y=0;y<3;y++)for(let x=-1;x<=1;x++)add(new T.BoxGeometry(.82,.42,3.25),m.wood,x*.85,.23+y*.43,.32);
+ for(let y=0;y<3;y++)for(let x=-1;x<=1;x++)add(new RoundedBoxGeometry(.82,.42,3.25,3,.025),m.wood,x*.85,.23+y*.43,.32);
  for(let x of [-1.45,1.45]){add(new T.BoxGeometry(.14,1.58,.14),m.wood,x,.7,-1.55);add(new T.BoxGeometry(.16,1.55,.16),m.wood,x,.7,2.6)}
  add(new T.BoxGeometry(3.15,.16,.16),m.wood,0,.84,-1.55);
  for(let z of [-.6,1.9]){const curve=new T.CatmullRomCurve3([V(-1.47,.12,z),V(-1.46,1.4,z),V(0,1.43,z),V(1.46,1.4,z),V(1.47,.12,z)]);add(new T.TubeGeometry(curve,20,.045,6,false),m.rope,0,0,0)}
@@ -113,13 +115,14 @@ export function buildWorld(scene:T.Scene){
  for(let x of [-2.3,2.3]){add(new T.BoxGeometry(.18,.2,4.5),m.iron,x,-.2,.3);for(let z of [-1.8,2.4])add(new T.BoxGeometry(.7,.17,.18),m.iron,x>0?2.02:-2.02,-.2,z)}
  // Dynamic ripples and glints, rendered in the same world space as the docks.
  const waterMat=new T.ShaderMaterial({uniforms:{time:{value:0},sunDir:{value:V(-.5,.8,.2)}},vertexShader:`varying vec3 wp;void main(){wp=(modelMatrix*vec4(position,1.)).xyz;gl_Position=projectionMatrix*viewMatrix*vec4(wp,1.);}`,fragmentShader:`varying vec3 wp;uniform float time;uniform vec3 sunDir;float wave(vec2 p){return sin(p.x*2.+p.y*.4+time*.8)*.3+sin(p.y*4.-p.x*.7-time)*.16+sin(p.x*11.+p.y*7.+time*1.6)*.04;}void main(){vec2 p=wp.xz;float a=wave(p);vec3 n=normalize(vec3(wave(p+vec2(.03,0.))-a,.16,wave(p+vec2(0.,.03))-a));vec3 v=normalize(cameraPosition-wp);float fres=pow(1.-max(dot(n,v),0.),3.);float gl=pow(max(dot(reflect(-normalize(sunDir),n),v),0.),110.);vec3 c=mix(vec3(.045,.135,.16),vec3(.30,.43,.46),fres);c+=vec3(.85,.77,.57)*gl*.9;c+=.012*sin(p.x*12.+a*7.);gl_FragColor=vec4(c,1.);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>}`});
- const water=new T.Mesh(new T.PlaneGeometry(1000,1000),waterMat);water.rotation.x=-Math.PI/2;water.position.y=.1;scene.add(water);
+ const water=waterNormal?new Water(new T.PlaneGeometry(1000,1000),{textureWidth:512,textureHeight:512,waterNormals:waterNormal,sunDirection:V(-.5,.8,-.5).normalize(),sunColor:0xffead3,waterColor:0x163438,distortionScale:1.7,fog:true}):new T.Mesh(new T.PlaneGeometry(1000,1000),waterMat);
+ water.rotation.x=-Math.PI/2;water.position.y=.1;scene.add(water);
  // Haze, clouds and birds keep distance legible.
  scene.background=new T.Color(0xb2c3ca);scene.fog=new T.FogExp2(0xb2c3ca,.0023);
- const sky=new T.Mesh(new T.SphereGeometry(950,24,12),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,vertexShader:`varying vec3 p;void main(){p=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`varying vec3 p;float hash(vec2 q){return fract(sin(dot(q,vec2(127.1,311.7)))*43758.5453);}float noise(vec2 q){vec2 i=floor(q),f=fract(q);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}void main(){vec3 d=normalize(p);float h=max(d.y,0.);vec3 c=mix(vec3(.68,.75,.77),vec3(.25,.39,.53),pow(h,.6));vec2 uv=d.xz/max(d.y+.2,.12)*2.5;float n=noise(uv)*.55+noise(uv*2.1)*.3+noise(uv*4.5)*.15;float cloud=smoothstep(.48,.72,n)*smoothstep(0.,.18,h);c=mix(c,vec3(.87,.87,.81),cloud*.8);gl_FragColor=vec4(c,1.);}` }));scene.add(sky);
+ const sky=new T.Mesh(new T.SphereGeometry(950,24,12),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,vertexShader:`varying vec3 p;void main(){p=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`varying vec3 p;float hash(vec2 q){return fract(sin(dot(q,vec2(127.1,311.7)))*43758.5453);}float noise(vec2 q){vec2 i=floor(q),f=fract(q);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}void main(){vec3 d=normalize(p);float h=max(d.y,0.);vec3 c=mix(vec3(.68,.75,.77),vec3(.25,.39,.53),pow(h,.6));vec2 uv=d.xz/max(d.y+.2,.12)*2.5;float n=noise(uv)*.55+noise(uv*2.1)*.3+noise(uv*4.5)*.15;float cloud=smoothstep(.48,.72,n)*smoothstep(0.,.18,h);c=mix(c,vec3(.87,.87,.81),cloud*.8);gl_FragColor=vec4(c,1.);}` }));if(!waterNormal)scene.add(sky);
  const cloudMat=new T.MeshBasicMaterial({color:0xf2ede0,transparent:true,opacity:.15,depthWrite:false});
- for(let k=0;k<20;k++){const cloud=new T.Mesh(new T.SphereGeometry(1,12,6),cloudMat);cloud.position.set((r()-.5)*1200,150+r()*100,(r()-.5)*700);cloud.scale.set(70+r()*80,8+r()*12,25+r()*35);scene.add(cloud)}
+ for(let k=0;k<(waterNormal?0:20);k++){const cloud=new T.Mesh(new T.SphereGeometry(1,12,6),cloudMat);cloud.position.set((r()-.5)*1200,150+r()*100,(r()-.5)*700);cloud.scale.set(70+r()*80,8+r()*12,25+r()*35);scene.add(cloud)}
  const birds:T.Mesh[]=[];const birdGeo=new T.BufferGeometry();birdGeo.setAttribute('position',new T.Float32BufferAttribute([-.6,0,0,0,.1,.2,.6,0,0,0,.1,.2,0,0,-.3,-.1,0,0],3));birdGeo.computeVertexNormals();
  for(let k=0;k<10;k++){const bird=new T.Mesh(birdGeo,new T.MeshBasicMaterial({color:0x354449,side:T.DoubleSide}));bird.position.set(-10+k*7,40+k*1.3,45+k*4);scene.add(bird);birds.push(bird)}
- return{cargo,latch,materials:m,update(s:State){cargo.position.set(4.75,s.cargoY,4.5+s.cargoZ);cargo.rotation.z=Math.sin(s.t*.8)*.003*s.giantRise;latchLever.rotation.x=-1.3*smooth(13.7,14,s.t)*Number(s.unlatched);waterMat.uniforms.time.value=s.t;birds.forEach((o,i)=>{o.position.x=-10+i*7+Math.sin(s.t*.18+i)*15;o.position.z=55+i*4-s.t*.7;o.rotation.z=Math.sin(s.t*4+i)*.2})}};
+ return{cargo,latch,materials:m,update(s:State){cargo.position.set(4.75,s.cargoY,4.5+s.cargoZ);cargo.rotation.z=Math.sin(s.t*.8)*.003*s.giantRise;latchLever.rotation.x=-1.3*smooth(13.7,14,s.t)*Number(s.unlatched);waterMat.uniforms.time.value=s.t;if(waterNormal)(water.material as T.ShaderMaterial).uniforms.time.value=s.t*.65;birds.forEach((o,i)=>{o.position.x=-10+i*7+Math.sin(s.t*.18+i)*15;o.position.z=55+i*4-s.t*.7;o.rotation.z=Math.sin(s.t*4+i)*.2})}};
 }

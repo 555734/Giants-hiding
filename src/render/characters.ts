@@ -1,4 +1,6 @@
 import * as T from 'three';
+import {refineBody,tailorBody} from './refine';
+import {skinMaterial,clothMaterial} from './detail';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
@@ -35,10 +37,10 @@ export class Character{
    byMaterial[mat].push(...ids);
   }
   geo.clearGroups();for(let material=0;material<4;material++){const start=newIndex.length;newIndex.push(...byMaterial[material]);geo.addGroup(start,byMaterial[material].length,material)}geo.setIndex(newIndex);
-  this.body.geometry=geo;this.body.material=[
-   new T.MeshStandardMaterial({color:0xbc8971,roughness:.68}),
-   new T.MeshStandardMaterial({color:giant?0x817a69:0x27495f,map:cloth,bumpMap:cloth,bumpScale:.012,roughness:.95}),
-   new T.MeshStandardMaterial({color:giant?0x3d4142:0x68543e,map:cloth,roughness:.97}),
+  this.body.geometry=tailorBody(refineBody(geo,giant?2:1));this.body.material=[
+   skinMaterial(),
+   clothMaterial(cloth,giant),
+   clothMaterial(cloth,giant,true),
    new T.MeshStandardMaterial({color:0x352b24,roughness:.7})
   ];this.body.castShadow=this.body.receiveShadow=true;this.body.frustumCulled=false;
   this.head=new T.Group();this.head.position.set(0,1.69,.015);this.unit.add(this.head);
@@ -55,6 +57,29 @@ export class Character{
    const scarf=accessory(new T.TorusGeometry(.115,.034,8,20),new T.MeshStandardMaterial({color:0xd4cbb7,roughness:1}),v(0,1.60,0),'spine003');scarf.rotation.x=Math.PI/2;
   }else{
    accessory(new T.TorusGeometry(.113,.012,6,24),leather,v(0,1.61,0),'spine003').rotation.x=Math.PI/2;
+  }
+  // A real jacket front and boots complement the displaced, skinned clothing shell.
+  const darkCloth=(this.body.material as T.Material[])[1];
+  for(const side of [-1,1]){
+   const lapel=accessory(new RoundedBoxGeometry(.075,.26,.025,3,.008),darkCloth,v(side*.065,1.46,.16),'spine003');lapel.rotation.z=side*-.27;
+  }
+  for(let y=1.07;y<1.48;y+=.085){const button=accessory(new T.SphereGeometry(.009,8,6),leather,v(.012,y,.177),y<1.25?'spine001':'spine002');button.scale.z=.4;}
+  const hair=new T.Mesh(new T.SphereGeometry(.108,32,16,0,Math.PI*2,0,1.65),new T.MeshStandardMaterial({color:giant?0x302820:0x211f1a,roughness:.96,bumpMap:cloth,bumpScale:.003}));
+  hair.position.set(0,.19,-.018);hair.scale.set(1,.77,1.08);hair.castShadow=true;this.head.add(hair);
+  if(giant){
+   const nailMat=new T.MeshPhysicalMaterial({color:0xbba08d,roughness:.49,clearcoat:.18});
+   this.root.updateMatrixWorld(true);
+   for(const side of ['L','R'])for(const name of ['f_index','f_middle','f_ring','f_pinky','thumb']){
+    const tip=this.bones[name+'03'+side],prev=this.bones[name+'02'+side];if(!tip||!prev)continue;
+    const start=tip.getWorldPosition(v()),direction=start.clone().sub(prev.getWorldPosition(v())).normalize();
+    const dorsal=v(-1,0,0).applyQuaternion(this.bones['hand'+side].getWorldQuaternion(new T.Quaternion()));
+    const scale=this.unit.getWorldScale(v()).x;
+    const center=start.clone().addScaledVector(direction,.018*scale).addScaledVector(dorsal,.008*scale);
+    const nail=new T.Mesh(new T.SphereGeometry(1,16,10),nailMat);this.unit.add(nail);nail.position.copy(this.unit.worldToLocal(center));
+    const z=direction,x=dorsal.clone().cross(z).normalize(),y=z.clone().cross(x).normalize();
+    nail.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z));nail.scale.set(name==='thumb'?.016:.012,.003,.021);nail.castShadow=true;
+    this.root.updateMatrixWorld(true);tip.attach(nail);
+   }
   }
   this.shadow=new T.Mesh(new T.CircleGeometry(height*.16,24),new T.MeshBasicMaterial({color:0x172526,transparent:true,opacity:giant?.11:.24,depthWrite:false}));this.shadow.rotation.x=-Math.PI/2;
  }
