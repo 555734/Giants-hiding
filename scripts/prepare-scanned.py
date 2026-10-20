@@ -17,7 +17,7 @@ def texture(suffix,kind):
  file=next(p for p in private.rglob('*') if p.name.lower().endswith(suffix))
  dest=processed/(kind+'.jpg')
  with Image.open(file) as im:
-  im=im.convert('RGB');im.thumbnail((4096,4096),Image.Resampling.LANCZOS)
+  im=im.convert('RGB');limit=8192 if kind=='color' else 4096 if kind=='normal' else 2048;im.thumbnail((limit,limit),Image.Resampling.LANCZOS)
   if kind=='roughness':im=ImageOps.invert(im).point(lambda x:max(118,min(245,x+42)))
   im.save(dest,quality=96)
  img=bpy.data.images.load(str(dest.resolve()),check_existing=True)

@@ -20,7 +20,7 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
    -.5,0,-.5, 0,1,-.5, -.5,0,.5, 0,1,-.5,0,1,.5,-.5,0,.5,
    0,1,-.5,.5,0,-.5,.5,0,.5,0,1,-.5,.5,0,.5,0,1,.5,
    -.5,0,-.5,.5,0,-.5,0,1,-.5, -.5,0,.5,0,1,.5,.5,0,.5
-  ],3));g.setAttribute('uv',new T.Float32BufferAttribute([0,0,1,0,0,1,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,.5,1,0,0,.5,1,1,0],2));g.computeVertexNormals();return g;
+  ],3));g.setAttribute('uv',new T.Float32BufferAttribute([0,0,1,0,0,1,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,.5,1,0,0,.5,1,1,0],2));const indices:number[]=[];for(let i=0;i<g.getAttribute('position').count;i+=3)indices.push(i,i+2,i+1);g.setIndex(indices);g.computeVertexNormals();return g;
  }
  const roofGeometry=roofGeo();
  const archShape=new T.Shape();archShape.moveTo(-.5,-.65);archShape.lineTo(.5,-.65);archShape.lineTo(.5,.18);archShape.absarc(0,.18,.5,0,Math.PI,false);archShape.lineTo(-.5,-.65);

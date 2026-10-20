@@ -14,7 +14,11 @@ export function fitWorkwear(actor:Actor){
   const materials=(Array.isArray(mesh.material)?mesh.material:[mesh.material]).map(source=>{
    const m=(source as T.MeshStandardMaterial).clone();
    if(/Work jacket/i.test(m.name)){m.color.set(dye);m.roughness=1;}
-   if(/Work trousers/i.test(m.name)){m.color.set(giant?0x81745d:0x7d684c);m.roughness=1;}
+   if(/Work trousers/i.test(m.name)){
+    m.color.set(giant?0xb1a087:0xae9675);m.roughness=1;
+    m.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',T.ShaderChunk.map_fragment.replace('diffuseColor *= sampledDiffuseColor;','sampledDiffuseColor.rgb=vec3(dot(sampledDiffuseColor.rgb,vec3(.299,.587,.114)))*1.65;diffuseColor *= sampledDiffuseColor;'));};
+    m.customProgramCacheKey=()=> 'neutral-work-trousers';
+   }
    if(/Work boots/i.test(m.name)){m.color.set(0x4b3828);m.roughness=.92;}
    if(/Rolled sleeve/i.test(m.name)){m.color.set(dye);m.roughness=.96;m.metalness=0;if(typeof document!=='undefined'){m.map=fabric();m.bumpMap=weave!;m.bumpScale=.0018;}}
    return m;

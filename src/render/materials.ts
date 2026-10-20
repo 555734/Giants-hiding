@@ -30,7 +30,7 @@ export function materials(){
  const stone=new T.MeshStandardMaterial({color:0xe4dcc7,map:stoneTex,bumpMap:stoneTex,bumpScale:.12,roughness:.95});
  const wood=new T.MeshStandardMaterial({color:0xd9c19a,map:woodTex,bumpMap:woodTex,bumpScale:.04,roughness:.86});
  const roof=new T.MeshStandardMaterial({color:0xbb927e,map:roofTex,bumpMap:roofTex,bumpScale:.075,roughness:.93});
- const iron=new T.MeshStandardMaterial({color:0x333b3b,metalness:.7,roughness:.6});
+ const iron=new T.MeshStandardMaterial({color:0x655b4f,metalness:.65,roughness:.68});
  const rope=new T.MeshStandardMaterial({color:0x9e8c62,roughness:1});
  const window=new T.MeshStandardMaterial({color:0x1c292d,roughness:.48,metalness:.15});
  const cream=new T.MeshStandardMaterial({color:0xd9ccb0,roughness:.95});

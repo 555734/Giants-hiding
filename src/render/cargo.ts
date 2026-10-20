@@ -27,7 +27,11 @@ export function detailedCargo(m:any){
   const geo=new RoundedBoxGeometry(w,h,d,3,Math.min(.035,h*.09)),p=geo.getAttribute('position');
   for(let i=0;i<p.count;i++){const xx=p.getX(i),yy=p.getY(i),zz=p.getZ(i);p.setXYZ(i,xx+Math.sin(zz*9+yy*17)*.005,yy+Math.sin(zz*8+xx*13)*.006,zz);}
   geo.computeVertexNormals();add(geo,m.wood,x,y,z,0,turn,(random()-.5)*.009);
-  for(const s of [-1,1])add(new T.PlaneGeometry(w*.95,h*.9),end,x+Math.sin(turn)*s*(d/2+.003),y,z+Math.cos(turn)*s*(d/2+.003),0,turn+(s<0?Math.PI:0));
+  for(const s of [-1,1]){
+   if(d>=w&&d>=h)add(new T.PlaneGeometry(w*.95,h*.9),end,x+Math.sin(turn)*s*(d/2+.003),y,z+Math.cos(turn)*s*(d/2+.003),0,turn+(s<0?Math.PI:0));
+   else if(w>=h)add(new T.PlaneGeometry(d*.95,h*.9),end,x+Math.cos(turn)*s*(w/2+.003),y,z-Math.sin(turn)*s*(w/2+.003),0,turn+s*Math.PI/2);
+   else add(new T.PlaneGeometry(w*.95,d*.9),end,x,y+s*(h/2+.003),z,-s*Math.PI/2,turn);
+  }
   // Long splits and worn edge splinters remain visible in a close third-person view.
   for(let n=0;n<2;n++){
    const a=(random()-.5)*w*.7,len=d*(.15+random()*.3);
@@ -60,8 +64,8 @@ export function detailedCargo(m:any){
   timber(.15,1.58,.18,x,.7,z);
   for(const y of [.22,.9]){add(new T.BoxGeometry(.23,.08,.21),iron,x,y,z);bolt(x,y,z-.12,true);}
  }
- timber(3.15,.17,.21,0,.84,-1.55);
- for(const x of [-1.25,1.25]){add(new T.BoxGeometry(.15,.36,.055),iron,x,.83,-1.68);for(const y of [.72,.96])bolt(x,y,-1.717,true);}
+ timber(3.15,.30,.26,0,.76,-1.55);
+ for(const x of [-1.25,1.25]){add(new T.BoxGeometry(.15,.36,.055),iron,x,.76,-1.70);for(const y of [.68,.84])bolt(x,y,-1.737,true);}
  for(const z of [-.62,1.9])for(let n=0;n<3;n++)rope([v(-1.47,.04,z+n*.065),v(-1.46,1.39,z+n*.065),v(-.7,1.45,z+n*.065),v(.7,1.44,z+n*.065),v(1.47,1.38,z+n*.065),v(1.47,.04,z+n*.065)],.025);
  // Corner slings and knots join the same moving load, with clear handholds at its sides.
  for(const x of [-1.78,1.78]){
@@ -83,7 +87,7 @@ export function detailedCargo(m:any){
 export function hoistChains(scene:T.Scene,m:any){
  const geo=new T.TorusGeometry(.12,.028,5,12),links=new T.InstancedMesh(geo,m.iron,260),o=new T.Object3D();links.castShadow=true;links.frustumCulled=false;scene.add(links);
  return{update(cargoY:number,cargoZ:number){for(let side=0;side<2;side++)for(let n=0;n<130;n++){
-  const y=65-n*.48,visible=y>=cargoY+2.7;o.position.set(4.75+(side?1.78:-1.78),y,4.6+cargoZ);
+  const y=cargoY+2.78+n*.48,visible=y<=65;o.position.set(4.75+(side?1.78:-1.78),y,4.6+cargoZ);
   o.rotation.set(0,n%2?Math.PI/2:0,0);o.scale.set(visible?1:0,visible?1.8:0,visible?1:0);o.updateMatrix();links.setMatrixAt(side*130+n,o.matrix);
  }links.instanceMatrix.needsUpdate=true;}};
 }

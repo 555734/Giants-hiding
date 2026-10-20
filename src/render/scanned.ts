@@ -60,8 +60,16 @@ export class ScannedCharacter implements Character{
    const sign=side==='L'?1:-1;let target=this.local(sign*.23,.92-down*.6,.08-wave*.2*sign);
    if(s.grip>.1)target.lerp(v(s.x+sign*.22,s.cargoY+.86,2.95+s.cargoZ),s.grip);
    if(interact>.1)target.lerp(v(4.35+sign*.12,s.cargoY+.35,2.4+s.cargoZ),interact);
-   if(s.crouch>.2)target=v(s.x+sign*.25,s.cargoY+.91,2.94+s.cargoZ);
-   this.arm(side,target,this.local(sign*.34,.45-down*.15,.08),s.crouch>.2?frame(v(0,-.15,1),v(0,-1,-.15)):undefined);
+   const hide=smooth(.05,.65,s.crouch);target.lerp(v(s.x+sign*.25,s.cargoY+1.01,2.80+s.cargoZ),hide);
+   this.arm(side,target,this.local(sign*.34,.45-down*.15,.08));
+   if(hide>0){
+    const hand=this.bones['hand'+side],current=hand.getWorldQuaternion(new T.Quaternion()),desired=frame(v(0,-.65,1),v(0,-1,-.65)).multiply(this.handOffsets[side]);
+    worldQ(hand,current.slerp(desired,hide));
+    for(const finger of ['f_index','f_middle','f_ring','f_pinky'])for(const segment of ['01','02','03']){
+     const key=finger+segment+side,b=this.bones[key],axis=this.fingerAxes[key];
+     if(b&&axis)b.quaternion.copy(this.rest.get(b.name)!.q).multiply(new T.Quaternion().setFromAxisAngle(axis,hide*(segment==='01'?.10:segment==='02'?.25:.18)));
+    }
+   }
   }
   this.shadow.position.set(s.x,s.onCargo?s.cargoY+.012:4.012,s.z);this.shadow.visible=s.y<6||s.onCargo;
  }
