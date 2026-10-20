@@ -39,7 +39,7 @@ async function start(){
   sun.target.position.set(s.x,s.y+1,s.z);sun.position.set(s.x-35,s.y+66,s.z-35);sun.target.updateMatrixWorld();
   composer.render(1/60);
  }
- const diagnostics=()=>({state:{...game.state},events:game.events,render:renderer.info.render,playerFeet:actors.human.bones.footL.getWorldPosition(new T.Vector3()).toArray(),leftHand:actors.giant.bones.handL.getWorldPosition(new T.Vector3()).toArray(),head:actors.giant.head.getWorldPosition(new T.Vector3()).toArray(),camera:camera.position.toArray()});
+ const diagnostics=()=>({state:{...game.state},events:game.events,supportSurfaceY:actors.supportSurfaceY,render:renderer.info.render,playerFeet:actors.human.bones.footL.getWorldPosition(new T.Vector3()).toArray(),leftHand:actors.giant.bones.handL.getWorldPosition(new T.Vector3()).toArray(),head:actors.giant.head.getWorldPosition(new T.Vector3()).toArray(),camera:camera.position.toArray()});
  const frame=(time:number)=>{
   if(time+1/120<game.state.t)game.reset();while(game.state.t+1/120<time)game.step();draw();return diagnostics();
  };

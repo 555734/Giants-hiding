@@ -10,9 +10,9 @@ const v=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 function worldQ(o:T.Object3D,q:T.Quaternion){o.quaternion.copy(o.parent!.getWorldQuaternion(new T.Quaternion()).invert().multiply(q));o.updateWorldMatrix(false,true);}
 function frame(finger:T.Vector3,normal:T.Vector3){const y=finger.clone().normalize(),z=normal.clone().cross(y).normalize(),x=y.clone().cross(z).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z))}
 export class ScannedCharacter implements Character{
- root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Object3D;headRest=new T.Quaternion();footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;handOffsets:Record<string,T.Quaternion>={};headOffset=new T.Quaternion();fingerAxes:Record<string,T.Vector3>={};
+ root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Object3D;headRest=new T.Quaternion();footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;handOffsets:Record<string,T.Quaternion>={};isGiant=false;poseState?:State;headOffset=new T.Quaternion();fingerAxes:Record<string,T.Vector3>={};
  constructor(source:T.Group,contract:RigContract,height:number,giant:boolean){
-  this.root.name=giant?'scanned-giant-worker':'scanned-human-player';this.root.add(this.unit);this.unit.scale.setScalar(height/contract.height);
+  this.isGiant=giant;this.root.name=giant?'scanned-giant-worker':'scanned-human-player';this.root.add(this.unit);this.unit.scale.setScalar(height/contract.height);
   const rig=clone(source);this.unit.add(rig);
   rig.traverse(o=>{if((o as T.Bone).isBone){const b=o as T.Bone;this.bones[b.name]=b;this.rest.set(b.name,{q:b.quaternion.clone(),p:b.position.clone()});}
    if((o as T.Mesh).isMesh){const mesh=o as T.Mesh;mesh.castShadow=mesh.receiveShadow=true;mesh.frustumCulled=false;if((o as T.SkinnedMesh).isSkinnedMesh){this.body=o as T.SkinnedMesh;if(giant)mesh.geometry=refineBody(mesh.geometry,1);}
@@ -64,21 +64,27 @@ export class ScannedCharacter implements Character{
   this.shadow.position.set(s.x,s.onCargo?s.cargoY+.012:4.012,s.z);this.shadow.visible=s.y<6||s.onCargo;
  }
  updateGiant(s:State){
-  Character.prototype.updateGiant.call(this,s);
+  this.poseState=s;Character.prototype.updateGiant.call(this,s);
   for(const finger of ['f_index','f_middle','f_ring','f_pinky','thumb'])for(const segment of ['01','02','03']){
-   const key=finger+segment+'R',b=this.bones[key];if(b&&this.fingerAxes[key])b.quaternion.copy(this.rest.get(b.name)!.q).multiply(new T.Quaternion().setFromAxisAngle(this.fingerAxes[key],.7));
+   const key=finger+segment+'R',b=this.bones[key];if(b&&this.fingerAxes[key])b.quaternion.copy(this.rest.get(b.name)!.q).multiply(new T.Quaternion().setFromAxisAngle(this.fingerAxes[key],segment==='01'?.95:segment==='02'?1.3:.7));
   }
   this.head.quaternion.copy(this.headRest);this.root.updateMatrixWorld(true);
   if(s.inspect>.01){const target=v(s.x,s.cargoY+.55,s.z+1.6),pivot=new T.Object3D();pivot.position.copy(this.head.getWorldPosition(v()));pivot.lookAt(target);
    const desired=pivot.quaternion.multiply(this.headOffset),current=this.head.getWorldQuaternion(new T.Quaternion());worldQ(this.head,current.slerp(desired,s.inspect*.8));}
  }
 
- arm(side:string,target:T.Vector3,pole:T.Vector3,handQ?:T.Quaternion){Character.prototype.arm.call(this,side,target,pole,handQ?handQ.clone().multiply(this.handOffsets[side]):undefined);}
+ arm(side:string,target:T.Vector3,pole:T.Vector3,handQ?:T.Quaternion){
+  if(this.isGiant&&side==='R'&&this.poseState){const s=this.poseState;target=v(2.15,s.cargoY-3.4,4.8+s.cargoZ);handQ=frame(v(0,1,0),v(1,0,0));}
+  Character.prototype.arm.call(this,side,target,pole,handQ?handQ.clone().multiply(this.handOffsets[side]):undefined);
+ }
 }
 export async function loadScannedCharacters(scene:T.Scene){
  const response=await fetch('./assets/scanned-actor.json');if(!response.ok)throw Error('Download/prepare the licensed scanned actor before running this version.');
  const contract=await response.json() as RigContract,asset=await new GLTFLoader().loadAsync('./assets/scanned-actor.glb');
  const human=new ScannedCharacter(asset.scene,contract,1.7,false),giant=new ScannedCharacter(asset.scene,contract,60,true);
  scene.add(human.root,giant.root,human.shadow);
- return{human,giant,update(s:Parameters<Character['updatePlayer']>[0]){human.updatePlayer(s);giant.updateGiant(s)}};
+ const ray=new T.Raycaster();let supportSurfaceY:number|null=null;
+ return{human,giant,get supportSurfaceY(){return supportSurfaceY;},update(s:Parameters<Character['updatePlayer']>[0]){giant.updateGiant(s);human.updatePlayer(s);supportSurfaceY=null;
+  if(s.grounded&&!s.onCargo&&s.z>-3.3&&s.z<3.3){giant.root.updateMatrixWorld(true);ray.set(v(s.x,s.y+1,s.z),v(0,-1,0));ray.far=3;const hits=ray.intersectObject(giant.root,true);if(hits.length)supportSurfaceY=hits[0].point.y;}
+ }};
 }

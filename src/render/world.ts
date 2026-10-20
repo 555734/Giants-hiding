@@ -26,6 +26,13 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
  b('quay',m.stone,-20,1,-12,32,6,40);b('quay',m.stone,29,1,-2,24,6,60);
  b('quay',m.stone,-18,1,132,14,6,260);b('quay',m.stone,24,1,140,14,6,240);
  for(let side of [-1,1])for(let z=-12;z<285;z+=6)b('embankment',m.stone,side<0?-10:17.5,2,z,1.4,6,5.95);
+ // Background land supports the city; the canal itself stays open.
+ const cityHeight=(x:number,z:number)=>4+Math.max(0,z-55)*.055+14*Math.exp(-((x+155)*(x+155)/14400+(z-165)*(z-165)/40000));
+ for(const [left,right]of [[-250,-25],[31,250]]){
+  const terrain=new T.PlaneGeometry(right-left,365,36,52);terrain.rotateX(-Math.PI/2);const p=terrain.getAttribute('position');
+  for(let i=0;i<p.count;i++){const x=p.getX(i)+(left+right)/2,z=p.getZ(i)+157.5;p.setXYZ(i,x,cityHeight(x,z)-.35,z);}terrain.computeVertexNormals();
+  const land=new T.Mesh(terrain,m.stone);land.receiveShadow=true;scene.add(land);
+ }
  // Starting quay and loading dock.
  for(let z=-17;z<-3;z+=.32)b('dock',m.wood,0,3.85,z,4.7,.3,.295);
  for(let x of [-2.1,2.1])for(let z=-16;z<=-4;z+=3){b('posts',m.wood,x,3.25,z,.3,3.5,.3);b('bolts',m.iron,x,4.04,z,.36,.08,.4)}
@@ -33,6 +40,10 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
  for(let x of [3.0,7.6])for(let z of [-4,-.2])b('posts',m.wood,x,2.0,z,.4,5.5,.4);
  for(let z=-16;z<-5;z+=3.5)b('rail',m.wood,2.0,4.85,z,.16,.16,3.3);
  function house(x:number,z:number,w:number,d:number,h:number){
+  const starts=new Map([...buckets].map(([key,b])=>[key,b.matrices.length]));
+  const rise=cityHeight(x,z)-4,rotation=(r()-.5)*.18+(r()>.75?Math.PI/2:0);
+  b('foundations',m.stone,x,3.25,z,w+.12,1.5,d+.12);
+
   const detailed=x*x+z*z<95*95;
   const tint=new T.Color().setHSL(.09+r()*.035,.1+r()*.08,.72+r()*.2);
   const plastered=r()>.28;b(plastered?'house-plaster':'house',plastered?m.plaster:m.stone,x,4+h/2,z,w,h,d,0,tint);
@@ -55,6 +66,9 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
   b('door',m.wood,x,5.1,z-d/2-.07,.95,2.2,.12);
   if(r()>.3)b('chimney',m.stone,x+w*.25,5+h+w*.2,z+d*.2,.65,2.5,.8);
   if(h>8&&r()>.6){b('balcony',m.wood,x,8.3,z-d/2-.7,w*.5,.25,1.4);b('balcony',m.iron,x,9,z-d/2-1.35,w*.5,.8,.07)}
+  const transform=new T.Matrix4().makeTranslation(x,rise,z).multiply(new T.Matrix4().makeRotationY(rotation)).multiply(new T.Matrix4().makeTranslation(-x,0,-z));
+  for(const [key,bucket]of buckets)for(let i=starts.get(key)??0;i<bucket.matrices.length;i++)bucket.matrices[i].premultiply(transform);
+
  }
  for(let z=14;z<310;z+=15){
   for(let x=-220;x<=220;x+=15){
@@ -99,6 +113,24 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
  // Small distant workers establish human scale.
  const personMat=new T.MeshStandardMaterial({color:0x4b5253,roughness:1});
  for(let k=0;k<48;k++){const z=20+r()*250,x=r()>.5?19.5:-12.5;inst('people',new T.CapsuleGeometry(.18,.8,3,5),personMat,x,4.65,z,1,1,1);inst('heads',new T.SphereGeometry(.14,6,4),m.cream,x,5.35,z,1,1,1)}
+ // Timber work barges, seats and mooring lines give the canal a human scale.
+ function barge(x:number,z:number,length:number){
+  const rows=24,cols=12,positions:number[]=[],uv:number[]=[],indices:number[]=[];
+  const width=(zz:number)=>1.2*Math.sqrt(Math.max(.08,1-Math.pow(zz/(length*.55),2)));
+  for(let row=0;row<=rows;row++){const zz=(row/rows-.5)*length;for(let col=0;col<=cols;col++){const a=col/cols*Math.PI;positions.push(x+Math.cos(a)*width(zz),.85-Math.sin(a)*.95,z+zz);uv.push(col/cols,row/rows*length/2);}}
+  for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const a=row*(cols+1)+col,c=a+cols+1;indices.push(a,c,a+1,a+1,c,c+1);}
+  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();
+  const outer=new T.Mesh(geo,m.wood);outer.castShadow=outer.receiveShadow=true;scene.add(outer);
+  const innerGeo=geo.clone(),ii=innerGeo.getIndex()!,nn=innerGeo.getAttribute('normal');
+  for(let i=0;i<ii.count;i+=3){const b=ii.getX(i+1);ii.setX(i+1,ii.getX(i+2));ii.setX(i+2,b);}for(let i=0;i<nn.count;i++)nn.setXYZ(i,-nn.getX(i),-nn.getY(i),-nn.getZ(i));
+  const inner=new T.Mesh(innerGeo,m.wood);inner.receiveShadow=true;scene.add(inner);
+  for(const side of [-1,1]){const points:T.Vector3[]=[];for(let row=0;row<=rows;row++){const zz=(row/rows-.5)*length;points.push(V(x+side*width(zz),.85,z+zz));}const rim=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points),32,.055,6,false),m.wood);rim.castShadow=true;scene.add(rim);}
+  for(let zz of [-length*.27,0,length*.27])b('boat-seats',m.wood,x,.62,z+zz,width(zz)*1.85,.12,.32);
+  b('boat-cargo',m.wood,x,.95,z-length*.15,1.1,.75,.8);
+  const bank=x>0?17.6:-10.4;
+  const rope=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3([V(x,.86,z+length*.35),V((x+bank)*.5,1.6,z+length*.4),V(bank,4.1,z+length*.42)]),24,.025,5,false),m.rope);scene.add(rope);
+ }
+ barge(13.8,27,8);barge(-7.8,87,9);barge(13.7,159,7);
  for(const data of buckets.values()){
   const mesh=new T.InstancedMesh(data.geometry,data.mat,data.matrices.length);for(let i=0;i<data.matrices.length;i++){mesh.setMatrixAt(i,data.matrices[i]);mesh.setColorAt(i,data.colors[i])}mesh.receiveShadow=true;mesh.castShadow=true;mesh.computeBoundingSphere();scene.add(mesh)
  }
