@@ -35,7 +35,7 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
  function house(x:number,z:number,w:number,d:number,h:number){
   const detailed=x*x+z*z<95*95;
   const tint=new T.Color().setHSL(.09+r()*.035,.1+r()*.08,.72+r()*.2);
-  b('house',m.stone,x,4+h/2,z,w,h,d,0,tint);
+  const plastered=r()>.28;b(plastered?'house-plaster':'house',plastered?m.plaster:m.stone,x,4+h/2,z,w,h,d,0,tint);
   inst('roofs',roofGeometry,m.roof,x,4+h,z,w+1,1.5+w*.25,d+.9,0,new T.Color().setHSL(.055+r()*.025,.25,.62+r()*.3));
   b('eaves',m.wood,x,4+h-.12,z,w+.25,.2,d+.25);
   const floors=Math.max(1,Math.floor(h/3.2));
@@ -59,7 +59,7 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
  for(let z=14;z<310;z+=15){
   for(let x=-220;x<=220;x+=15){
    if(x>-14&&x<20)continue;if(x>-45&&x<-10&&z<32)continue;
-   const xx=x+r()*4,zz=z+r()*4,w=7+r()*4,d=7+r()*4,h=5+r()*10;
+   const xx=x+(r()-.5)*6,zz=z+(r()-.5)*6,w=7+r()*5,d=7+r()*4,h=6+r()*13;
    house(xx,zz,w,d,h);
    if(r()>.92){inst('tree',new T.IcosahedronGeometry(1,1),m.leaf,xx+7,9,zz,3,4,3)}
   }
@@ -118,7 +118,7 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
  const water=waterNormal?new Water(new T.PlaneGeometry(1000,1000),{textureWidth:512,textureHeight:512,waterNormals:waterNormal,sunDirection:V(-.5,.8,-.5).normalize(),sunColor:0xffead3,waterColor:0x163438,distortionScale:1.7,fog:true}):new T.Mesh(new T.PlaneGeometry(1000,1000),waterMat);
  water.rotation.x=-Math.PI/2;water.position.y=.1;scene.add(water);
  // Haze, clouds and birds keep distance legible.
- scene.background=new T.Color(0xb2c3ca);scene.fog=new T.FogExp2(0xb2c3ca,.0023);
+ scene.background=new T.Color(0xb2c3ca);scene.fog=new T.FogExp2(0xb2c3ca,.0019);
  const sky=new T.Mesh(new T.SphereGeometry(950,24,12),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,vertexShader:`varying vec3 p;void main(){p=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`varying vec3 p;float hash(vec2 q){return fract(sin(dot(q,vec2(127.1,311.7)))*43758.5453);}float noise(vec2 q){vec2 i=floor(q),f=fract(q);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}void main(){vec3 d=normalize(p);float h=max(d.y,0.);vec3 c=mix(vec3(.68,.75,.77),vec3(.25,.39,.53),pow(h,.6));vec2 uv=d.xz/max(d.y+.2,.12)*2.5;float n=noise(uv)*.55+noise(uv*2.1)*.3+noise(uv*4.5)*.15;float cloud=smoothstep(.48,.72,n)*smoothstep(0.,.18,h);c=mix(c,vec3(.87,.87,.81),cloud*.8);gl_FragColor=vec4(c,1.);}` }));if(!waterNormal)scene.add(sky);
  const cloudMat=new T.MeshBasicMaterial({color:0xf2ede0,transparent:true,opacity:.15,depthWrite:false});
  for(let k=0;k<(waterNormal?0:20);k++){const cloud=new T.Mesh(new T.SphereGeometry(1,12,6),cloudMat);cloud.position.set((r()-.5)*1200,150+r()*100,(r()-.5)*700);cloud.scale.set(70+r()*80,8+r()*12,25+r()*35);scene.add(cloud)}

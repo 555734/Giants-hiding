@@ -64,23 +64,10 @@ export class Character{
    const lapel=accessory(new RoundedBoxGeometry(.075,.26,.025,3,.008),darkCloth,v(side*.065,1.46,.16),'spine003');lapel.rotation.z=side*-.27;
   }
   for(let y=1.07;y<1.48;y+=.085){const button=accessory(new T.SphereGeometry(.009,8,6),leather,v(.012,y,.177),y<1.25?'spine001':'spine002');button.scale.z=.4;}
-  const hair=new T.Mesh(new T.SphereGeometry(.108,32,16,0,Math.PI*2,0,1.65),new T.MeshStandardMaterial({color:giant?0x302820:0x211f1a,roughness:.96,bumpMap:cloth,bumpScale:.003}));
-  hair.position.set(0,.19,-.018);hair.scale.set(1,.77,1.08);hair.castShadow=true;this.head.add(hair);
-  if(giant){
-   const nailMat=new T.MeshPhysicalMaterial({color:0xbba08d,roughness:.49,clearcoat:.18});
-   this.root.updateMatrixWorld(true);
-   for(const side of ['L','R'])for(const name of ['f_index','f_middle','f_ring','f_pinky','thumb']){
-    const tip=this.bones[name+'03'+side],prev=this.bones[name+'02'+side];if(!tip||!prev)continue;
-    const start=tip.getWorldPosition(v()),direction=start.clone().sub(prev.getWorldPosition(v())).normalize();
-    const dorsal=v(-1,0,0).applyQuaternion(this.bones['hand'+side].getWorldQuaternion(new T.Quaternion()));
-    const scale=this.unit.getWorldScale(v()).x;
-    const center=start.clone().addScaledVector(direction,.018*scale).addScaledVector(dorsal,.008*scale);
-    const nail=new T.Mesh(new T.SphereGeometry(1,16,10),nailMat);this.unit.add(nail);nail.position.copy(this.unit.worldToLocal(center));
-    const z=direction,x=dorsal.clone().cross(z).normalize(),y=z.clone().cross(x).normalize();
-    nail.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z));nail.scale.set(name==='thumb'?.016:.012,.003,.021);nail.castShadow=true;
-    this.root.updateMatrixWorld(true);tip.attach(nail);
-   }
-  }
+  const hairGeo=new T.SphereGeometry(.13,32,20),hp=hairGeo.getAttribute('position'),hi=hairGeo.getIndex()!,keepHair:number[]=[];
+  for(let i=0;i<hi.count;i+=3){const ids=[hi.getX(i),hi.getX(i+1),hi.getX(i+2)];if(ids.every(j=>hp.getY(j)>-.085&&!(hp.getZ(j)>.04&&hp.getY(j)<.025)))keepHair.push(...ids)}hairGeo.setIndex(keepHair);
+  const hair=new T.Mesh(hairGeo,new T.MeshStandardMaterial({color:giant?0x302820:0x211f1a,roughness:.96,bumpMap:cloth,bumpScale:.001}));
+  hair.position.set(0,.13,-.035);hair.scale.set(1,1,1.1);hair.castShadow=true;this.head.add(hair);
   this.shadow=new T.Mesh(new T.CircleGeometry(height*.16,24),new T.MeshBasicMaterial({color:0x172526,transparent:true,opacity:giant?.11:.24,depthWrite:false}));this.shadow.rotation.x=-Math.PI/2;
  }
  resetPose(){this.head.quaternion.copy(this.headRest);for(const [n,p]of this.rest){this.bones[n].quaternion.copy(p.q);this.bones[n].position.copy(p.p)}this.root.updateMatrixWorld(true)}

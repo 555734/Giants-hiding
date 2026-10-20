@@ -25,7 +25,7 @@ export function tailorBody(g:T.BufferGeometry){
  for(const group of g.groups)for(let i=group.start;i<group.start+group.count;i++)tags[idx.getX(i)]=group.materialIndex??0;
  for(let i=0;i<p.count;i++){const mat=tags[i];if(mat!==1&&mat!==2)continue;
   const x=p.getX(i),y=p.getY(i)+.996932,z=p.getZ(i),nx=normal.getX(i),ny=normal.getY(i),nz=normal.getZ(i);
-  const crease=mat===1?(.014*Math.sin(y*67+x*18)*Math.sin(z*24+x*14)+.008*Math.sin(y*112+z*29)):(.009*Math.sin(y*85+x*31)+.005*Math.sin(z*42-y*43));
+  const crease=mat===1?(.004*Math.sin(y*67+x*18)*Math.sin(z*24+x*14)+.003*Math.sin(y*112+z*29)):(.003*Math.sin(y*85+x*31)+.002*Math.sin(z*42-y*43));
   const puff=mat===1?.021:.012;const d=puff+crease;
   p.setXYZ(i,x+nx*d,p.getY(i)+ny*d,z+nz*d);
  }p.needsUpdate=true;g.computeVertexNormals();return g;

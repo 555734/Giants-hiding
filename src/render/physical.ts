@@ -24,10 +24,10 @@ function metreUV(mat:T.MeshStandardMaterial,metres:number){
 }
 export async function upgradeSurfaces(renderer:T.WebGLRenderer,scene:T.Scene,m:any){
  const loader=new T.TextureLoader();const tex=async(name:string,color=false)=>{const t=await loader.loadAsync('./assets/surfaces/'+name);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());if(color)t.colorSpace=T.SRGBColorSpace;return t};
- for(const [name,metres]of [['stone',2.5],['wood',2],['roof',2]]as const){
+ for(const [name,metres]of [['stone',2.5],['wood',2],['roof',2],['plaster',2.5]]as const){
   const mat=m[name] as T.MeshStandardMaterial;
   [mat.map,mat.normalMap,mat.roughnessMap]=await Promise.all([tex(name+'-color.jpg',true),tex(name+'-normal.jpg'),tex(name+'-roughness.jpg')]);
-  mat.bumpMap=null;mat.color.set(name==='stone'?0xd9d5ca:name==='wood'?0xbda585:0xb6aaa0);mat.roughness=1;mat.normalScale.setScalar(name==='stone'?.85:.7);metreUV(mat,metres);
+  mat.bumpMap=null;mat.color.set(name==='stone'?0xd9d5ca:name==='wood'?0xbda585:name==='plaster'?0xf0e5cc:0xffffff);if(name==='roof')mat.color.setRGB(1.5,.9,.60);mat.roughness=1;mat.normalScale.setScalar(name==='stone'?.85:.7);metreUV(mat,metres);
  }
  const hdr=await new HDRLoader().loadAsync('./assets/surfaces/sky.hdr');hdr.mapping=T.EquirectangularReflectionMapping;
  const pmrem=new T.PMREMGenerator(renderer);scene.environment=pmrem.fromEquirectangular(hdr).texture;scene.environmentIntensity=.6;pmrem.dispose();

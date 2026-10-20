@@ -11,20 +11,15 @@ export function skinMaterial(){
   float skinRelief(vec3 p){float pore=sn(p*780.);float lines=pow(abs(sin(p.x*145.+sn(p*65.)*5.)),20.);return pore*.00017+lines*.00020;}
   `);
   s.fragmentShader=s.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
-  float mottling=sn(skinP*42.);float freckles=smoothstep(.75,.85,sn(skinP*255.));
-  diffuseColor.rgb*=mix(vec3(.86,.81,.76),vec3(1.08,1.02,.96),mottling);
-  diffuseColor.rgb*=1.-freckles*.16;
-  `).replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
-  vec3 dp1=dFdx(-vViewPosition),dp2=dFdy(-vViewPosition);
-  vec3 r1=cross(dp2,normal),r2=cross(normal,dp1);
-  float determinant=dot(dp1,r1),height=skinRelief(skinP);
-  vec3 grad=sign(determinant)*(dFdx(height)*r1+dFdy(height)*r2);
-  normal=normalize(abs(determinant)*normal-grad*18.);
+  float mottling=sn(skinP*80.);float freckles=smoothstep(.80,.90,sn(skinP*255.));
+  diffuseColor.rgb*=mix(vec3(.95,.94,.92),vec3(1.02,1.01,.99),mottling);
+  diffuseColor.rgb*=1.-freckles*.06;
   `);
+
  };mat.customProgramCacheKey=()=> 'worker-skin-v2';return mat;
 }
 export function clothMaterial(texture:T.Texture,giant:boolean,trousers=false){
- const mat=new T.MeshStandardMaterial({color:trousers?(giant?0x55504a:0x5e503f):(giant?0x9c9688:0x304b5e),map:texture,bumpMap:texture,bumpScale:.0016,roughness:.94});
+ const mat=new T.MeshStandardMaterial({color:trousers?(giant?0x55504a:0x5e503f):(giant?0x9c9688:0x304b5e),map:texture,bumpMap:texture,bumpScale:.0004,roughness:.94});
  mat.onBeforeCompile=s=>{
   s.vertexShader=s.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 clothP;').replace('#include <begin_vertex>','#include <begin_vertex>\nclothP=position;');
   s.fragmentShader=s.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 clothP;').replace('#include <color_fragment>',`#include <color_fragment>

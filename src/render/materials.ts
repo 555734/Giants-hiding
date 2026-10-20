@@ -26,7 +26,7 @@ function canvasTexture(kind:'stone'|'wood'|'roof'|'cloth'){
  const tex=new T.CanvasTexture(c);tex.colorSpace=T.SRGBColorSpace;tex.wrapS=tex.wrapT=T.RepeatWrapping;tex.anisotropy=4;return tex;
 }
 export function materials(){
- const stoneTex=canvasTexture('stone'),woodTex=canvasTexture('wood'),roofTex=canvasTexture('roof'),clothTex=canvasTexture('cloth');
+ const stoneTex=canvasTexture('stone'),woodTex=canvasTexture('wood'),roofTex=canvasTexture('roof'),clothTex=canvasTexture('cloth');clothTex.repeat.set(6,6);
  const stone=new T.MeshStandardMaterial({color:0xe4dcc7,map:stoneTex,bumpMap:stoneTex,bumpScale:.12,roughness:.95});
  const wood=new T.MeshStandardMaterial({color:0xd9c19a,map:woodTex,bumpMap:woodTex,bumpScale:.04,roughness:.86});
  const roof=new T.MeshStandardMaterial({color:0xbb927e,map:roofTex,bumpMap:roofTex,bumpScale:.075,roughness:.93});
@@ -34,6 +34,7 @@ export function materials(){
  const rope=new T.MeshStandardMaterial({color:0x9e8c62,roughness:1});
  const window=new T.MeshStandardMaterial({color:0x1c292d,roughness:.48,metalness:.15});
  const cream=new T.MeshStandardMaterial({color:0xd9ccb0,roughness:.95});
+ const plaster=new T.MeshStandardMaterial({color:0xd8cdb6,roughness:.94});
  const leaf=new T.MeshStandardMaterial({color:0x4f6042,roughness:1});
- return{stone,wood,roof,iron,rope,window,cream,leaf,clothTex};
+ return{stone,wood,roof,plaster,iron,rope,window,cream,leaf,clothTex};
 }

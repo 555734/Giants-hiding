@@ -17,8 +17,8 @@ async function start(){
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
  document.body.prepend(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(58,innerWidth/innerHeight,.06,1200);
- scene.add(new T.HemisphereLight(0xd7e4ed,0x77705c,.65));
- const sun=new T.DirectionalLight(0xffebcf,3.2);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-28;sun.shadow.camera.right=28;sun.shadow.camera.top=35;sun.shadow.camera.bottom=-28;sun.shadow.camera.near=1;sun.shadow.camera.far=170;sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun,sun.target);
+ scene.add(new T.HemisphereLight(0xd7e4ed,0x77705c,.95));
+ const sun=new T.DirectionalLight(0xffebcf,2.3);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-28;sun.shadow.camera.right=28;sun.shadow.camera.top=35;sun.shadow.camera.bottom=-28;sun.shadow.camera.near=1;sun.shadow.camera.far=170;sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun,sun.target);
  const waterNormal=await new T.TextureLoader().loadAsync('./assets/surfaces/water-normal.jpg');waterNormal.wrapS=waterNormal.wrapT=T.RepeatWrapping;
  const world=buildWorld(scene,waterNormal);await upgradeSurfaces(renderer,scene,world.materials);
  const actors=await loadCharacters(scene,world.materials.clothTex),game=new Game();await game.init();
