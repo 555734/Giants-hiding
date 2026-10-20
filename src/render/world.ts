@@ -7,7 +7,8 @@ import {detailedCargo,hoistChains} from './cargo';
 import {smooth} from '../simulation/replay';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
- const m=materials(),r=seeded(1217),windowPlane=new T.PlaneGeometry(1,1),box=new RoundedBoxGeometry(1,1,1,2,.018),cylinder=new T.CylinderGeometry(1,1,1,16);
+ const m=materials(),r=seeded(1217),windowPlane=new T.PlaneGeometry(1,1),box=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(1,1,1,16);
+ // City mouldings use twelve-triangle blocks; close cargo keeps its authored bevels.
  const buckets=new Map<string,{geometry:T.BufferGeometry;mat:T.Material;matrices:T.Matrix4[];colors:T.Color[]}>();
  const obj=new T.Object3D();
  function inst(key:string,geo:T.BufferGeometry,mat:T.Material,x:number,y:number,z:number,sx:number,sy:number,sz:number,ry=0,col?:T.Color){

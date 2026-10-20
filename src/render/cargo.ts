@@ -39,7 +39,7 @@ export function detailedCargo(m:any){
   const frames=curve.computeFrenetFrames(segments,false);
   for(let strand=0;strand<3;strand++){
    const path:T.Vector3[]=[];
-   for(let i=0;i<=segments;i++){const angle=i/segments*length*48+strand*Math.PI*2/3;
+   for(let i=0;i<=segments;i++){const angle=i/segments*length*24+strand*Math.PI*2/3;
     path.push(curve.getPointAt(i/segments).addScaledVector(frames.normals[i],Math.cos(angle)*radius*.42).addScaledVector(frames.binormals[i],Math.sin(angle)*radius*.42));}
    add(new T.TubeGeometry(new T.CatmullRomCurve3(path),segments,radius*.49,5,false),m.rope);
   }

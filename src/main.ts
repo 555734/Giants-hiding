@@ -33,9 +33,9 @@ async function start(){
  function draw(){
   const s=game.state;world.update(s);actors.update(s);
   let angle=.19*smooth(17,21,s.t)-.35*smooth(21,24,s.t)+.43*smooth(27,30,s.t)+lookX;
-  const back=5.3,camHeight=2.15+lookY,viewY=s.y+actors.human.groundOffset;
+  const close=smooth(19,24,s.t),back=5.3-2.0*close,camHeight=2.15-.4*close+lookY,viewY=s.y+actors.human.groundOffset;
   camera.position.set(s.x-Math.sin(angle)*back,viewY+camHeight,s.z-Math.cos(angle)*back);
-  camera.lookAt(s.x+Math.sin(angle)*3.0,viewY+1.10,s.z+Math.cos(angle)*3.0);
+  camera.lookAt(s.x+Math.sin(angle)*3.0+1.2*close,viewY+1.10-.2*close,s.z+Math.cos(angle)*3.0);
   sun.target.position.set(s.x,s.y+1,s.z);sun.position.set(s.x-35,s.y+66,s.z-35);sun.target.updateMatrixWorld();
   composer.render(1/60);
  }
