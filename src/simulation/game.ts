@@ -1,7 +1,7 @@
 import RAPIER from '@dimforge/rapier3d-compat';
 import {segmentIntersectsBox} from './sight';
 import {cargoHeight,clamp,replayInput,smooth,type Input} from './replay';
-export type State={t:number;x:number;y:number;z:number;vx:number;vz:number;vy:number;yaw:number;grounded:boolean;onCargo:boolean;unlatched:boolean;interactProgress:number;crouch:number;grip:number;handRetreat:number;cargoY:number;cargoZ:number;giantRise:number;inspect:number;visible:boolean;mode:'replay'|'explore'};
+export type State={t:number;distance:number;x:number;y:number;z:number;vx:number;vz:number;vy:number;yaw:number;grounded:boolean;onCargo:boolean;unlatched:boolean;interactProgress:number;crouch:number;grip:number;handRetreat:number;cargoY:number;cargoZ:number;giantRise:number;inspect:number;visible:boolean;mode:'replay'|'explore'};
 export class Game {
  world!:RAPIER.World;player!:RAPIER.RigidBody;collider!:RAPIER.Collider;motor!:RAPIER.KinematicCharacterController;tray!:RAPIER.RigidBody;hand!:RAPIER.RigidBody;
  state!:State;lastJump=false;events:{t:number;name:string}[]=[];
@@ -13,7 +13,7 @@ export class Game {
   this.player=this.world.createRigidBody(RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(0,4.86,-10.2));
   this.collider=this.world.createCollider(RAPIER.ColliderDesc.capsule(.61,.23),this.player);
   this.motor=this.world.createCharacterController(.015);this.motor.enableAutostep(.3,.25,true);this.motor.enableSnapToGround(.25);
-  this.state={t:0,x:0,y:4,z:-10.2,vx:0,vz:0,vy:0,yaw:0,grounded:true,onCargo:false,unlatched:false,interactProgress:0,crouch:0,grip:0,handRetreat:0,cargoY:4,cargoZ:0,giantRise:0,inspect:0,visible:false,mode:'replay'};this.lastJump=false;this.events=[];
+  this.state={t:0,distance:0,x:0,y:4,z:-10.2,vx:0,vz:0,vy:0,yaw:0,grounded:true,onCargo:false,unlatched:false,interactProgress:0,crouch:0,grip:0,handRetreat:0,cargoY:4,cargoZ:0,giantRise:0,inspect:0,visible:false,mode:'replay'};this.lastJump=false;this.events=[];
  }
  step(dt=1/60,manual?:Input){
   const s=this.state,t=s.t, i=manual??replayInput(t,s.x,s.z-s.cargoZ), oldY=s.y;
@@ -60,6 +60,7 @@ export class Game {
   const eye={x:1,y:s.cargoY+5,z:12+s.cargoZ},head={x:s.x,y:s.y+1.65-s.crouch,z:s.z};
   const occluded=segmentIntersectsBox(eye,head,{x:3.4,y:s.cargoY,z:3.19+s.cargoZ},{x:6.1,y:s.cargoY+1.31,z:6.45+s.cargoZ});
   s.visible=s.inspect>.65&&s.onCargo&&!occluded;
+  if(s.grounded)s.distance+=Math.hypot(i.x,i.z)*dt;
   s.t+=dt;
  }
  seek(t:number){this.reset();const n=Math.round(t*60);for(let k=0;k<n;k++)this.step();return this.state}

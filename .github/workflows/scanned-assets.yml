@@ -13,6 +13,25 @@ jobs:
       - run: python3 scripts/scanned-download.py
       - run: sudo apt-get update -qq && sudo apt-get install -y blender python3-numpy python3-pil
       - run: blender -b -t 2 --python-exit-code 1 --python scripts/scanned-inspect.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: python3 -m pip install Pillow==10.4.0
+      - run: npm ci && npm run assets
+      - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-scanned.py
+      - run: npm test && npm run build
+      - name: Render scanned character in the gameplay scene
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 5173 --bind 127.0.0.1 --directory dist > /tmp/server.log 2>&1 &
+          sleep 2
+          node scripts/capture.mjs --stills
+      - name: Publish only rendered previews
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/publish-previews.mjs
       - name: Publish metadata only
         env:
           GH_TOKEN: ${{ github.token }}
