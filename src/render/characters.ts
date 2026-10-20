@@ -17,7 +17,7 @@ function ik(a:T.Bone,b:T.Bone,c:T.Bone,target:T.Vector3,pole:T.Vector3){
  const elbow=start.clone().addScaledVector(dir,la*cos).addScaledVector(side,la*Math.sqrt(1-cos*cos));
  aim(a,b,elbow);aim(b,c,start.clone().addScaledVector(dir,d));
 }
-function palmQuaternion(finger:T.Vector3,normal:T.Vector3){const y=finger.clone().normalize(),x=y.clone().cross(normal).normalize(),z=x.clone().cross(y).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z))}
+function palmQuaternion(finger:T.Vector3,normal:T.Vector3){const y=finger.clone().normalize(),z=normal.clone().cross(y).normalize(),x=y.clone().cross(z).normalize();return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z))}
 export class Character{
  root=new T.Group();unit=new T.Group();bones:Record<string,T.Bone>={};rest=new Map<string,{q:T.Quaternion;p:T.Vector3}>();head!:T.Group;footRest:Record<string,T.Quaternion>={};body!:T.SkinnedMesh;shadow:T.Mesh;
  constructor(base:T.Group,headGeo:T.BufferGeometry,headMat:T.Material,height:number,giant:boolean,cloth:T.Texture){
@@ -41,8 +41,8 @@ export class Character{
    new T.MeshStandardMaterial({color:giant?0x3d4142:0x68543e,map:cloth,roughness:.97}),
    new T.MeshStandardMaterial({color:0x352b24,roughness:.7})
   ];this.body.castShadow=this.body.receiveShadow=true;this.body.frustumCulled=false;
-  this.head=new T.Group();this.head.position.set(0,1.785,.015);this.unit.add(this.head);
-  const h=new T.Mesh(headGeo,headMat);h.scale.setScalar(.042);h.castShadow=h.receiveShadow=true;this.head.add(h);
+  this.head=new T.Group();this.head.position.set(0,1.69,.015);this.unit.add(this.head);
+  const h=new T.Mesh(headGeo,headMat);h.scale.setScalar(.06);h.castShadow=h.receiveShadow=true;this.head.add(h);
   this.root.updateMatrixWorld(true);this.bones.spine004.attach(this.head);
   for(const side of ['L','R'])this.footRest[side]=this.bones['foot'+side].getWorldQuaternion(new T.Quaternion());
   const accessory=(geometry:T.BufferGeometry,material:T.Material,p:T.Vector3,bone:string)=>{const o=new T.Mesh(geometry,material);o.position.copy(p);o.castShadow=o.receiveShadow=true;this.unit.add(o);this.root.updateMatrixWorld(true);this.bones[bone].attach(o);return o};
@@ -75,11 +75,11 @@ export class Character{
   this.legs(foot(1),foot(-1),this.local(0,.5,1.2));
   for(const side of ['L','R']){
    const sign=side==='L'?1:-1;
-   let target=this.local(sign*.25,.76-down*.6,.08-wave*.2*sign);
+   let target=this.local(sign*.23,.92-down*.6,.08-wave*.2*sign);
    if(s.grip>.1)target.lerp(v(s.x+sign*.22,s.cargoY+.86,2.95+s.cargoZ),s.grip);
    if(interact>.1)target.lerp(v(4.35+sign*.12,s.cargoY+.35,2.4+s.cargoZ),interact);
-   if(s.crouch>.2)target=this.local(sign*.27,.55,.28);
-   this.arm(side,target,this.local(sign*.6,.9,-.2));
+   if(s.crouch>.2)target=this.local(sign*.20,.38,.34);
+   this.arm(side,target,this.local(sign*.34,.45-down*.15,.08));
   }
   this.shadow.position.set(s.x,s.onCargo?s.cargoY+.012:4.012,s.z);this.shadow.visible=s.y<6||s.onCargo;
  }
@@ -88,7 +88,8 @@ export class Character{
   this.root.position.set(-19+9*a-7*inspect,-28*(1-a)-6*inspect,12);this.root.rotation.y=Math.PI/2;this.resetPose();
   this.bendSpine(1.12*(1-a)+.23*a+.68*inspect);
   this.legs(v(-22+5*a,2.1,6),v(-23+5*a,2.1,18),v(-2,7,12));
-  const left=v(-11*ret,3.55+12*ret+18*a,3.45);
+  for(const side of ['L','R']){this.bones['forearm'+side].position.multiplyScalar(1.05);this.bones['hand'+side].position.multiplyScalar(1.05)}this.root.updateMatrixWorld(true);
+  const left=v(-11*ret,3.20+2.5*(1-smooth(0,2.2,s.t))+12*ret+18*a,3.45);
   this.arm('L',left,v(-16,11,0),palmQuaternion(v(0,0,-1),v(0,1,0)));
   const right=v(2.15,s.cargoY-.25,6.1+s.cargoZ);
   this.arm('R',right,v(-17,15,24),palmQuaternion(v(0,0,-1),v(1,.2,0)));
@@ -106,6 +107,8 @@ export async function loadCharacters(scene:T.Scene,cloth:T.Texture){
  const loader=new GLTFLoader(),tl=new T.TextureLoader();
  const [base,hg,col,normal]=await Promise.all([loader.loadAsync('./assets/human-base.glb'),loader.loadAsync('./assets/LeePerrySmith.glb'),tl.loadAsync('./assets/Map-COL.jpg'),tl.loadAsync('./assets/Infinite-Level_02_Tangent_SmoothUV.jpg')]);col.colorSpace=T.SRGBColorSpace;col.flipY=normal.flipY=true;col.anisotropy=4;
  let headGeo!:T.BufferGeometry;hg.scene.traverse(o=>{if((o as T.Mesh).isMesh)headGeo=(o as T.Mesh).geometry});
+ const positions=headGeo.getAttribute('position'),indices=headGeo.getIndex(),kept:number[]=[];
+ const count=indices?indices.count:positions.count;for(let n=0;n<count;n+=3){const a=indices?indices.getX(n):n,b=indices?indices.getX(n+1):n+1,c=indices?indices.getX(n+2):n+2;if((positions.getY(a)+positions.getY(b)+positions.getY(c))/3>=-1.05)kept.push(a,b,c)}headGeo=headGeo.clone();headGeo.setIndex(kept);
  const headMat=new T.MeshStandardMaterial({map:col,normalMap:normal,normalScale:new T.Vector2(.65,.65),roughness:.68,color:0xffead7});
  const human=new Character(base.scene,headGeo,headMat,1.7,false,cloth),giant=new Character(base.scene,headGeo,headMat,60,true,cloth);scene.add(human.root,giant.root,human.shadow);
  return{human,giant,update(s:State){human.updatePlayer(s);giant.updateGiant(s)}};

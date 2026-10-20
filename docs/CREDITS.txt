@@ -1,0 +1,19 @@
+GIANTS HIDING — HARBOUR ESCAPE, PROTOTYPE PV v0.1
+
+Head scan: Infinite / Lee Perry-Smith 3D Head Scan, by Lee Perry-Smith / Infinite-Realities, CC BY 3.0.
+https://creativecommons.org/licenses/by/3.0/
+Original source: http://www.ir-ltd.net/infinite-3d-head-scan-released/
+Distribution information: https://casual-effects.com/data/
+Converted/distributed by Morgan McGuire and Guedis Cardenas. Three.js GLB distribution used.
+Modified: scale, attachment to body rig, materials and posed animation. No endorsement implied.
+Please retain these credits when sharing the footage.
+
+Body mesh: orange juice games, CC0.
+https://orange-juice-games.itch.io/male-base-mesh
+Mirror: https://github.com/BoQsc/Godot-3D-Male-Base-Mesh
+Modified: clothing, removed original head, scale, rig posing and accessories.
+
+Environment, procedural materials, traversal, camera and original procedural Foley created for this project.
+Renderer: Three.js (MIT). Physics: Rapier (Apache-2.0).
+Source: https://github.com/555734/Giants-hiding
+This is a replay-driven 3D prototype, not a completed game's production trailer.

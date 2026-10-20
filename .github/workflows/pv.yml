@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - run: npm ci && npm run assets && npm run build
+      - run: npm ci && npm run assets && npm test && npm run build
       - name: Start prototype
         run: |
           npm run dev > /tmp/giants-vite.log 2>&1 &
@@ -49,11 +49,20 @@ jobs:
           gh release view pv-review >/dev/null 2>&1 || gh release create pv-review --title 'PV review frames — work in progress' --prerelease --notes 'Review frames from the continuous 3D prototype. See README for asset credits.'
           gh release upload pv-review output/review-frames.zip --clobber
       - name: Full MP4
-        if: ${{ inputs.full == true }}
+        if: ${{ inputs.full == true || contains(github.event.head_commit.message, '[render-pv]') }}
         run: |
+          python3 -m pip install numpy==1.26.4 scipy==1.13.1 Pillow==10.4.0
           python3 scripts/audio.py
           npm run pv:render
           python3 scripts/verify_video.py
+      - name: Publish rendered video
+        if: ${{ inputs.full == true || contains(github.event.head_commit.message, '[render-pv]') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=pv-build-${{ github.run_number }}
+          gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title 'Giants Hiding — 30-second 3D prototype PV' --notes-file docs/CREDITS.txt
+          gh release upload "$TAG" output/giants-hiding-pv-30s.mp4 output/motion-sheet.jpg output/verification.json docs/CREDITS.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
