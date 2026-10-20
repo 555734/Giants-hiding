@@ -46,6 +46,7 @@ export class Character{
   this.root.updateMatrixWorld(true);this.bones.spine004.attach(this.head);
   for(const side of ['L','R'])this.footRest[side]=this.bones['foot'+side].getWorldQuaternion(new T.Quaternion());
   const accessory=(geometry:T.BufferGeometry,material:T.Material,p:T.Vector3,bone:string)=>{const o=new T.Mesh(geometry,material);o.position.copy(p);o.castShadow=o.receiveShadow=true;this.unit.add(o);this.root.updateMatrixWorld(true);this.bones[bone].attach(o);return o};
+  accessory(new T.CapsuleGeometry(.058,.11,6,12),(this.body.material as T.Material[])[0],v(0,1.63,0),'spine004');
   const leather=new T.MeshStandardMaterial({color:giant?0x433527:0x876c48,roughness:.88});
   accessory(new T.CylinderGeometry(.164,.15,.075,16),leather,v(0,.98,0),'spine');
   if(!giant){
@@ -88,14 +89,15 @@ export class Character{
   this.root.position.set(-19+9*a-7*inspect,-28*(1-a)-6*inspect,12);this.root.rotation.y=Math.PI/2;this.resetPose();
   this.bendSpine(1.12*(1-a)+.23*a+.68*inspect);
   this.legs(v(-22+5*a,2.1,6),v(-23+5*a,2.1,18),v(-2,7,12));
-  for(const side of ['L','R']){this.bones['forearm'+side].position.multiplyScalar(1.05);this.bones['hand'+side].position.multiplyScalar(1.05)}this.root.updateMatrixWorld(true);
-  const left=v(-11*ret,3.20+2.5*(1-smooth(0,2.2,s.t))+12*ret+18*a,3.45);
-  this.arm('L',left,v(-16,11,0),palmQuaternion(v(0,0,-1),v(0,1,0)));
+  for(const side of ['L','R']){this.bones['forearm'+side].position.multiplyScalar(1.25);this.bones['hand'+side].position.multiplyScalar(1.25)}this.root.updateMatrixWorld(true);
+  const left=v(-11*ret,3.80+2.5*(1-smooth(0,2.2,s.t))+12*ret+18*a,3.45);
+  this.arm('L',left,v(-16,11,0),palmQuaternion(v(0,0,-1),v(0,-1,0)));
   const right=v(2.15,s.cargoY-.25,6.1+s.cargoZ);
   this.arm('R',right,v(-17,15,24),palmQuaternion(v(0,0,-1),v(1,.2,0)));
   // The same five fingers curl around the outside handle; the left fingers stay open while supporting the player.
   for(const side of ['L','R'])for(const finger of ['f_index','f_middle','f_ring','f_pinky','thumb'])for(const segment of ['01','02','03']){
-   const b=this.bones[finger+segment+side];if(b)b.quaternion.multiply(new T.Quaternion().setFromAxisAngle(v(1,0,0),side==='R'?.7:(ret*.2+Math.sin(s.t*1.4)*.015)));
+   const b=this.bones[finger+segment+side];if(b)b.quaternion.multiply(new T.Quaternion().setFromAxisAngle(v(1,0,0),side==='R'?.7:(ret*.2)));
+   if(side==='L'&&ret<.01&&finger!=='thumb'){const next=this.bones[finger+(segment==='01'?'02':segment==='02'?'03':'')+side];if(next&&segment!=='03')aim(b,next,b.getWorldPosition(v()).add(v(0,0,-3)));}
   }
   if(inspect>.01){
    const hp=this.head.getWorldPosition(v());const target=v(s.x,s.cargoY+.55,s.z+1.6);
@@ -105,7 +107,7 @@ export class Character{
 }
 export async function loadCharacters(scene:T.Scene,cloth:T.Texture){
  const loader=new GLTFLoader(),tl=new T.TextureLoader();
- const [base,hg,col,normal]=await Promise.all([loader.loadAsync('./assets/human-base.glb'),loader.loadAsync('./assets/LeePerrySmith.glb'),tl.loadAsync('./assets/Map-COL.jpg'),tl.loadAsync('./assets/Infinite-Level_02_Tangent_SmoothUV.jpg')]);col.colorSpace=T.SRGBColorSpace;col.flipY=normal.flipY=true;col.anisotropy=4;
+ const [base,hg,col,normal]=await Promise.all([loader.loadAsync('./assets/human-base.glb'),loader.loadAsync('./assets/LeePerrySmith.glb'),tl.loadAsync('./assets/face-albedo-open.jpg'),tl.loadAsync('./assets/Infinite-Level_02_Tangent_SmoothUV.jpg')]);col.colorSpace=T.SRGBColorSpace;col.flipY=normal.flipY=true;col.anisotropy=4;
  let headGeo!:T.BufferGeometry;hg.scene.traverse(o=>{if((o as T.Mesh).isMesh)headGeo=(o as T.Mesh).geometry});
  const positions=headGeo.getAttribute('position'),indices=headGeo.getIndex(),kept:number[]=[];
  const count=indices?indices.count:positions.count;for(let n=0;n<count;n+=3){const a=indices?indices.getX(n):n,b=indices?indices.getX(n+1):n+1,c=indices?indices.getX(n+2):n+2;if((positions.getY(a)+positions.getY(b)+positions.getY(c))/3>=-1.05)kept.push(a,b,c)}headGeo=headGeo.clone();headGeo.setIndex(kept);

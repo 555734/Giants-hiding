@@ -5,7 +5,7 @@ https://creativecommons.org/licenses/by/3.0/
 Original source: http://www.ir-ltd.net/infinite-3d-head-scan-released/
 Distribution information: https://casual-effects.com/data/
 Converted/distributed by Morgan McGuire and Guedis Cardenas. Three.js GLB distribution used.
-Modified: scale, attachment to body rig, materials and posed animation. No endorsement implied.
+Modified: scale, attachment to body rig, materials, posed animation and AI-edited eye albedo. No endorsement implied.
 Please retain these credits when sharing the footage.
 
 Body mesh: orange juice games, CC0.

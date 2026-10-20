@@ -16,6 +16,7 @@ Open the local URL. Replay starts automatically. Space pauses; R restarts; drag 
 
 ```sh
 npm run pv:stills
+python3 -m pip install numpy scipy Pillow
 python3 scripts/audio.py
 npm run pv:render
 ```
@@ -31,7 +32,7 @@ GitHub Actions builds the project and generates review frames. The full-render w
 - `scripts/`: asset integrity checks, deterministic browser capture, Foley and video checks.
 - `docs/`: storyboard timing, asset provenance, capture notes.
 
-The hand uses a simplified planar collision proxy. The cargo is a persistent kinematic support. On flat supports the grounded motor integrates horizontal velocity directly, avoiding a Rapier capsule resting-contact stiction issue; airborne motion uses Rapier sweeps. This prototype does not implement the full giant AI, complete escape routes, or mobile release controls.
+The hand uses a simplified support proxy with a shallow ramp fitted to the posed hand along the recorded route. The cargo is a persistent kinematic support. On flat supports the grounded motor integrates horizontal velocity directly, avoiding a Rapier capsule resting-contact stiction issue; airborne motion uses Rapier sweeps. This prototype does not implement the full giant AI, complete escape routes, or mobile release controls.
 
 ## Asset credits (also apply when sharing the video)
 
@@ -39,4 +40,4 @@ The hand uses a simplified planar collision proxy. The cargo is a persistent kin
 - **Infinite / Lee Perry-Smith 3D Head Scan**: Lee Perry-Smith / Infinite-Realities, **CC BY 3.0** (https://creativecommons.org/licenses/by/3.0/). Model conversion/distribution credits: Morgan McGuire and Guedis Cardenas. Source distribution: https://threejs.org/examples/webgl_materials_normalmap.html ; original dataset information: https://casual-effects.com/data/ . Modified: scaled, attached to the body rig, material/normal settings and pose. Asset provenance also documented at https://github.com/keijiro/InfiniteScan . Please retain this credit with the footage; it does not imply endorsement.
 - Three.js: MIT. Rapier: Apache-2.0. City meshes, props, procedural materials, camera and Foley: created for this project.
 
-No image-generation-to-3D service was used. Downloaded, rigged assets were adapted in code. The original image-board quality is a visual target, not a claim about this prototype's fidelity.
+Downloaded, rigged assets were adapted in code. The face albedo was edited with image generation to open the eyes; the UV-map prompt is in `docs/face-texture.md`. No image-to-3D reconstruction service was used. The original image-board quality is a visual target, not a claim about this prototype's fidelity.

@@ -31,7 +31,7 @@ export class Game {
   const carry=s.onCargo&&s.grounded;
   const support=(x:number,z:number):number|undefined=>{
    if(x>=-2.35&&x<=2.35&&z>=-17&&z<=-3)return 4;
-   if(s.handRetreat<.02&&Math.abs(x)<=1.75&&z>=-3.3&&z<=3.3)return 4;
+   if(s.handRetreat<.02&&Math.abs(x)<=1.75&&z>=-3.3&&z<=3.3)return 3.95+.4*smooth(-.5,1.5,z);
    if(x>=2.75&&x<=6.75&&z>=1+s.cargoZ&&z<=8+s.cargoZ)return s.cargoY;
   };
   if(carry){

@@ -7,9 +7,9 @@ export function replayInput(t:number,x:number,z:number):Input {
  const steer=(tx:number,tz:number,speed:number)=>{const dx=tx-x,dz=tz-z,d=Math.hypot(dx,dz);if(d>.025){i.x=dx/d*Math.min(speed,d*10);i.z=dz/d*Math.min(speed,d*10)}};
  if(t<3)steer(0,-4.7,1.85);
  else if(t<6)steer(0,-1.5,1.1);
- else if(t<9)steer(1.15,1.35,1.08);
- else if(t<10.3)steer(1.62,2.28,.8);
- else if(t<11.1){i.x=2.6;i.z=.1;i.jump=t<10.32}
+ else if(t<9)steer(0,1.05,.87);
+ else if(t<10.3)steer(.90,1.50,.85);
+ else if(t<11.1){i.x=2.9;i.z=.9;i.jump=t<10.32}
  else if(t<13)steer(4.35,2.35,.9);
  else if(t<15)steer(4.35,2.4,.55);
  else if(t<18)steer(4.35,2.4,.5);

@@ -51,6 +51,8 @@ jobs:
       - name: Full MP4
         if: ${{ inputs.full == true || contains(github.event.head_commit.message, '[render-pv]') }}
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
           python3 -m pip install numpy==1.26.4 scipy==1.13.1 Pillow==10.4.0
           python3 scripts/audio.py
           npm run pv:render
