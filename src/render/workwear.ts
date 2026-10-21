@@ -9,13 +9,23 @@ function fabric(){
  for(let n=0;n<256;n+=3){g.strokeStyle=n%2?'rgba(43,37,28,.04)':'rgba(244,231,206,.05)';g.lineWidth=1;g.beginPath();g.moveTo(n,0);g.lineTo(n,256);g.stroke();g.beginPath();g.moveTo(0,n);g.lineTo(256,n);g.stroke();}
  weave=new T.CanvasTexture(c);weave.colorSpace=T.SRGBColorSpace;weave.wrapS=weave.wrapT=T.RepeatWrapping;weave.repeat.set(7,7);weave.anisotropy=8;return weave;
 }
+let leatherMaps:T.Texture[]=[];
+export async function loadWorkwearSurfaces(){
+ leatherMaps=await Promise.all(['color','normal','roughness'].map(slot=>new T.TextureLoader().loadAsync('./assets/surfaces/brown_leather-'+slot+'.jpg')));
+ leatherMaps.forEach((map,i)=>{map.wrapS=map.wrapT=T.RepeatWrapping;map.anisotropy=8;if(i===0)map.colorSpace=T.SRGBColorSpace;});
+}
 export function fitWorkwear(actor:Actor){
  const giant=actor.isGiant,dye=giant?0x827866:0x536d80;
  actor.unit.traverse(o=>{if(!(o as T.Mesh).isMesh)return;const mesh=o as T.Mesh;
   const materials=(Array.isArray(mesh.material)?mesh.material:[mesh.material]).map(source=>{
    if(/Anatomical eye/i.test(source.name))return anatomicalEye();
-   const skin=!/Work |Rolled sleeve|Jacket seams|Linen collar|Horn buttons|Scanned hair|Fitted jacket collar/i.test(source.name);
+   const skin=!/Worker |Travel |Work |Rolled sleeve|Jacket seams|Linen collar|Horn buttons|Scanned hair|Fitted jacket collar/i.test(source.name);
    const m=skin?scannedSkin(source as T.MeshStandardMaterial):(source as T.MeshStandardMaterial).clone();
+   if(/Worker eyes/i.test(source.name)){const eye=new T.MeshPhysicalMaterial();T.MeshStandardMaterial.prototype.copy.call(eye,source);eye.roughness=.18;eye.normalScale.setScalar(.08);eye.ior=1.38;eye.specularIntensity=.5;eye.clearcoat=.45;eye.clearcoatRoughness=.10;return eye;}
+   if(/Worker skin/i.test(m.name))return scannedSkin(source as T.MeshStandardMaterial);
+   if(/Worker linen|Worker waistcoat|Worker trousers/i.test(m.name)){m.color.set(0xe5d6bb);m.roughness=.94;}
+   if(/Worker boots/i.test(m.name)){m.color.set(0x79624a);m.roughness=.82;}
+   if(/Travel coat/i.test(m.name)){m.color.set(0x8c9296);m.roughness=.96;}
    if(/Work jacket/i.test(m.name)){m.color.set(dye);m.roughness=1;}
    if(/Work trousers/i.test(m.name)){
     m.color.set(giant?0xb1a087:0xae9675);m.roughness=1;
@@ -33,16 +43,20 @@ export function fitWorkwear(actor:Actor){
   });mesh.material=Array.isArray(mesh.material)?materials:materials[0];
  });
  if(typeof document==='undefined')return;
- const cloth=new T.MeshStandardMaterial({color:dye,map:fabric(),bumpMap:weave,bumpScale:.0015,roughness:.96});
- const leather=new T.MeshStandardMaterial({color:0x6e4c30,map:fabric(),roughness:.89});
+ const leather=new T.MeshStandardMaterial({color:0xb39b7d,map:leatherMaps[0],normalMap:leatherMaps[1],roughnessMap:leatherMaps[2],normalScale:new T.Vector2(.45,.45),roughness:.88});
+ leather.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',T.ShaderChunk.map_fragment.replace('diffuseColor *= sampledDiffuseColor;','sampledDiffuseColor.rgb=pow(sampledDiffuseColor.rgb,vec3(.55));diffuseColor *= sampledDiffuseColor;'));};leather.customProgramCacheKey=()=> 'worn-tan-leather';
  const iron=new T.MeshStandardMaterial({color:0x5c4b36,metalness:.65,roughness:.7});
  function attach(geo:T.BufferGeometry,mat:T.Material,pos:T.Vector3,bone:string,q?:T.Quaternion){
   const mesh=new T.Mesh(geo,mat);mesh.position.copy(pos);if(q)mesh.quaternion.copy(q);actor.unit.add(mesh);mesh.castShadow=mesh.receiveShadow=true;actor.root.updateMatrixWorld(true);actor.bones[bone].attach(mesh);return mesh;
  }
  const v=(x:number,y:number,z:number)=>new T.Vector3(x,y,z);
  if(!giant){
-  const bag=attach(new RoundedBoxGeometry(.27,.30,.105,4,.025),leather,v(.14,1.16,-.19),'spine001');bag.rotation.z+=.12;
+  const bagGeo=new RoundedBoxGeometry(.28,.30,.115,5,.026),bp=bagGeo.getAttribute('position');
+  for(let i=0;i<bp.count;i++){const x=bp.getX(i),y=bp.getY(i),z=bp.getZ(i);bp.setXYZ(i,x*(1+.035*Math.sin(y*41)),y,z+Math.sin(x*37+y*31)*.0025);}bagGeo.computeVertexNormals();
+  const bag=attach(bagGeo,leather,v(.14,1.16,-.19),'spine001');bag.rotation.z+=.12;
   attach(new RoundedBoxGeometry(.29,.13,.025,3,.012),leather,v(.14,1.255,-.25),'spine001');
+  const piping=new T.CatmullRomCurve3([v(.018,1.28,-.253),v(.01,1.04,-.253),v(.14,1.012,-.253),v(.27,1.04,-.253),v(.275,1.28,-.253)]);
+  attach(new T.TubeGeometry(piping,40,.003,5,false),leather,v(0,0,0),'spine001');
   attach(new T.BoxGeometry(.055,.035,.015),iron,v(.14,1.21,-.272),'spine001');
   const strap=new T.CatmullRomCurve3([v(-.13,1.66,-.04),v(-.17,1.56,-.16),v(.01,1.36,-.23),v(.15,1.14,-.26)]);
   const positions:number[]=[],indices:number[]=[];

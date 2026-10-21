@@ -36,5 +36,6 @@ export function materials(){
  const cream=new T.MeshStandardMaterial({color:0xd9ccb0,roughness:.95});
  const plaster=new T.MeshStandardMaterial({color:0xd8cdb6,roughness:.94});
  const leaf=new T.MeshStandardMaterial({color:0x4f6042,roughness:1});
- return{stone,wood,roof,plaster,iron,rope,window,cream,leaf,clothTex};
+ const wall=stone.clone();
+ return{wall,stone,wood,roof,plaster,iron,rope,window,cream,leaf,clothTex};
 }

@@ -2,7 +2,7 @@ import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {Character} from './characters';
-import {fitWorkwear} from './workwear';
+import {fitWorkwear,loadWorkwearSurfaces} from './workwear';
 import {refineBody} from './refine';
 import type {State} from '../simulation/game';
 import {smooth} from '../simulation/replay';
@@ -94,9 +94,12 @@ export class ScannedCharacter implements Character{
  }
 }
 export async function loadScannedCharacters(scene:T.Scene,inspectContact=false){
+ await loadWorkwearSurfaces();
  const response=await fetch('./assets/scanned-actor.json');if(!response.ok)throw Error('Download/prepare the licensed scanned actor before running this version.');
  const contract=await response.json() as RigContract,asset=await new GLTFLoader().loadAsync('./assets/scanned-actor.glb');
- const human=new ScannedCharacter(asset.scene,contract,1.7,false),giant=new ScannedCharacter(asset.scene,contract,60,true);
+ const workerResponse=await fetch('./assets/worker-actor.json');if(!workerResponse.ok)throw Error('Prepare the licensed Eric worker before running.');
+ const workerContract=await workerResponse.json() as RigContract,worker=await new GLTFLoader().loadAsync('./assets/worker-actor.glb');
+ const human=new ScannedCharacter(asset.scene,contract,1.7,false),giant=new ScannedCharacter(worker.scene,workerContract,60,true);
  scene.add(human.root,giant.root,human.shadow);
  const ray=new T.Raycaster();let supportSurfaceY:number|null=null,takeoffOffset=0;
  return{human,giant,calibrateTakeoff(s:State){

@@ -20,7 +20,7 @@ jobs:
       actor_sha: ${{ steps.actor-download.outputs.sha }}
     if: ${{ !contains(github.event.head_commit.message, '[inspect-only]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     env:
       CHROMIUM_PATH: /usr/bin/google-chrome
     steps:
@@ -41,7 +41,11 @@ jobs:
       - run: npm ci && npm run assets
       - id: actor-download
         run: python3 scripts/scanned-download.py
+      - run: python3 scripts/worker-download.py
+      - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-worker.py
       - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-scanned.py
+      - run: python3 scripts/architecture-download.py
+      - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-architecture.py
       - run: npm test && npm run build
       - name: Review frames
         run: |
@@ -75,6 +79,8 @@ jobs:
             public/assets/
             !public/assets/scanned-actor.glb
             !public/assets/scanned-actor.json
+            !public/assets/worker-actor.glb
+            !public/assets/worker-actor.json
   render:
     needs: review
     if: ${{ inputs.full == true || contains(github.event.head_commit.message, '[render-pv]') }}
@@ -100,6 +106,8 @@ jobs:
           path: public/assets/
       - run: sudo apt-get update -qq && sudo apt-get install -y blender python3-numpy python3-pil ffmpeg
       - run: python3 scripts/scanned-download.py
+      - run: python3 scripts/worker-download.py
+      - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-worker.py
       - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-scanned.py
       - run: npm run build
       - name: Render consecutive frames
@@ -134,7 +142,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG=pv-build-${{ github.run_number }}
-          gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title 'Giants Hiding — 30-second visual revision v0.5' --notes-file docs/CREDITS.txt
+          gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title 'Giants Hiding — 30-second visual revision v0.6' --notes-file docs/CREDITS.txt
           gh release upload "$TAG" output/giants-hiding-pv-30s.mp4 output/motion-sheet.jpg output/verification.json docs/CREDITS.txt
       - uses: actions/upload-artifact@v4
         with:

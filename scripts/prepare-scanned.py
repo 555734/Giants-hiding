@@ -5,7 +5,7 @@ from pathlib import Path
 from mathutils import Vector,Matrix
 from PIL import Image,ImageOps
 bpy.ops.wm.read_factory_settings(use_empty=True)
-private=Path('private-assets');files=sorted(p for p in private.rglob('*') if p.suffix.lower()=='.fbx');assert files
+private=Path('private-assets/nathan');files=sorted(p for p in private.rglob('*') if p.suffix.lower()=='.fbx');assert files
 bpy.ops.import_scene.fbx(filepath=str(files[0].resolve()),use_anim=False)
 for o in bpy.data.objects:
  if o.animation_data:o.animation_data_clear()
@@ -124,7 +124,7 @@ for polygon in mesh.polygons:polygon.use_smooth=True
 print('Prepared workwear:',len(faces),'sleeve polygons;',sum(p.material_index==shirt_id for p in body.data.polygons),'shirt polygons')
 # Tailoring stays in the source rig, so seams and collar deform with the scan.
 import runpy
-runpy.run_path('scripts/tailor-scanned.py',init_globals=globals())
+runpy.run_path('scripts/coat-scanned.py',init_globals=globals())
 points=[o.matrix_world@Vector(c) for o in bpy.data.objects if o.type=='MESH' for c in o.bound_box]
 lo=Vector((min(p.x for p in points),min(p.y for p in points),min(p.z for p in points)));hi=Vector((max(p.x for p in points),max(p.y for p in points),max(p.z for p in points)))
 hip=arm.matrix_world@arm.data.bones[prefix+'hip'].head_local

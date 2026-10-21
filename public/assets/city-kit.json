@@ -1,0 +1,14 @@
+{
+  "source": "Amazon Lumberyard Bistro / NVIDIA ORCA",
+  "url": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
+  "license": "CC-BY-4.0",
+  "modifications": "Architecture-only extraction, metre pivots, converted PBR maps, recolored roofs, generated LODs",
+  "variants": [
+    2,
+    3,
+    4,
+    5,
+    7,
+    8
+  ]
+}

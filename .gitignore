@@ -9,3 +9,4 @@ public/assets/*.jpg
 private-assets/
 public/assets/surfaces/
 public/assets/scanned-actor.json
+public/assets/worker-actor.json

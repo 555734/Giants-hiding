@@ -1,13 +1,13 @@
 import * as T from 'three';
+import {buildArchitecture} from './architecture';
 import {Water} from 'three/addons/objects/Water.js';
-import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {materials,seeded} from './materials';
 import type {State} from '../simulation/game';
 import {detailedCargo,hoistChains} from './cargo';
 import {smooth} from '../simulation/replay';
 const V=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
-export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
- const m=materials(),r=seeded(1217),windowPlane=new T.PlaneGeometry(1,1),box=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(1,1,1,16);
+export async function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
+ const m=materials(),r=seeded(1217),box=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(1,1,1,16);
  // City mouldings use twelve-triangle blocks; close cargo keeps its authored bevels.
  const buckets=new Map<string,{geometry:T.BufferGeometry;mat:T.Material;matrices:T.Matrix4[];colors:T.Color[]}>();
  const obj=new T.Object3D();
@@ -15,16 +15,6 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
   if(!buckets.has(key))buckets.set(key,{geometry:geo,mat,matrices:[],colors:[]});const b=buckets.get(key)!;obj.position.set(x,y,z);obj.rotation.set(0,ry,0);obj.scale.set(sx,sy,sz);obj.updateMatrix();b.matrices.push(obj.matrix.clone());b.colors.push(col??new T.Color(1,1,1));
  }
  const b=(key:string,mat:T.Material,x:number,y:number,z:number,sx:number,sy:number,sz:number,ry=0,c?:T.Color)=>inst(key,box,mat,x,y,z,sx,sy,sz,ry,c);
- function roofGeo(){
-  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute([
-   -.5,0,-.5, 0,1,-.5, -.5,0,.5, 0,1,-.5,0,1,.5,-.5,0,.5,
-   0,1,-.5,.5,0,-.5,.5,0,.5,0,1,-.5,.5,0,.5,0,1,.5,
-   -.5,0,-.5,.5,0,-.5,0,1,-.5, -.5,0,.5,0,1,.5,.5,0,.5
-  ],3));g.setAttribute('uv',new T.Float32BufferAttribute([0,0,1,0,0,1,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,.5,1,0,0,.5,1,1,0],2));const indices:number[]=[];for(let i=0;i<g.getAttribute('position').count;i+=3)indices.push(i,i+2,i+1);g.setIndex(indices);g.computeVertexNormals();return g;
- }
- const roofGeometry=roofGeo();
- const archShape=new T.Shape();archShape.moveTo(-.5,-.65);archShape.lineTo(.5,-.65);archShape.lineTo(.5,.18);archShape.absarc(0,.18,.5,0,Math.PI,false);archShape.lineTo(-.5,-.65);
- const archGeometry=new T.ShapeGeometry(archShape,8);
  // The water lane remains open all the way to the wall. Buildings are individual volumes, not an image plane.
  b('ground',m.stone,0,-3,60,900,5,900);
  b('quay',m.stone,-20,1,-12,32,6,40);b('quay',m.stone,29,1,-2,24,6,60);
@@ -43,65 +33,18 @@ export function buildWorld(scene:T.Scene,waterNormal?:T.Texture){
  for(let z=-4.2;z<.2;z+=.32)b('dock',m.wood,5.3,3.85,z,5.8,.3,.295);
  for(let x of [3.0,7.6])for(let z of [-4,-.2])b('posts',m.wood,x,2.0,z,.4,5.5,.4);
  for(let z=-16;z<-5;z+=3.5)b('rail',m.wood,2.0,4.85,z,.16,.16,3.3);
- function house(x:number,z:number,w:number,d:number,h:number){
-  const starts=new Map([...buckets].map(([key,b])=>[key,b.matrices.length]));
-  const rise=cityHeight(x,z)-4,rotation=(r()-.5)*.18+(r()>.75?Math.PI/2:0);
-  b('foundations',m.stone,x,3.25,z,w+.12,1.5,d+.12);
-
-  const detailed=x*x+z*z<125*125;
-  const tint=new T.Color().setHSL(.075+r()*.045,.06+r()*.12,.86+r()*.12);
-  const plastered=r()>.13;b(plastered?'house-plaster':'house',plastered?m.plaster:m.stone,x,4+h/2,z,w,h,d,0,tint);
-  inst('roofs',roofGeometry,m.roof,x,4+h,z,w+1,1.5+w*.25,d+.9,0,new T.Color().setHSL(.045+r()*.035,.27,.78+r()*.19));
-  b('eaves',m.wood,x,4+h-.12,z,w+.25,.2,d+.25);
-  const floors=Math.max(1,Math.floor(h/3.2));
-  for(let floor=0;floor<floors;floor++){
-   const y=5.6+floor*3.05;
-   if(detailed&&floor>0)b('storey-cornice',m.cream,x,y-1.25,z,w+.16,.11,d+.16);
-   for(let xx=x-w/2+1;xx<x+w/2-.5;xx+=1.9)for(let sign of [-1,1]){
-    inst('windows',archGeometry,m.window,xx,y,z+sign*(d/2+.027),.78,.95,1,sign>0?0:Math.PI);
-    if(detailed){b('windowframe',m.cream,xx,y-.65,z+sign*(d/2+.08),.95,.1,.15);
-    b('shutter',m.wood,xx-.47,y,z+sign*(d/2+.1),.18,1.3,.08);
-    b('shutter',m.wood,xx+.47,y,z+sign*(d/2+.1),.18,1.3,.08);}
-   }
-   for(let zz=z-d/2+1;zz<z+d/2-.5;zz+=2.1)for(let sign of [-1,1]){
-    inst('windows',archGeometry,m.window,x+sign*(w/2+.027),y,zz,.73,.95,1,sign>0?Math.PI/2:-Math.PI/2);
-    if(detailed)b('windowframe',m.cream,x+sign*(w/2+.06),y-.65,zz,.15,.1,.85)
-   }
-  }
-  if(detailed){
-   for(const sign of [-1,1]){
-    for(const dx of [-w/2+.13,w/2-.13])for(let yy=4.6;yy<4+h;yy+=.65)b('corner-stones',m.cream,x+dx,yy,z+sign*(d/2+.045),.30,.30,.11);
-    b('upper-cornice',m.cream,x,4+h-.26,z+sign*(d/2+.10),w+.3,.18,.22);
-    if(r()>.4){const bx=x+(r()-.5)*w*.35,yy=8.0,zz=z+sign*(d/2+.6);
-     b('balcony-stone',m.cream,bx,yy,zz,2.1,.16,1.1);
-     for(const dx of [-.95,-.6,-.2,.2,.6,.95])b('balcony-iron',m.iron,bx+dx,yy+.5,zz+sign*.5,.035,.85,.035);
-     b('balcony-iron',m.iron,bx,yy+.92,zz+sign*.5,2.05,.045,.045);
-    }
-   }
-  }
-  b('door',m.wood,x,5.1,z-d/2-.07,.95,2.2,.12);
-  if(r()>.3)b('chimney',m.stone,x+w*.25,5+h+w*.2,z+d*.2,.65,2.5,.8);
-  if(h>8&&r()>.6){b('balcony',m.wood,x,8.3,z-d/2-.7,w*.5,.25,1.4);b('balcony',m.iron,x,9,z-d/2-1.35,w*.5,.8,.07)}
-  const transform=new T.Matrix4().makeTranslation(x,rise,z).multiply(new T.Matrix4().makeRotationY(rotation)).multiply(new T.Matrix4().makeTranslation(-x,0,-z));
-  for(const [key,bucket]of buckets)for(let i=starts.get(key)??0;i<bucket.matrices.length;i++)bucket.matrices[i].premultiply(transform);
-
- }
- for(let z=14;z<310;z+=15){
-  for(let x=-220;x<=220;x+=15){
-   if(x>-14&&x<20)continue;if(x>-45&&x<-10&&z<32)continue;
-   const xx=x+(r()-.5)*6,zz=z+(r()-.5)*6,w=7+r()*5,d=7+r()*4,h=6+r()*13;
-   house(xx,zz,w,d,h);
-   if(r()>.92){inst('tree',new T.IcosahedronGeometry(1,1),m.leaf,xx+7,9,zz,3,4,3)}
-  }
- }
+ await buildArchitecture(scene,cityHeight);
  // Monumental perimeter wall with buttresses and merlons.
  for(let x=-285;x<=285;x+=15){
-  b('wall',m.stone,x,50,335,15.05,100,13,0,new T.Color(.80+r()*.09,.80+r()*.08,.77+r()*.08));
-  for(const yy of [16,38,62,83,99])b('wall-belt',m.cream,x,yy,327.8,15.1,.7,1.6);b('wallbuttress',m.stone,x,43,327,3.5,86,5);
-  for(let dx=-6;dx<=6;dx+=4)b('merlon',m.stone,x+dx,102,335,2.2,4,13.5);
-  if(Math.abs(x)%45===0){b('tower',m.stone,x,54,332,11,108,19);b('towercap',m.cream,x,108,332,12,1.2,20)}
+  b('wall',m.wall,x,50,335,15.05,100,13,0,new T.Color(.80+r()*.09,.80+r()*.08,.77+r()*.08));
+  for(const yy of [16,38,62,83,99])b('wall-belt',m.cream,x,yy,327.8,15.1,.7,1.6);b('wallbuttress',m.wall,x,43,327,3.5,86,5);
+  for(let dx=-6;dx<=6;dx+=4)b('merlon',m.wall,x+dx,102,335,2.2,4,13.5);
+  if(Math.abs(x)%45===0){b('tower',m.wall,x,54,332,11,108,19);b('towercap',m.cream,x,108,332,12,1.2,20)}
  }
- for(let side of [-1,1])for(let z=-40;z<=335;z+=20){b('sidewall',m.stone,side*255,50,z,12,100,20);b('sidebuttress',m.stone,side*247,43,z,6,86,3.5);b('sidecap',m.cream,side*255,101,z,13,2,20)}
+ for(let side of [-1,1])for(let z=-40;z<=335;z+=20){b('sidewall',m.wall,side*255,50,z,12,100,20);b('sidebuttress',m.wall,side*247,43,z,6,86,3.5);b('sidecap',m.cream,side*255,101,z,13,2,20)}
+ // Individual masonry courses give the monumental wall depth at skyline scale.
+ for(let row=0;row<60;row++)for(let col=0;col<160;col++){const x=-280+col*3.5+(row%2)*1.75,y=.9+row*1.65;
+  const shade=.80+r()*.19;b('wall-ashlar',m.wall,x,y,328.35,3.46,1.61,.46,0,new T.Color(shade,shade*.98,shade*.95));}
  // Belfries and roofs break up the skyline.
  for(const [x,z,h] of [[52,71,39],[-67,124,48],[92,199,52],[-130,249,58]]){
   b('belfry',m.stone,x,4+h/2,z,9,h,9);b('belfrycap',m.cream,x,h-2,z,10,1,10);

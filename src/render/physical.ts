@@ -30,8 +30,9 @@ export async function upgradeSurfaces(renderer:T.WebGLRenderer,scene:T.Scene,m:a
   [mat.map,mat.normalMap,mat.roughnessMap]=await Promise.all([tex(name+'-color.jpg',true),tex(name+'-normal.jpg'),tex(name+'-roughness.jpg')]);
   mat.bumpMap=null;mat.color.set(name==='stone'?0xd9d5ca:name==='wood'?0xc3bcac:name==='plaster'?0xf0e5cc:0xffffff);if(name==='roof')mat.color.setRGB(1.5,.9,.60);mat.roughness=1;mat.normalScale.setScalar(name==='stone'?.85:.7);metreUV(mat,metres,name==='plaster');
  }
+ m.wall.copy(m.stone);m.wall.color.set(0xbab7ac);metreUV(m.wall,16);
  const hdr=await new HDRLoader().loadAsync('./assets/surfaces/sky.hdr');hdr.mapping=T.EquirectangularReflectionMapping;
- const pmrem=new T.PMREMGenerator(renderer);scene.environment=pmrem.fromEquirectangular(hdr).texture;scene.environmentIntensity=.85;pmrem.dispose();
+ const pmrem=new T.PMREMGenerator(renderer);scene.environment=pmrem.fromEquirectangular(hdr).texture;scene.environmentIntensity=.65;pmrem.dispose();
  // Keep the photographed sky but hide its source landscape below the medieval skyline.
  scene.background=hdr;scene.backgroundRotation.y=2.4;scene.backgroundIntensity=.72;scene.backgroundBlurriness=.025;
  const normal=await tex('water-normal.jpg');return{waterNormal:normal};

@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {CSM} from 'three/addons/csm/CSM.js';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
 import {GTAOPass} from 'three/addons/postprocessing/GTAOPass.js';
@@ -13,15 +14,24 @@ const params=new URLSearchParams(location.search),capture=params.has('capture');
 if(capture)document.body.classList.add('capture');
 async function start(){
  const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance',preserveDrawingBuffer:capture});
- renderer.setPixelRatio(capture?1:Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+ renderer.setPixelRatio(capture?1:Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.98;
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
  document.body.prepend(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(58,innerWidth/innerHeight,.06,1200);
- scene.add(new T.HemisphereLight(0xe2e7e9,0x8a8275,1.45));
- const sun=new T.DirectionalLight(0xfff0dc,1.9);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-28;sun.shadow.camera.right=28;sun.shadow.camera.top=35;sun.shadow.camera.bottom=-28;sun.shadow.camera.near=1;sun.shadow.camera.far=170;sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun,sun.target);
+ scene.add(new T.HemisphereLight(0xe2e7e9,0x706758,.55));
  const waterNormal=await new T.TextureLoader().loadAsync('./assets/surfaces/water-normal.jpg');waterNormal.wrapS=waterNormal.wrapT=T.RepeatWrapping;
- const world=buildWorld(scene,waterNormal);await upgradeSurfaces(renderer,scene,world.materials);
+ const world=await buildWorld(scene,waterNormal);await upgradeSurfaces(renderer,scene,world.materials);
  const actors=await loadScannedCharacters(scene,params.has('review')),game=new Game();await game.init();actors.calibrateTakeoff(game.seek(10.3));game.reset();
+ // Cascades cover both the close actors and the city; a single 56m shadow
+ // camera left the detailed façades and monumental walls without cast shadows.
+ const sunlight=new CSM({camera,parent:scene,cascades:4,maxFar:480,mode:'practical',shadowMapSize:2048,lightDirection:new T.Vector3(35,-66,35).normalize(),lightIntensity:2.2,lightNear:1,lightFar:650,shadowBias:-.00015});
+ sunlight.fade=true;sunlight.updateFrustums();sunlight.lights.forEach(light=>{light.color.set(0xfff2df);light.shadow.normalBias=.045;});
+ const shaded=new Set<T.MeshStandardMaterial>();
+ scene.traverse(o=>{if(!(o as T.Mesh).isMesh)return;const mesh=o as T.Mesh;for(const mat of Array.isArray(mesh.material)?mesh.material:[mesh.material])if((mat as T.MeshStandardMaterial).isMeshStandardMaterial)shaded.add(mat as T.MeshStandardMaterial);});
+ for(const material of shaded){
+  const original=material.onBeforeCompile,cache=material.customProgramCacheKey();sunlight.setupMaterial(material);const cascade=material.onBeforeCompile;
+  material.onBeforeCompile=function(shader,renderer){cascade.call(this,shader,renderer);original.call(this,shader,renderer);};material.customProgramCacheKey=()=>cache+'-cascade-v6';material.needsUpdate=true;
+ }
  const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
  // Fixed noise seed: distributed ranges must use the same spatial AO pattern.
  const random=Math.random;let ao:GTAOPass;
@@ -36,16 +46,16 @@ async function start(){
   const close=smooth(19,24,s.t),back=4.4-1.8*close,camHeight=1.9-.4*close+lookY,viewY=s.y+actors.human.groundOffset;
   camera.position.set(s.x-Math.sin(angle)*back,viewY+camHeight,s.z-Math.cos(angle)*back);
   camera.lookAt(s.x+Math.sin(angle)*3.0-1.05*close,viewY+1.10-.2*close,s.z+Math.cos(angle)*3.0);
-  sun.target.position.set(s.x,s.y+1,s.z);sun.position.set(s.x-35,s.y+66,s.z-35);sun.target.updateMatrixWorld();
+  camera.updateMatrixWorld();sunlight.update();
   composer.render(1/60);
  }
- const diagnostics=()=>({state:{...game.state},events:game.events,supportSurfaceY:actors.supportSurfaceY,visualGroundOffset:actors.human.groundOffset,render:renderer.info.render,playerFeet:actors.human.bones.footL.getWorldPosition(new T.Vector3()).toArray(),leftHand:actors.giant.bones.handL.getWorldPosition(new T.Vector3()).toArray(),head:actors.giant.head.getWorldPosition(new T.Vector3()).toArray(),camera:camera.position.toArray()});
+ const diagnostics=()=>({state:{...game.state},events:game.events,supportSurfaceY:actors.supportSurfaceY,visualGroundOffset:actors.human.groundOffset,render:renderer.info.render,architecture:scene.userData.architecture,playerFeet:actors.human.bones.footL.getWorldPosition(new T.Vector3()).toArray(),leftHand:actors.giant.bones.handL.getWorldPosition(new T.Vector3()).toArray(),head:actors.giant.head.getWorldPosition(new T.Vector3()).toArray(),camera:camera.position.toArray()});
  const frame=(time:number)=>{
   if(time+1/120<game.state.t)game.reset();while(game.state.t+1/120<time)game.step();draw();return diagnostics();
  };
  Object.assign(window,{__PV:{ready:true,frame,diagnostics,reset:()=>{game.reset();draw()},jpeg:(time:number,quality=.93)=>{frame(time);return renderer.domElement.toDataURL('image/jpeg',quality).split(',')[1]},png:(time:number)=>{frame(time);return renderer.domElement.toDataURL('image/png').split(',')[1]}}});
  document.getElementById('loading')!.remove();draw();
- window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);ao.setSize(Math.round(innerWidth*.5),Math.round(innerHeight*.5));camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();draw()});
+ window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);ao.setSize(Math.round(innerWidth*.5),Math.round(innerHeight*.5));camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();sunlight.updateFrustums();draw()});
  window.addEventListener('keydown',e=>{keys.add(e.code);if(e.code==='KeyP'){manual=!manual;game.state.mode=manual?'explore':'replay'}if(e.code==='KeyR'){game.reset();paused=false;manual=false}if(e.code==='Space'&&!manual){paused=!paused;e.preventDefault()}});
  window.addEventListener('keyup',e=>keys.delete(e.code));
  renderer.domElement.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});
