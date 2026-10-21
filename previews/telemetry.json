@@ -1,0 +1,637 @@
+[
+  {
+    "state": {
+      "t": 0,
+      "distance": 0,
+      "x": 0,
+      "y": 4,
+      "z": -10.2,
+      "vx": 0,
+      "vz": 0,
+      "vy": 0,
+      "yaw": 0,
+      "grounded": true,
+      "onCargo": false,
+      "unlatched": false,
+      "interactProgress": 0,
+      "crouch": 0,
+      "grip": 0,
+      "handRetreat": 0,
+      "cargoY": 4,
+      "cargoZ": 0,
+      "giantRise": 0,
+      "inspect": 0,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [],
+    "supportSurfaceY": null,
+    "visualGroundOffset": 0,
+    "render": {
+      "frame": 64,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      0.11967703088328181,
+      4.085987069261843,
+      -10.199979305564488
+    ],
+    "leftHand": [
+      -0.000002674698498239536,
+      6.300000485024181,
+      3.450002482259884
+    ],
+    "head": [
+      -7.371191622730734,
+      18.96442951442287,
+      11.994740731674364
+    ],
+    "camera": [
+      0,
+      5.9,
+      -14.6
+    ]
+  },
+  {
+    "state": {
+      "t": 7.499999999999979,
+      "distance": 9.966413501863482,
+      "x": 0,
+      "y": 3.969401945619628,
+      "z": -0.23358649813643756,
+      "vx": 0,
+      "vz": 0.87,
+      "vy": 0,
+      "yaw": 0,
+      "grounded": true,
+      "onCargo": false,
+      "unlatched": false,
+      "interactProgress": 0,
+      "crouch": 0,
+      "grip": 0,
+      "handRetreat": 0,
+      "cargoY": 4,
+      "cargoZ": 0,
+      "giantRise": 0,
+      "inspect": 0,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [],
+    "supportSurfaceY": 3.9653603034693354,
+    "visualGroundOffset": -0.004041642150292457,
+    "render": {
+      "frame": 73,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      0.11899440002315856,
+      4.074829226808991,
+      -0.06739650504448624
+    ],
+    "leftHand": [
+      -0.0000029573927413650836,
+      3.8000011356905508,
+      3.4500019591051614
+    ],
+    "head": [
+      -7.371191622730734,
+      18.96442951442287,
+      11.994740731674364
+    ],
+    "camera": [
+      0,
+      5.865360303469336,
+      -4.633586498136438
+    ]
+  },
+  {
+    "state": {
+      "t": 10.300000000000091,
+      "distance": 12.221348465415138,
+      "x": 0.8798792086841007,
+      "y": 4.349966663193094,
+      "z": 1.4894399230048476,
+      "vx": 0,
+      "vz": 0,
+      "vy": 0,
+      "yaw": 1.087471747826951,
+      "grounded": true,
+      "onCargo": false,
+      "unlatched": false,
+      "interactProgress": 0,
+      "crouch": 0,
+      "grip": 0,
+      "handRetreat": 0,
+      "cargoY": 4,
+      "cargoZ": 0,
+      "giantRise": 0,
+      "inspect": 0,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [],
+    "supportSurfaceY": 3.9752382797735244,
+    "visualGroundOffset": -0.37472838341957004,
+    "render": {
+      "frame": 82,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      0.9355145009106575,
+      4.0612253491272305,
+      1.3834809368285277
+    ],
+    "leftHand": [
+      -0.0000029573927413650836,
+      3.8000011356905508,
+      3.4500019591051614
+    ],
+    "head": [
+      -7.371191622730734,
+      18.96442951442287,
+      11.994740731674364
+    ],
+    "camera": [
+      0.8798792086841007,
+      5.875238279773525,
+      -2.9105600769951527
+    ]
+  },
+  {
+    "state": {
+      "t": 10.350000000000094,
+      "distance": 12.221348465415138,
+      "x": 1.0248792045117756,
+      "y": 4.545633326541769,
+      "z": 1.5344399219990192,
+      "vx": 2.9,
+      "vz": 0.9,
+      "vy": 3.7199999999999998,
+      "yaw": 1.1578570243023778,
+      "grounded": false,
+      "onCargo": false,
+      "unlatched": false,
+      "interactProgress": 0,
+      "crouch": 0,
+      "grip": 0,
+      "handRetreat": 0,
+      "cargoY": 4,
+      "cargoZ": 0,
+      "giantRise": 0,
+      "inspect": 0,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [
+      {
+        "t": 10.300000000000091,
+        "name": "jump"
+      }
+    ],
+    "supportSurfaceY": null,
+    "visualGroundOffset": -0.3705200080198232,
+    "render": {
+      "frame": 91,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      1.071800514566998,
+      4.4701132875538265,
+      1.4239853568998286
+    ],
+    "leftHand": [
+      -0.0000029573927413650836,
+      3.8000011356905508,
+      3.4500019591051614
+    ],
+    "head": [
+      -7.371191622730734,
+      18.96442951442287,
+      11.994740731674364
+    ],
+    "camera": [
+      1.0248792045117756,
+      6.075113318521947,
+      -2.865560078000981
+    ]
+  },
+  {
+    "state": {
+      "t": 13.50000000000025,
+      "distance": 13.44260642226762,
+      "x": 4.341179550079872,
+      "y": 4,
+      "z": 2.3786874291695783,
+      "vx": 0,
+      "vz": 0,
+      "vy": 0,
+      "yaw": 0.8613005121805132,
+      "grounded": true,
+      "onCargo": true,
+      "unlatched": false,
+      "interactProgress": 0.49999999999999994,
+      "crouch": 0,
+      "grip": 0,
+      "handRetreat": 0.8809203264318612,
+      "cargoY": 4,
+      "cargoZ": 0,
+      "giantRise": 0,
+      "inspect": 0,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [
+      {
+        "t": 10.300000000000091,
+        "name": "jump"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "land"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "step"
+      }
+    ],
+    "supportSurfaceY": null,
+    "visualGroundOffset": 0,
+    "render": {
+      "frame": 100,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      4.419353745957902,
+      4.074999975969708,
+      2.2876445955245397
+    ],
+    "leftHand": [
+      -9.690124018517691,
+      14.371043078554788,
+      3.450000417777906
+    ],
+    "head": [
+      -7.371191622730734,
+      18.96442951442287,
+      11.994740731674364
+    ],
+    "camera": [
+      4.341179550079872,
+      5.9,
+      -2.021312570830422
+    ]
+  },
+  {
+    "state": {
+      "t": 19.500000000000174,
+      "distance": 14.042606422267554,
+      "x": 4.941014636024834,
+      "y": 20.905555987401286,
+      "z": 2.392754044590585,
+      "vx": 0.39989005729663996,
+      "vz": 0.009377743614007488,
+      "vy": 0,
+      "yaw": 3.826996101007155e-7,
+      "grounded": true,
+      "onCargo": true,
+      "unlatched": true,
+      "interactProgress": 0.850000000000001,
+      "crouch": 0,
+      "grip": 0.9999999999373258,
+      "handRetreat": 1,
+      "cargoY": 20.905555987401286,
+      "cargoZ": 0,
+      "giantRise": 0.49722223492356726,
+      "inspect": 0,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [
+      {
+        "t": 10.300000000000091,
+        "name": "jump"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "land"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "step"
+      },
+      {
+        "t": 13.8333333333336,
+        "name": "latch"
+      }
+    ],
+    "supportSurfaceY": null,
+    "visualGroundOffset": 0,
+    "render": {
+      "frame": 109,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      5.061014718428304,
+      20.980555992865327,
+      2.65014760553669
+    ],
+    "leftHand": [
+      -10.999999626591734,
+      24.74999976668727,
+      3.4499979171629658
+    ],
+    "head": [
+      -6.590017292838423,
+      36.45364020191934,
+      11.994740724925684
+    ],
+    "camera": [
+      4.377663390845715,
+      22.79435598740128,
+      -1.9202096156498816
+    ]
+  },
+  {
+    "state": {
+      "t": 22.500000000000004,
+      "distance": 14.386859388594488,
+      "x": 5.242845102177652,
+      "y": 35.428779581364644,
+      "z": 2.4567616887440007,
+      "vx": 0,
+      "vz": 0,
+      "vy": 0,
+      "yaw": 7.143746625933019e-12,
+      "grounded": true,
+      "onCargo": true,
+      "unlatched": true,
+      "interactProgress": 0.850000000000001,
+      "crouch": 0.7199898012199449,
+      "grip": 0.00039721854837285756,
+      "handRetreat": 1,
+      "cargoY": 35.428779581364644,
+      "cargoZ": 0,
+      "giantRise": 0.9243758700401365,
+      "inspect": 0.5721438242806175,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [
+      {
+        "t": 10.300000000000091,
+        "name": "jump"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "land"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "step"
+      },
+      {
+        "t": 13.8333333333336,
+        "name": "latch"
+      }
+    ],
+    "supportSurfaceY": null,
+    "visualGroundOffset": 0,
+    "render": {
+      "frame": 118,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      5.362845109973968,
+      35.50377957233674,
+      2.696761692150422
+    ],
+    "leftHand": [
+      -11.000000695180855,
+      32.43876597535505,
+      3.4499986488268704
+    ],
+    "head": [
+      -6.663399243193087,
+      44.922770183978216,
+      11.994740725078685
+    ],
+    "camera": [
+      5.19801478335874,
+      37.01517958136464,
+      -0.5317020775604506
+    ]
+  },
+  {
+    "state": {
+      "t": 25.499999999999833,
+      "distance": 14.386859388594488,
+      "x": 5.242845102177652,
+      "y": 38,
+      "z": 2.4567616887440007,
+      "vx": 0,
+      "vz": 0,
+      "vy": 0,
+      "yaw": 7.143746625933019e-12,
+      "grounded": true,
+      "onCargo": true,
+      "unlatched": true,
+      "interactProgress": 0.850000000000001,
+      "crouch": 0.719999999999998,
+      "grip": 6.267416546813384e-11,
+      "handRetreat": 1,
+      "cargoY": 38,
+      "cargoZ": 0,
+      "giantRise": 1,
+      "inspect": 1,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [
+      {
+        "t": 10.300000000000091,
+        "name": "jump"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "land"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "step"
+      },
+      {
+        "t": 13.8333333333336,
+        "name": "latch"
+      }
+    ],
+    "supportSurfaceY": null,
+    "visualGroundOffset": 0,
+    "render": {
+      "frame": 127,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      5.362845109973969,
+      38.07499999096783,
+      2.69676169215272
+    ],
+    "leftHand": [
+      -11.000001211301532,
+      33.80000049696552,
+      3.4499985013621473
+    ],
+    "head": [
+      -6.948402754370557,
+      42.81463381619655,
+      11.994740728705132
+    ],
+    "camera": [
+      5.657072439374692,
+      39.5,
+      -0.11002924803262992
+    ]
+  },
+  {
+    "state": {
+      "t": 28.499999999999662,
+      "distance": 14.7576927219278,
+      "x": 5.613075845471203,
+      "y": 38,
+      "z": 2.6084608294189726,
+      "vx": 0.24959386520730628,
+      "vz": 0.014244383134309774,
+      "vy": 0,
+      "yaw": 3.734310546517153e-18,
+      "grounded": true,
+      "onCargo": true,
+      "unlatched": true,
+      "interactProgress": 0.850000000000001,
+      "crouch": 0.7199999999999995,
+      "grip": 9.888891224283609e-18,
+      "handRetreat": 1,
+      "cargoY": 38,
+      "cargoZ": 0.13056792409688084,
+      "giantRise": 1,
+      "inspect": 0.18604863113014714,
+      "visible": false,
+      "mode": "replay"
+    },
+    "events": [
+      {
+        "t": 10.300000000000091,
+        "name": "jump"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "land"
+      },
+      {
+        "t": 11.083333333333464,
+        "name": "step"
+      },
+      {
+        "t": 13.8333333333336,
+        "name": "latch"
+      }
+    ],
+    "supportSurfaceY": null,
+    "visualGroundOffset": 0,
+    "render": {
+      "frame": 136,
+      "calls": 1,
+      "triangles": 1,
+      "points": 0,
+      "lines": 0
+    },
+    "architecture": {
+      "source": "ORCA Bistro",
+      "buildings": 126,
+      "triangles": 2001503
+    },
+    "playerFeet": [
+      5.73307584981446,
+      38.19589773305821,
+      2.7861535469502066
+    ],
+    "leftHand": [
+      -11.00000072470166,
+      33.80000078747664,
+      3.4499998076147254
+    ],
+    "head": [
+      -6.784930704864085,
+      51.07785133307146,
+      11.99474071903695
+    ],
+    "camera": [
+      5.470147930401015,
+      39.5,
+      0.012392338201205888
+    ]
+  }
+]
