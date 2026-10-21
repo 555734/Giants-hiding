@@ -7,6 +7,7 @@ sys.path.append('/usr/lib/python3/dist-packages')
 from pathlib import Path
 from mathutils import Vector,Matrix
 from PIL import Image,ImageOps
+import numpy as np
 source=Path(os.environ.get('BISTRO_SOURCE','private-assets/bistro/Bistro_v5_2'))
 cache=Path('private-assets/architecture-textures');cache.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -40,17 +41,31 @@ print('ARCHITECTURE',len(selected),'meshes',len(used),'materials',flush=True)
 def texture(name,kind):
  path=source/'Textures'/name
  if not path.exists():return None
- output=cache/(path.stem+('.png' if kind=='normal' else '.jpg'))
+ output=cache/(path.stem+('-opengl-v2.png' if kind=='normal' else '.jpg'))
+ if output.exists():
+  try:
+   with Image.open(output) as cached:cached.load()
+  except (OSError,ValueError,SyntaxError):output.unlink()
  if not output.exists():
   with Image.open(path) as im:
    im=im.convert('RGB');im.thumbnail((1024,1024),Image.Resampling.LANCZOS)
-   if kind=='normal':r,g,b=im.split();im=Image.merge('RGB',(r,ImageOps.invert(g),b))
+   if kind=='normal':
+    # ORCA uses BC5 two-channel tangent normals: DDS has R/G but zero B.
+    # Reconstruct positive Z before DirectX-to-OpenGL green inversion.
+    a=np.array(im,dtype=np.float32)
+    if a[:,:,2].max()<2:
+     x=a[:,:,0]/127.5-1;y=a[:,:,1]/127.5-1
+     a[:,:,2]=(np.sqrt(np.maximum(0,1-x*x-y*y))*.5+.5)*255
+    a[:,:,1]=255-a[:,:,1];im=Image.fromarray(np.rint(a).clip(0,255).astype('uint8'),'RGB')
    if kind=='color' and any(s in name.lower() for s in ['roof','tiles']):
     # Adapt the Paris slate roof palette to the game's warm port city.
     gray=ImageOps.grayscale(im);im=ImageOps.colorize(gray,'#322c29','#a87855')
-   if output.suffix=='.png':im.save(output)
-   else:im.save(output,quality=90)
+   temporary=output.with_name(output.stem+'.building'+output.suffix)
+   if output.suffix=='.png':im.save(temporary,format='PNG')
+   else:im.save(temporary,format='JPEG',quality=90)
+   temporary.replace(output)
  image=bpy.data.images.load(str(output.resolve()),check_existing=True)
+ if not image.packed_file:image.pack()
  if kind!='color':image.colorspace_settings.name='Non-Color'
  return image
 for mat in used:
@@ -92,5 +107,5 @@ for o in list(bpy.data.objects):
  if o.type!='MESH' and o not in roots:bpy.data.objects.remove(o,do_unlink=True)
 out=Path('public/assets');out.mkdir(parents=True,exist_ok=True)
 bpy.ops.export_scene.gltf(filepath=str((out/'city-kit.glb').resolve()),export_format='GLB',export_animations=False,export_yup=True,export_cameras=False,export_lights=False)
-(out/'city-kit.json').write_text(json.dumps({'source':'Amazon Lumberyard Bistro / NVIDIA ORCA','url':'https://developer.nvidia.com/orca/amazon-lumberyard-bistro','license':'CC-BY-4.0','modifications':'Architecture-only extraction, metre pivots, converted PBR maps, recolored roofs, generated LODs','variants':[v[0] for v in variants]},indent=2))
+(out/'city-kit.json').write_text(json.dumps({'source':'Amazon Lumberyard Bistro / NVIDIA ORCA','url':'https://developer.nvidia.com/orca/amazon-lumberyard-bistro','license':'CC-BY-4.0','converter':bpy.app.version_string,'normal_maps':'BC5 positive Z reconstruction and DirectX-to-OpenGL green inversion','modifications':'Architecture-only extraction, metre pivots, converted PBR maps, recolored roofs, generated LODs','variants':[v[0] for v in variants]},indent=2))
 print('EXPORTED', (out/'city-kit.glb').stat().st_size,flush=True)

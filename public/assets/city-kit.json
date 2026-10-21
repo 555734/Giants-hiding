@@ -2,6 +2,8 @@
   "source": "Amazon Lumberyard Bistro / NVIDIA ORCA",
   "url": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
   "license": "CC-BY-4.0",
+  "converter": "4.3.2",
+  "normal_maps": "BC5 positive Z reconstruction and DirectX-to-OpenGL green inversion",
   "modifications": "Architecture-only extraction, metre pivots, converted PBR maps, recolored roofs, generated LODs",
   "variants": [
     2,

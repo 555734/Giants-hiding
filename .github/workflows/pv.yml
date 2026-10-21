@@ -45,7 +45,10 @@ jobs:
       - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-worker.py
       - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-scanned.py
       - run: python3 scripts/architecture-download.py
-      - run: blender -b -t 2 --python-exit-code 1 --python scripts/prepare-architecture.py
+      - run: bash scripts/architecture-blender.sh
+      - name: Prepare architecture with the reviewed Blender exporter
+        run: |
+          "$ARCHITECTURE_BLENDER" -b -t 2 --python-exit-code 1 --python-expr "import sys,os,runpy;sys.path.insert(0,os.environ['ARCHITECTURE_PYLIBS']);runpy.run_path('scripts/prepare-architecture.py')"
       - run: npm test && npm run build
       - name: Review frames
         run: |
