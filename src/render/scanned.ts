@@ -71,7 +71,7 @@ export class ScannedCharacter implements Character{
     }
    }
   }
-  this.shadow.position.set(s.x,s.onCargo?s.cargoY+.012:4.012,s.z);this.shadow.visible=s.y<6||s.onCargo;
+  this.shadow.position.set(s.x,s.onCargo?s.cargoY+.012:s.y+this.groundOffset+.012,s.z);this.shadow.visible=s.grounded&&(s.y<6||s.onCargo);
  }
  updateGiant(s:State){
   this.poseState=s;Character.prototype.updateGiant.call(this,s);

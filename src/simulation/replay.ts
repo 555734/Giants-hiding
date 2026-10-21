@@ -14,8 +14,8 @@ export function replayInput(t:number,x:number,z:number):Input {
  else if(t<15)steer(4.35,2.4,.55);
  else if(t<18)steer(4.35,2.4,.5);
  else if(t<21)steer(5.25,2.4,.4);
- else if(t<24)steer(5.25,2.58,.15);
- else if(t>=27)steer(5.65,2.78,.25);
+ else if(t<24)steer(5.25,2.48,.15);
+ else if(t>=27)steer(5.65,2.48,.25);
  return i;
 }
 export const beats=[
