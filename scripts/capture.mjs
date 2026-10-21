@@ -25,7 +25,7 @@ try{
  }else{
   const file=path.join(out,chunk===null?'giants-hiding-pv-30s.mp4':`part-${String(chunk).padStart(2,'0')}.mp4`);
   const inputs=chunk===null?['-i',path.join(out,'foley.wav'),'-map','0:v','-map','1:a','-c:a','aac','-b:a','192k']:['-an'];
-  const enc=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','image2pipe','-vcodec','mjpeg','-framerate',String(fps),'-i','pipe:0',...inputs,'-c:v','libx264','-preset','medium','-crf','19','-pix_fmt','yuv420p','-t',String(duration),'-metadata','title=Giants Hiding — Harbour Escape PV v0.4','-metadata','comment=Character: Renderpeople Nathan Animated 003 Walking, licensed free sample. Adapted scale, textures and poses. Full credits: github.com/555734/Giants-hiding/blob/main/docs/CREDITS.txt','-movflags','+faststart',file],{stdio:['pipe','inherit','inherit']});
+  const enc=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','image2pipe','-vcodec','mjpeg','-framerate',String(fps),'-i','pipe:0',...inputs,'-c:v','libx264','-preset','medium','-crf','19','-pix_fmt','yuv420p','-t',String(duration),'-metadata','title=Giants Hiding — Harbour Escape PV v0.5','-metadata','comment=Character: Renderpeople Nathan Animated 003 Walking, licensed free sample. Adapted scale, textures and poses. Full credits: github.com/555734/Giants-hiding/blob/main/docs/CREDITS.txt','-movflags','+faststart',file],{stdio:['pipe','inherit','inherit']});
   let encoderError;enc.on('error',e=>encoderError=e);enc.stdin.on('error',e=>encoderError=e);
   const begin=Date.now(),first=Math.round(start*fps),end=Math.round((start+duration)*fps);
   for(let n=first;n<end;n++){

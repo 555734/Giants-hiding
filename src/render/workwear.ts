@@ -1,5 +1,6 @@
 import * as T from 'three';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {anatomicalEye,scannedSkin} from './portrait';
 type Actor={unit:T.Group;root:T.Group;bones:Record<string,T.Bone>;isGiant:boolean};
 let weave:T.CanvasTexture|undefined;
 function fabric(){
@@ -9,18 +10,23 @@ function fabric(){
  weave=new T.CanvasTexture(c);weave.colorSpace=T.SRGBColorSpace;weave.wrapS=weave.wrapT=T.RepeatWrapping;weave.repeat.set(9,9);weave.anisotropy=4;return weave;
 }
 export function fitWorkwear(actor:Actor){
- const giant=actor.isGiant,dye=giant?0x796b59:0x526776;
+ const giant=actor.isGiant,dye=giant?0x827866:0x536d80;
  actor.unit.traverse(o=>{if(!(o as T.Mesh).isMesh)return;const mesh=o as T.Mesh;
   const materials=(Array.isArray(mesh.material)?mesh.material:[mesh.material]).map(source=>{
-   const m=(source as T.MeshStandardMaterial).clone();
+   if(/Anatomical eye/i.test(source.name))return anatomicalEye();
+   const skin=!/Work |Rolled sleeve|Jacket seams|Linen collar|Horn buttons/i.test(source.name);
+   const m=skin?scannedSkin(source as T.MeshStandardMaterial):(source as T.MeshStandardMaterial).clone();
    if(/Work jacket/i.test(m.name)){m.color.set(dye);m.roughness=1;}
    if(/Work trousers/i.test(m.name)){
     m.color.set(giant?0xb1a087:0xae9675);m.roughness=1;
     m.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',T.ShaderChunk.map_fragment.replace('diffuseColor *= sampledDiffuseColor;','sampledDiffuseColor.rgb=vec3(dot(sampledDiffuseColor.rgb,vec3(.299,.587,.114)))*1.65;diffuseColor *= sampledDiffuseColor;'));};
     m.customProgramCacheKey=()=> 'neutral-work-trousers';
    }
-   if(/Work boots/i.test(m.name)){m.color.set(0x4b3828);m.roughness=.92;}
-   if(/Rolled sleeve/i.test(m.name)){m.color.set(dye);m.roughness=.96;m.metalness=0;if(typeof document!=='undefined'){m.map=fabric();m.bumpMap=weave!;m.bumpScale=.0018;}}
+   if(/Work boots/i.test(m.name)){m.color.set(0x3d3026);m.map=null;m.roughness=.86;}
+   if(/Rolled sleeve/i.test(m.name)){m.color.set(dye);m.roughness=.96;m.metalness=0;if(typeof document!=='undefined'){m.map=fabric();m.bumpMap=weave!;m.bumpScale=.0005;}}
+   if(/Jacket seams/i.test(m.name)){m.color.set(giant?0x5a5143:0x394e5f);m.roughness=.95;}
+   if(/Linen collar/i.test(m.name)){m.color.set(0xb9b09a);m.roughness=.96;}
+   if(/Horn buttons/i.test(m.name)){m.color.set(0x40372d);m.roughness=.6;}
    return m;
   });mesh.material=Array.isArray(mesh.material)?materials:materials[0];
  });

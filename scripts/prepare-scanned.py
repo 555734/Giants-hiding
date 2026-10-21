@@ -90,14 +90,14 @@ normal_matrix=body.matrix_world.to_3x3().inverted().transposed();inverse=body.ma
 def fabric_point(vi):
  vertex=body.data.vertices[vi];point=body.matrix_world@vertex.co;normal=(normal_matrix@vertex.normal).normalized()
  # Millimetres in world space, independent of the FBX's centimetre transforms.
- distance=.007
+ distance=.014
  for side in ['l','r']:
   elbow=arm.matrix_world@arm.data.bones[prefix+'lowerarm_'+side].head_local
   wrist=arm.matrix_world@arm.data.bones[prefix+'hand_'+side].head_local;direction=wrist-elbow
   fraction=(point-elbow).dot(direction)/direction.length_squared
   near=abs(fraction-.48)
-  if near<.07:distance+=.006*(1-near/.07)
- distance+=.0015*math.sin(point.x*180+point.y*97+point.z*113)
+  if near<.09:distance+=.012*(1-near/.09)
+ distance+=.003*math.sin(point.x*73+point.y*25+point.z*31)
  return inverse@(point+normal*distance)
 mesh.from_pydata([fabric_point(vi) for vi in indices],[],[[lookup[vi] for vi in polygon.vertices] for polygon in faces]);mesh.update()
 sleeves=bpy.data.objects.new('tailored-work-sleeves',mesh);bpy.context.collection.objects.link(sleeves)
@@ -112,6 +112,9 @@ for old,new in lookup.items():
 modifier=sleeves.modifiers.new('native-scan-skin','ARMATURE');modifier.object=arm
 for polygon in mesh.polygons:polygon.use_smooth=True
 print('Prepared workwear:',len(faces),'sleeve polygons;',sum(p.material_index==shirt_id for p in body.data.polygons),'shirt polygons')
+# Tailoring stays in the source rig, so seams and collar deform with the scan.
+import runpy
+runpy.run_path('scripts/tailor-scanned.py',init_globals=globals())
 points=[o.matrix_world@Vector(c) for o in bpy.data.objects if o.type=='MESH' for c in o.bound_box]
 lo=Vector((min(p.x for p in points),min(p.y for p in points),min(p.z for p in points)));hi=Vector((max(p.x for p in points),max(p.y for p in points),max(p.z for p in points)))
 hip=arm.matrix_world@arm.data.bones[prefix+'hip'].head_local

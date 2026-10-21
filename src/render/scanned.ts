@@ -44,26 +44,26 @@ export class ScannedCharacter implements Character{
   this.root.position.set(s.x,s.y+this.groundOffset,s.z);this.root.rotation.y=s.yaw;this.resetPose();
   const speed=Math.hypot(s.vx,s.vz),moving=speed>.08,phase=s.distance/1.04*Math.PI*2,wave=moving?Math.sin(phase):0;
   const interact=s.t>=12.8&&s.t<14.4?smooth(12.8,13.15,s.t)*(1-smooth(14.05,14.4,s.t)):0;
-  const down=s.crouch+interact*.15+s.grip*.1,hip=this.bones.spine,hp=hip.getWorldPosition(v());hp.y-=down;
+  const down=s.crouch*.78+interact*.15+s.grip*.1,hip=this.bones.spine,hp=hip.getWorldPosition(v());hp.y-=down;
   if(moving&&s.grounded)hp.y+=Math.cos(phase*2)*.012;
   hip.position.copy(hip.parent!.worldToLocal(hp));this.root.updateMatrixWorld(true);
-  this.bendSpine(s.crouch*.55+s.grip*.12+interact*.65+(moving?.06:0));
+  this.bendSpine(s.crouch*.88+s.grip*.12+interact*.65+(moving?.06:0));
   const foot=(side:number)=>{
    const u=((s.distance/1.04+(side>0?.5:0))%1+1)%1,swing=u>=.5;
    const a=swing?(u-.5)*2:u*2;
    const z=moving?(swing?-.26+.52*a:.26-.52*a):0;
    const y=!s.grounded?.22:moving&&swing?Math.sin(a*Math.PI)*.13:0;
-   return this.local(side*.12,.075+y,z);
+   return this.local(side*.12,.075+y,z+(side>0?.06:-.16)*smooth(.1,.65,s.crouch));
   };
   this.legs(foot(1),foot(-1),this.local(0,.5,1.2));
   for(const side of ['L','R']){
    const sign=side==='L'?1:-1;let target=this.local(sign*.23,.92-down*.6,.08-wave*.2*sign);
    if(s.grip>.1)target.lerp(v(s.x+sign*.22,s.cargoY+.86,2.95+s.cargoZ),s.grip);
    if(interact>.1)target.lerp(v(4.35+sign*.12,s.cargoY+.35,2.4+s.cargoZ),interact);
-   const hide=smooth(.05,.65,s.crouch);target.lerp(v(s.x+sign*.25,s.cargoY+1.01,2.80+s.cargoZ),hide);
+   const hide=smooth(.05,.65,s.crouch);target.lerp(v(s.x+sign*.25,s.cargoY+.89,2.78+s.cargoZ),hide);
    this.arm(side,target,this.local(sign*.34,.45-down*.15,.08));
    if(hide>0){
-    const hand=this.bones['hand'+side],current=hand.getWorldQuaternion(new T.Quaternion()),desired=frame(v(0,-.65,1),v(0,-1,-.65)).multiply(this.handOffsets[side]);
+    const hand=this.bones['hand'+side],current=hand.getWorldQuaternion(new T.Quaternion()),desired=frame(v(0,-.4,1),v(0,-1,-.4)).multiply(this.handOffsets[side]);
     worldQ(hand,current.slerp(desired,hide));
     for(const finger of ['f_index','f_middle','f_ring','f_pinky'])for(const segment of ['01','02','03']){
      const key=finger+segment+side,b=this.bones[key],axis=this.fingerAxes[key];
@@ -81,6 +81,11 @@ export class ScannedCharacter implements Character{
   this.head.quaternion.copy(this.headRest);this.root.updateMatrixWorld(true);
   if(s.inspect>.01){const target=v(s.x,s.cargoY+.55,s.z+1.6),pivot=new T.Object3D();pivot.position.copy(this.head.getWorldPosition(v()));pivot.lookAt(target);
    const desired=pivot.quaternion.multiply(this.headOffset),current=this.head.getWorldQuaternion(new T.Quaternion());worldQ(this.head,current.slerp(desired,s.inspect*.8));}
+  const face=this.head.getWorldQuaternion(new T.Quaternion()).multiply(this.headOffset.clone().invert());
+  const gaze=v(s.x,s.cargoY+.8,s.z+1).sub(this.head.getWorldPosition(v())).applyQuaternion(face.invert()).normalize();
+  this.unit.traverse(o=>{if(!(o as T.Mesh).isMesh)return;const m=(o as T.Mesh).material;
+   for(const material of Array.isArray(m)?m:[m])if(material.userData.gaze)material.userData.gaze.value.set(T.MathUtils.clamp(Math.atan2(gaze.x,gaze.z),-.20,.20)*s.inspect,T.MathUtils.clamp(Math.atan2(gaze.y,Math.hypot(gaze.x,gaze.z)),-.16,.16)*s.inspect);
+  });
  }
 
  arm(side:string,target:T.Vector3,pole:T.Vector3,handQ?:T.Quaternion){
