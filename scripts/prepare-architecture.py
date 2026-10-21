@@ -56,6 +56,7 @@ def texture(name,kind):
 for mat in used:
  paths=[Path(n.image.filepath).name for n in mat.node_tree.nodes if n.type=='TEX_IMAGE' and n.image] if mat.use_nodes else []
  names={k:next((n for n in paths if n.endswith(s)),None) for k,s in [('color','_BaseColor.dds'),('normal','_Normal.dds'),('orm','_Specular.dds')]}
+ if hasattr(mat,'blend_method'):mat.blend_method='OPAQUE'
  mat.use_nodes=True;nodes=mat.node_tree.nodes;links=mat.node_tree.links;nodes.clear()
  p=nodes.new('ShaderNodeBsdfPrincipled');p.inputs['Roughness'].default_value=.8
  out=nodes.new('ShaderNodeOutputMaterial');links.new(p.outputs['BSDF'],out.inputs['Surface'])

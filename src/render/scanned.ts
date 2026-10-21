@@ -17,7 +17,7 @@ export class ScannedCharacter implements Character{
   const rig=clone(source);this.unit.add(rig);
   rig.traverse(o=>{if((o as T.Bone).isBone){const b=o as T.Bone;this.bones[b.name]=b;this.rest.set(b.name,{q:b.quaternion.clone(),p:b.position.clone()});}
    if((o as T.Mesh).isMesh){const mesh=o as T.Mesh;mesh.castShadow=mesh.receiveShadow=true;mesh.frustumCulled=false;if((o as T.SkinnedMesh).isSkinnedMesh){this.body=o as T.SkinnedMesh;if(giant)mesh.geometry=refineBody(mesh.geometry,1);}
-    const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];for(const material of materials){const m=material as T.MeshStandardMaterial;if(m.map)m.map.anisotropy=8;if(m.normalMap)m.normalScale.setScalar(.65);m.envMapIntensity=.7;}
+    const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];for(const material of materials){const m=material as T.MeshStandardMaterial;m.transparent=false;m.opacity=1;m.depthWrite=true;m.alphaTest=0;if(m.map)m.map.anisotropy=8;if(m.normalMap)m.normalScale.setScalar(.65);m.envMapIntensity=.7;}
    }});
   for(const [alias,name]of Object.entries(contract.aliases)){if(!this.bones[name])throw Error('Scanned rig missing '+name);this.bones[alias]=this.bones[name];}
   for(const name of ['spine','spine001','spine002','spine003','spine004','thighL','shinL','footL','thighR','shinR','footR','upper_armL','forearmL','handL','upper_armR','forearmR','handR'])if(!this.bones[name])throw Error('Missing required alias: '+name);

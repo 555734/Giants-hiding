@@ -20,7 +20,7 @@ export async function buildArchitecture(scene:T.Scene,height:(x:number,z:number)
   const extent=new T.Box3().setFromObject(root).getSize(new T.Vector3());if(extent.y<10||extent.y>60||Math.max(extent.x,extent.z)>80)throw Error('Architecture units invalid: '+name+' '+extent.toArray());
   root.traverse(o=>{if(!(o as T.Mesh).isMesh)return;const source=o as T.Mesh;
    const materials=Array.isArray(source.material)?source.material:[source.material];
-   for(const mat of materials){const m=mat as T.MeshStandardMaterial;m.envMapIntensity=.55;if(/Concrete|Brick_Large_Beige|Building_Details/.test(m.name))m.color.set(0xc9bba2);if(/Roofing/.test(m.name)){m.map=roofMaps[0];m.normalMap=roofMaps[1];m.roughnessMap=roofMaps[2];m.metalness=0;m.roughness=1;m.color.set(0xe0b18c);m.normalScale.setScalar(.6);}
+   for(const mat of materials){const m=mat as T.MeshStandardMaterial;m.transparent=false;m.opacity=1;m.depthWrite=true;m.alphaTest=0;m.envMapIntensity=.55;if(/Concrete|Brick_Large_Beige|Building_Details/.test(m.name))m.color.set(0xc9bba2);if(/Roofing/.test(m.name)){m.map=roofMaps[0];m.normalMap=roofMaps[1];m.roughnessMap=roofMaps[2];m.metalness=0;m.roughness=1;m.color.set(0xe0b18c);m.normalScale.setScalar(.6);}
    if(m.map)m.map.anisotropy=8;if(m.normalMap)m.normalMap.anisotropy=4;}
    const mesh=new T.InstancedMesh(source.geometry,source.material,matrices.length);mesh.name='city-'+name;mesh.castShadow=mesh.receiveShadow=true;
    matrices.forEach((placement,i)=>mesh.setMatrixAt(i,placement.clone().multiply(source.matrixWorld)));mesh.computeBoundingSphere();scene.add(mesh);

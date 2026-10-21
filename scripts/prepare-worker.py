@@ -27,6 +27,7 @@ def texture(suffix,kind):
  return img
 color=texture('_dif.jpg','color');normal=texture('_norm.jpg','normal');rough=texture('_gloss.jpg','roughness')
 for mat in bpy.data.materials:
+ if hasattr(mat,'blend_method'):mat.blend_method='OPAQUE'
  mat.use_nodes=True;nodes=mat.node_tree.nodes;links=mat.node_tree.links;nodes.clear()
  p=nodes.new('ShaderNodeBsdfPrincipled');p.inputs['Roughness'].default_value=.75
  out=nodes.new('ShaderNodeOutputMaterial');links.new(p.outputs['BSDF'],out.inputs['Surface'])
