@@ -18,14 +18,14 @@ jobs:
           node-version: '24'
       - uses: actions/download-artifact@v4
         with:
-          name: giants-hiding-pv-c43df67bfdf46d6dc6c77748305b17cfc2c76e1c
-          run-id: 39537125807
+          name: giants-hiding-pv-1ada34959fbc352d6ea1653bec02b064e76ec464
+          run-id: 39687068995
           github-token: ${{ github.token }}
           path: output
       - uses: actions/download-artifact@v4
         with:
           name: pv-review-frames
-          run-id: 39537125807
+          run-id: 39687068995
           github-token: ${{ github.token }}
           path: output
       - name: Extract full-resolution gameplay previews from the encoded MP4
@@ -38,7 +38,7 @@ jobs:
       - name: Publish a gameplay preview with the video
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload pv-build-27 output/frame-25.50.jpg output/frame-07.50.jpg output/frame-28.50.jpg --clobber
+        run: gh release upload pv-build-31 output/frame-25.50.jpg output/frame-07.50.jpg output/frame-28.50.jpg --clobber
       - name: Prepare a compact sheet extracted from the encoded MP4
         run: |
           python3 -m pip install Pillow==10.4.0
@@ -51,6 +51,6 @@ jobs:
       - name: Publish review files with readable image data
         env:
           GH_TOKEN: ${{ github.token }}
-          PV_SOURCE_SHA: c43df67bfdf46d6dc6c77748305b17cfc2c76e1c
-          PV_SOURCE_RUN: '39537125807'
+          PV_SOURCE_SHA: 1ada34959fbc352d6ea1653bec02b064e76ec464
+          PV_SOURCE_RUN: '39687068995'
         run: node scripts/publish-previews.mjs
