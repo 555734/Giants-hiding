@@ -56,3 +56,9 @@ Legacy source/tests also retain the CC0 male base mesh and CC BY 3.0 Lee Perry-S
 ## v0.4 visual pass
 
 The cargo uses baked irregular timbers, cut-end rings and cracks, braided rope, iron straps and bolts, plus hoist chains connected to a dock gantry. Building facades have lighter limewash, arched windows, corner masonry, cornices and balconies. Character scan materials are classified into workwear, trousers and boots; a skinned sleeve shell and a fitted satchel replace parts of the modern T-shirt appearance. The albedo retains its native 8K resolution; normal/roughness textures use 4K/2K. A ray query adjusts the rendered feet to the visible supporting hand; a deterministic takeoff correction blends this offset through the jump. Crouched hands curl over the front cargo beam. The deterministic simulation and 30-second route are retained. Visual acceptance is checked in rendered frames before a new full capture.
+
+## 人物改修 v0.5
+
+スキャンの骨格を維持して上着の裾・ポケット・縫い目・袖を加工し、別の眼球材質と虹彩・瞳孔、控えめな肌の反射を導入。隠れる姿勢も腰・足・手首を調整しています。衣服はゲーム用の近似であり、参考画像と同等の品質を保証するものではありません。
+
+`prepare-scanned.py` は `tailor-scanned.py` を呼び出します。変換済み人物モデル・テクスチャは引き続き非公開の一時ファイルとして扱い、映像のみを公開します。

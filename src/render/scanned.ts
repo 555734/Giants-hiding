@@ -53,7 +53,7 @@ export class ScannedCharacter implements Character{
    const a=swing?(u-.5)*2:u*2;
    const z=moving?(swing?-.26+.52*a:.26-.52*a):0;
    const y=!s.grounded?.22:moving&&swing?Math.sin(a*Math.PI)*.13:0;
-   return this.local(side*.12,.075+y,z+(side>0?.06:-.16)*smooth(.1,.65,s.crouch));
+   return this.local(side*.12,.075+y,z+(side>0?.24:-.16)*smooth(.1,.65,s.crouch));
   };
   this.legs(foot(1),foot(-1),this.local(0,.5,1.2));
   for(const side of ['L','R']){

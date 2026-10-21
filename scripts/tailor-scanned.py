@@ -31,13 +31,11 @@ for vi in garment:
  vertex.co=inverse@q
 body.data.update()
 
-# The original watch and trainer markings are baked into the scan. Cover the
-# watch with a fitted broad fabric wrist wrap instead of a floating bracelet.
 tree=KDTree(len(points))
 for i,p in enumerate(points):tree.insert(p,i)
 tree.balance()
 bvh=BVHTree.FromPolygons([world@v.co for v in body.data.vertices],[list(p.vertices) for p in body.data.polygons])
-def surface(x,y,front=True,offset=.013):
+def surface(x,y,front=True,offset=.0018):
  origin=native(Vector((x,y,.65 if front else -.65)))
  direction=-fwd if front else fwd
  hit,normal,_,_=bvh.ray_cast(origin,direction,1.3/factor)
@@ -50,8 +48,16 @@ lining=bpy.data.materials.new('Linen collar');lining.use_nodes=True
 lining.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.95
 button=bpy.data.materials.new('Horn buttons');button.use_nodes=True
 button.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.56
+collar=bpy.data.materials.new('Fitted jacket collar');collar.use_nodes=True
+collar.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.95
+shirt_tree=KDTree(len(garment))
+for i in garment:shirt_tree.insert(points[i],i)
+shirt_tree.balance()
 
 created=[]
+source_uv={}
+for polygon in body.data.polygons:
+ for li in polygon.loop_indices:source_uv[body.data.loops[li].vertex_index]=body.data.uv_layers.active.data[li].uv.copy()
 def skinned(name,vertices,polygons,material):
  mesh=bpy.data.meshes.new(name);mesh.from_pydata([inverse@p for p in vertices],[],polygons);mesh.update()
  obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
@@ -60,6 +66,11 @@ def skinned(name,vertices,polygons,material):
  for i,p in enumerate(vertices):
   _,index,_=tree.find(p)
   for vg in body.data.vertices[index].groups:obj.vertex_groups[vg.group].add([i],vg.weight,'REPLACE')
+ if material==shirt:
+  uv=mesh.uv_layers.new(name='scan-fitted-cloth-uv')
+  for polygon in mesh.polygons:
+   for li in polygon.loop_indices:
+    _,index,_=shirt_tree.find(vertices[mesh.loops[li].vertex_index]);uv.data[li].uv=source_uv[index]
  modifier=obj.modifiers.new('native-garment-skin','ARMATURE');modifier.object=arm
  for polygon in mesh.polygons:polygon.use_smooth=True
  created.append(obj);return obj
@@ -83,27 +94,16 @@ for front in [True,False]:
  # A central tailored back seam catches the grazing light without a pasted decal.
  if not front:ribbon('jacket-back-seam',sample_line((0,1.60),(0,1.055)),.0025,False)
 
-ribbon('jacket-front-placket',sample_line((.004,1.55),(.004,1.055)),.022,True,cloth)
+ribbon('jacket-front-placket',sample_line((.004,1.55),(.004,1.055)),.022,True,shirt)
 for side in [-1,1]:
- # Small collar panels sit directly on the clavicle/chest surface.
- path=[(side*.025,1.615),(side*.091,1.613),(side*.124,1.55),(side*.052,1.52)]
- vertices=[surface(x,y,True,.023) for x,y in path]
- skinned('jacket-lapel',vertices,[(0,1,2),(0,2,3)],cloth)
- ribbon('lapel-stitch',path+[path[0]],.0025,True)
  # Patch pockets with sewn edges, scaled to the actual torso rather than boxes.
  path=[(side*.052,1.23),(side*.142,1.23),(side*.142,1.12),(side*.052,1.12)]
- vertices=[surface(x,y,True,.018) for x,y in path]
- skinned('jacket-pocket',vertices,[(0,1,2),(0,2,3)],cloth)
+ vertices=[surface(x,y,True,.0025) for x,y in path]
+ skinned('jacket-pocket',vertices,[(0,1,2),(0,2,3)],shirt)
  ribbon('pocket-stitch',path+[path[0]],.003,True)
 
-# A folded linen collar follows the actual neckline; its shape comes from the
-# scan ray intersections, not an unscaled torus attached to the head.
-for front in [True,False]:
- path=[(-.067+i*.0067,1.635+.012*(1-abs(-1+i*.1))) for i in range(21)]
- ribbon('folded-linen-neckline',path,.018,front,lining)
-
 for y in [1.12,1.22,1.32,1.42,1.52]:
- center=surface(.004,y,True,.029);vertices=[]
+ center=surface(.004,y,True,.006);vertices=[]
  for ring in [0,1]:
   for i in range(12):
    a=i*math.tau/12;vertices.append(center+right*math.cos(a)*.006/factor+Vector((0,0,math.sin(a)*.006/factor))+fwd*(ring*.003/factor))
@@ -144,7 +144,7 @@ bmesh.ops.delete(bm,geom=[bm.verts[i] for i in eye_vertices],context='VERTS');bm
 print('Separate anatomical eyes:',len(eye_vertices),'source vertices')
 
 # Bake the small sewn pieces into one skinned draw per material.
-groups=[[o for o in created if o.data.materials[0]==material] for material in [trim,lining,button,cloth]]
+groups=[[o for o in created if o.data.materials[0]==material] for material in [trim,lining,button,cloth,shirt,collar]]
 for objects in groups:
  if len(objects)<2:continue
  bpy.ops.object.select_all(action='DESELECT')
@@ -157,4 +157,4 @@ for obj in [body,sleeves]:
  modifier=obj.modifiers.new('garment-silhouette','SUBSURF');modifier.levels=1;modifier.render_levels=1
  # Applying subdivision after the Armature modifier is safe in rest pose.
  bpy.ops.object.modifier_apply(modifier=modifier.name)
-print('Tailored jacket: fitted seams, lapels, pockets, linen neckline, articulated cloth')
+print('Tailored jacket: fitted seams, pockets, articulated cloth')

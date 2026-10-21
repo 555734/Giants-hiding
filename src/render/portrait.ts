@@ -15,8 +15,8 @@ export function anatomicalEye(){
    float fibre=.5+.24*sin(theta*79.+sin(radius*91.)*1.8)+.15*sin(theta*139.+radius*143.);
    vec3 iris=mix(vec3(.075,.052,.028),vec3(.24,.19,.10),clamp(fibre,0.,1.));
    iris*=1.-.55*smoothstep(.29,.365,radius);
-   iris=mix(vec3(.007,.009,.008),iris,smoothstep(.122,.145,radius));
-   vec3 sclera=vec3(.72,.68,.59)*(1.-.13*smoothstep(.40,.90,radius));
+   iris=mix(vec3(.007,.009,.008),iris,smoothstep(.095,.112,radius));
+   vec3 sclera=vec3(.52,.49,.44)*(1.-.13*smoothstep(.40,.90,radius));
    diffuseColor.rgb=mix(iris,sclera,smoothstep(.355,.375,radius));
   `);
  };

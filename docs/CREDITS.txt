@@ -13,4 +13,4 @@ The previous CC0 male base and CC BY 3.0 Lee Perry-Smith head remain credited in
 
 This is a prototype visual revision. Reference-image fidelity is a target, not a claim.
 
-V0.5: fitted skinned jacket seams, lapels, pockets and linen neckline; separate opaque anatomical eye surfaces with procedural iris and corneal highlight; material and crouch refinements. No derived character assets are redistributed.
+V0.5: fitted skinned jacket seams, pockets and fitted garment panels; separate opaque anatomical eye surfaces with procedural iris and corneal highlight; material and crouch refinements. No derived character assets are redistributed.

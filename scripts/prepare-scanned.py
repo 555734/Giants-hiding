@@ -1,6 +1,6 @@
 import sys
 sys.path.append('/usr/lib/python3/dist-packages')
-import bpy,json,math
+import bpy,json,math,shutil
 from pathlib import Path
 from mathutils import Vector,Matrix
 from PIL import Image,ImageOps
@@ -16,10 +16,12 @@ processed=private/'processed';processed.mkdir(exist_ok=True)
 def texture(suffix,kind):
  file=next(p for p in private.rglob('*') if p.name.lower().endswith(suffix))
  dest=processed/(kind+'.jpg')
- with Image.open(file) as im:
-  im=im.convert('RGB');limit=8192 if kind=='color' else 4096 if kind=='normal' else 2048;im.thumbnail((limit,limit),Image.Resampling.LANCZOS)
-  if kind=='roughness':im=ImageOps.invert(im).point(lambda x:max(118,min(245,x+42)))
-  im.save(dest,quality=96)
+ if kind=='color':shutil.copyfile(file,dest)
+ else:
+  with Image.open(file) as im:
+   im=im.convert('RGB');limit=4096 if kind=='normal' else 2048;im.thumbnail((limit,limit),Image.Resampling.LANCZOS)
+   if kind=='roughness':im=ImageOps.invert(im).point(lambda x:max(118,min(245,x+42)))
+   im.save(dest,quality=96)
  img=bpy.data.images.load(str(dest.resolve()),check_existing=True)
  if kind!='color':img.colorspace_settings.name='Non-Color'
  return img
@@ -44,8 +46,10 @@ base=body.data.materials[0]
 shirt=base.copy();shirt.name='Work jacket'
 trousers=base.copy();trousers.name='Work trousers'
 boots=base.copy();boots.name='Work boots'
-for mat in [shirt,trousers,boots]:body.data.materials.append(mat)
-shirt_id=len(body.data.materials)-3;trousers_id=shirt_id+1;boots_id=shirt_id+2
+hair=base.copy();hair.name='Scanned hair'
+cuff=base.copy();cuff.name='Work wrist cuff'
+for mat in [shirt,trousers,boots,hair,cuff]:body.data.materials.append(mat)
+shirt_id=len(body.data.materials)-5;trousers_id=shirt_id+1;boots_id=shirt_id+2;hair_id=shirt_id+3;cuff_id=shirt_id+4
 photo=Image.open(processed/'color.jpg').convert('RGB');pixel=photo.load();pw,ph=photo.size
 uv_layer=body.data.uv_layers.active.data
 def influences(vertex):
@@ -55,6 +59,9 @@ def influences(vertex):
   out[name]=out.get(name,0)+group.weight
  return out
 weights=[influences(vertex) for vertex in body.data.vertices]
+body_points=[body.matrix_world@vertex.co for vertex in body.data.vertices]
+floor=min(p.z for p in body_points);height_scale=1.94459/(max(p.z for p in body_points)-floor)
+hip_world=arm.matrix_world@arm.data.bones[prefix+'hip'].head_local
 for polygon in body.data.polygons:
  group={}
  for vi in polygon.vertices:
@@ -66,9 +73,12 @@ for polygon in body.data.polygons:
  torso=sum(value for key,value in group.items() if key.startswith(('hip','spine_','upperarm_','shoulder_','neck')))
  legs=sum(value for key,value in group.items() if key.startswith(('upperleg_','lowerleg_')))
  feet=sum(value for key,value in group.items() if key.startswith(('foot_','ball_')))
+ center=sum((body_points[vi] for vi in polygon.vertices),Vector())/len(polygon.vertices)
+ relative_height=(center.z-floor)*height_scale
  if torso>.45 and white:polygon.material_index=shirt_id
  elif feet>.48:polygon.material_index=boots_id
- elif legs>.60:polygon.material_index=trousers_id
+ elif legs>.60 or (group.get('hip',0)>.50 and center.z<hip_world.z+.05):polygon.material_index=trousers_id
+ elif group.get('head',0)>.5 and relative_height>1.845 and max(rgb)<145:polygon.material_index=hair_id
 # A skinned fabric shell extends the photographed short sleeves to the middle forearms.
 cloth=bpy.data.materials.new('Rolled sleeve cloth');cloth.use_nodes=True
 cloth.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.93

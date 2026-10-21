@@ -33,7 +33,7 @@ async function start(){
  function draw(){
   const s=game.state;world.update(s);actors.update(s);
   let angle=.19*smooth(17,21,s.t)-.35*smooth(21,24,s.t)+.43*smooth(27,30,s.t)+lookX;
-  const close=smooth(19,24,s.t),back=5.3-2.4*close,camHeight=2.15-.5*close+lookY,viewY=s.y+actors.human.groundOffset;
+  const close=smooth(19,24,s.t),back=4.4-1.8*close,camHeight=1.9-.4*close+lookY,viewY=s.y+actors.human.groundOffset;
   camera.position.set(s.x-Math.sin(angle)*back,viewY+camHeight,s.z-Math.cos(angle)*back);
   camera.lookAt(s.x+Math.sin(angle)*3.0-1.05*close,viewY+1.10-.2*close,s.z+Math.cos(angle)*3.0);
   sun.target.position.set(s.x,s.y+1,s.z);sun.position.set(s.x-35,s.y+66,s.z-35);sun.target.updateMatrixWorld();
