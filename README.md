@@ -1,4 +1,6 @@
-# Giants Hiding — Harbour Escape PV v0.4
+# Giants Hiding — Harbour Escape PV v0.5
+
+[Latest 30-second PV (1080p / 30fps)](https://github.com/555734/Giants-hiding/releases/download/pv-build-27/giants-hiding-pv-30s.mp4) · [Character revision and verification](docs/visual-review-v0.5.md)
 
 One continuous 30-second third-person traversal. A normal-size player crosses a giant worker's hand, jumps onto a single cargo tray, releases its latch, rises on that same tray and crouches behind timber as the worker examines the load. The camera follows throughout.
 
